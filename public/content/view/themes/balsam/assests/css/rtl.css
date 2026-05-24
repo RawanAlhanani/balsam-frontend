@@ -1,0 +1,232 @@
+
+@font-face {
+    font-family: HacenMaghreb;
+    src: url(HacenMaghreb.ttf);
+    font-weight: bold;
+}
+@font-face {
+    font-family: HacenMaghreb;
+    src: url(HacenMaghrebBd.ttf);
+    font-weight: normal;
+}
+body , h1 , h2 , h3 , h4 , h5 ,h6 , p , a {
+    font-family: HacenMaghreb!important;
+}
+.navigation > ul > li {
+    float: right;
+}
+.col-md-6 {
+    float: right;
+}
+
+.col-md-6 .droite {
+    text-align: right;
+    font-size: 16px;
+    text-decoration: underline;
+}
+.col-md-12 .droite {
+    text-align: right;
+    font-size: 16px;
+    text-decoration: underline;
+}
+
+.col-md-3 .droite {
+    text-align: right;
+    font-size: 16px;
+    text-decoration: underline;
+}
+
+
+.progress-bar.progress {
+    right: 0px;
+}.col-md-4 {
+    float: right;
+
+}
+.kode_eco_logo {
+    float: left;
+}
+.navigation {
+    float: right;
+}
+.eco_form_importer .eco_headings {
+    text-align: right;
+
+}.eco_admin_info li i {
+    float: right;
+
+}.col-md-3 {
+    float: right;
+
+}
+.eco_recent_posts .eco_thumb {
+    float: right;
+    margin-left: 13px;
+   margin-right: 0;
+}
+.eco_widget_post li {
+    float: right;
+
+}
+.col-md-9 {
+    float: right;
+
+}
+.eco_page_link li:before {
+    position: absolute;
+    content: "";
+    top: 3px;
+    border-left: 1px solid #fff;
+    min-height: 14px;
+    right: auto;
+    transform: skewX(-21deg);
+    -webkit-transform: skewX(-21deg);
+    left: 2px;
+}
+.eco_page_link li {
+
+    margin-left: 7px;
+    padding-left: 13px;
+    padding-right: 0;
+    margin-right: 0;
+}
+.eco_share-tag .social-icons {
+    float: left;
+
+}
+.eco_share-tag span i {
+    margin-left: 10px;
+    margin-right: 0;
+}
+.eco_share-tag span {
+    float: right;
+
+}
+.eco_widget_list_style li a:before {
+
+    content:"\f104";
+
+    left: 0;
+    right: auto;
+}
+.widget_post_content .eco_sm_titles:before {
+
+    left: auto;
+
+    right: 0;
+}
+.your-submit-message h5 i {
+    float: left;
+}
+.navigation > ul > li {
+
+    width: auto;
+    margin-right: 0px;
+    position: relative;
+}
+.navigation > ul .children {
+
+    left: auto;
+
+    right: 0;
+}
+.nav-menu-mega li a, .navigation > ul li .children li a {
+
+    text-align: right;
+
+}
+.ccd{
+
+    float: left;
+
+}
+.navigation > ul {
+    float: right;
+
+}
+.dl-menuwrapper li {
+
+    text-align: right;
+}
+.dl-menuwrapper li.dl-back:after, .dl-menuwrapper li > a:not(:only-child):after {
+    position: absolute;
+    top: 0;
+    line-height: 40px;
+    font-family: FontAwesome;
+    speak: none;
+    -webkit-font-smoothing: antialiased;
+    content:"\f104";
+    font-size: 16px;
+    color: #fff;
+    /* left: 0; */
+    right: auto;
+    margin-right: 20px;
+}
+.aboutus {
+    direction: rtl;
+    text-align: right;
+}
+.eco-event-title h5 {
+    width: auto;
+    margin-bottom: 10px;
+    font-weight: bold;
+    text-align: right;
+    color: #e84f47;
+}
+.eco_blog_content p {
+    float: left;
+    width: 100%;
+    margin-bottom: 0px;
+    text-align: right;
+}
+.feature_blog_caption h5 {
+    margin-bottom: 0px;
+    text-align: right;
+}
+.eco_blog_detail_content {
+    float: left;
+    width: 100%;
+    text-align: right;
+}
+.eco_widget_list_style li {
+
+    text-align: right;
+}
+.widget_post_content .eco_sm_titles {
+
+    text-align: right;
+}
+.widget_post_content {
+    direction: ltr;
+}
+
+.feature_blog_caption p {
+
+    text-align: right;
+}
+td {
+    text-align: center;
+}
+.eco_footer_content .eco_sm_titles {
+    text-align: right;
+}
+.eco_offices_info p {
+
+    text-align: right;
+}
+.eco_admin_info li i {
+
+    text-align: right;
+
+}
+.social-icons li {
+
+    float: right;
+}
+h4.eco_sm_titles {
+    text-align: right;
+}
+
+.eco_detail_address {
+    text-align: right;
+}
