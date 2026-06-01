@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
-const AdminHeader = () => {
+const AdminHeader = ({ toggleMenu }) => {
     const navigate = useNavigate();
 
     const handleLogout = (e) => {
@@ -17,14 +17,14 @@ const AdminHeader = () => {
                 <div className="navbar-header">
                     <ul className="nav navbar-nav flex-row">
                         <li className="nav-item mobile-menu d-md-none mr-auto">
-                            <a className="nav-link nav-menu-main menu-toggle hidden-xs" href="#">
+                            <a className="nav-link nav-menu-main menu-toggle hidden-xs" href="#" onClick={toggleMenu}>
                                 <i className="ft-menu font-large-1"></i>
                             </a>
                         </li>
                         <li className="nav-item">
-                            <Link className="navbar-brand" to="/">
+                            <Link className="navbar-brand" to="/admin/dashboard">
                                 <img className="brand-logo" alt="modern admin logo" src="/backend/app-assets/images/logo/logo.png" />
-                                <h3 className="brand-text">الإدارة الحديثة</h3>
+                                <h3 className="brand-text">باسم</h3>
                             </Link>
                         </li>
                         <li className="nav-item d-md-none">
@@ -38,7 +38,7 @@ const AdminHeader = () => {
                     <div className="collapse navbar-collapse" id="navbar-mobile">
                         <ul className="nav navbar-nav mr-auto float-left">
                             <li className="nav-item d-none d-md-block">
-                                <a className="nav-link nav-menu-main menu-toggle hidden-xs" href="#">
+                                <a className="nav-link nav-menu-main menu-toggle hidden-xs" href="#" onClick={toggleMenu}>
                                     <i className="ft-menu"></i>
                                 </a>
                             </li>

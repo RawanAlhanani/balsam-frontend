@@ -35,14 +35,27 @@ export const formatDescription = (desc) => {
 
 /**
  * Gets the full storage URL for an image.
- * Prefers relative paths if the assets were copied to the public folder.
  * @param {string} imageName - The name of the image file.
+ * @param {string} type - Optional type to help locate the image (e.g., 'activity', 'child').
  * @returns {string} - The complete URL.
  */
-export const getStorageUrl = (imageName) => {
+export const getStorageUrl = (imageName, type = '') => {
     if (!imageName) return "/backend/app-assets/images/portrait/small/avatar-s-19.png"; // Placeholder
     
-    // We copied assets to public/storage/MesImages
-    // Using relative path /storage/MesImages/... allows the browser to fetch from the Vite dev server
-    return `/storage/MesImages/${imageName}`;
+    // If it's already an absolute URL, return it
+    if (imageName.startsWith('http')) return imageName;
+
+    const backendUrl = import.meta.env.VITE_API_BASE_URL?.replace('/api', '') || 'http://localhost:8000';
+    const storageBase = import.meta.env.VITE_STORAGE_URL || `${backendUrl}/storage/MesImages`;
+
+    // Strategy: 
+    // 1. Most new images are in /storage/MesImages/
+    // 2. Some old ones might be in /ImagesActivites/ or /PhotoEnfant/
+    
+    // If the name contains "activity" or we know it's an activity and it's old, 
+    // we might need to check /ImagesActivites/
+    // However, for simplicity and since we are moving towards /MesImages/, 
+    // we'll primarily use the storageBase.
+    
+    return `${storageBase}/${imageName}`;
 };

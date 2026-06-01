@@ -64,9 +64,10 @@ const AdminLogin = () => {
             const response = await api.post('/admin-login', { login, mdp });
             localStorage.setItem('admin_token', response.data.token);
             localStorage.setItem('is_admin', 'true');
+            localStorage.setItem('admin_role', response.data.user.role);
             navigate('/admin/dashboard');
         } catch (err) {
-            setError(err.response?.data?.message || 'Login ou mot de passe non valides !!!!');
+            setError(err.response?.data?.message || 'Email ou mot de passe non valides !!!!');
         }
     };
 
@@ -85,7 +86,7 @@ const AdminLogin = () => {
                                             </div>
                                         </div>
                                         <h6 className="card-subtitle line-on-side text-muted text-center font-small-3 pt-2">
-                                            <span>Se connecter</span>
+                                            <span>Se connecter (Administration)</span>
                                         </h6>
                                     </div>
                                     <div className="card-content">
@@ -100,9 +101,9 @@ const AdminLogin = () => {
                                                 <fieldset className="form-group position-relative has-icon-left mb-1">
                                                     <input 
                                                         dir="ltr" 
-                                                        type="text" 
+                                                        type="email" 
                                                         className="form-control form-control-lg" 
-                                                        placeholder="Votre login"
+                                                        placeholder="Votre Email"
                                                         value={login}
                                                         onChange={(e) => setLogin(e.target.value)}
                                                         required 
