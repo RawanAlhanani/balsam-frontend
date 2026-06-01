@@ -1,12 +1,22 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import AdminHeader from '../components/Admin/AdminHeader';
 import AdminSidebar from '../components/Admin/AdminSidebar';
 import AdminFooter from '../components/Admin/AdminFooter';
 
 const AdminLayout = ({ children }) => {
+    const [isMenuExpanded, setIsMenuExpanded] = useState(true);
+
+    const toggleMenu = (e) => {
+        if (e) e.preventDefault();
+        setIsMenuExpanded(!isMenuExpanded);
+    };
+
     useEffect(() => {
         // Add admin specific classes to body
-        document.body.className = "vertical-layout vertical-menu 2-columns menu-expanded fixed-navbar";
+        const baseClasses = "vertical-layout vertical-menu 2-columns fixed-navbar";
+        const menuClass = isMenuExpanded ? "menu-expanded" : "menu-collapsed";
+        document.body.className = `${baseClasses} ${menuClass}`;
+        
         document.body.setAttribute("data-open", "click");
         document.body.setAttribute("data-menu", "vertical-menu");
         document.body.setAttribute("data-col", "2-columns");
@@ -23,6 +33,12 @@ const AdminLayout = ({ children }) => {
             "/backend/assets/css/style-rtl.css"
         ];
 
+        const adminScripts = [
+            "/backend/app-assets/vendors/js/vendors.min.js",
+            "/backend/app-assets/js/core/app-menu.js",
+            "/backend/app-assets/js/core/app.js"
+        ];
+
         const linkElements = adminStyles.map(href => {
             const link = document.createElement('link');
             link.rel = 'stylesheet';
@@ -33,24 +49,34 @@ const AdminLayout = ({ children }) => {
             return link;
         });
 
+        const scriptElements = adminScripts.map(src => {
+            const script = document.createElement('script');
+            script.src = src;
+            script.className = 'admin-script';
+            script.async = false;
+            document.body.appendChild(script);
+            return script;
+        });
+
         return () => {
-            // Clean up admin styles when leaving admin section
+            // Clean up admin styles and scripts when leaving admin section
             document.body.className = "";
             document.body.removeAttribute("data-open");
             document.body.removeAttribute("data-menu");
             document.body.removeAttribute("data-col");
             linkElements.forEach(link => {
-                if (link.parentNode) {
-                    link.parentNode.removeChild(link);
-                }
+                if (link.parentNode) link.parentNode.removeChild(link);
+            });
+            scriptElements.forEach(script => {
+                if (script.parentNode) script.parentNode.removeChild(script);
             });
         };
-    }, []);
+    }, [isMenuExpanded]);
 
     return (
         <div className="admin-wrapper">
-            <AdminHeader />
-            <AdminSidebar />
+            <AdminHeader toggleMenu={toggleMenu} />
+            <AdminSidebar isExpanded={isMenuExpanded} />
             {children}
             <AdminFooter />
         </div>

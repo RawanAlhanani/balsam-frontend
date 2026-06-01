@@ -1,7 +1,19 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import api from '../../api';
 
 const AdminDashboard = () => {
+    const [stats, setStats] = useState({
+        tuteurs_count: 0,
+        activites_count: 0,
+        news_count: 0,
+        partenaires_count: 0
+    });
+
+    useEffect(() => {
+        api.get('/admin/stats').then(res => setStats(res.data)).catch(err => console.error(err));
+    }, []);
+
     return (
         <div className="app-content content">
             <div className="content-wrapper">
@@ -18,17 +30,17 @@ const AdminDashboard = () => {
                                     <div className="card-body">
                                         <div className="media d-flex">
                                             <div className="media-body text-left">
-                                                <h3 className="info">المسجلين</h3>
-                                                <h6>إدارة أولياء الأمور</h6>
+                                                <h3 className="info">{stats.tuteurs_count}</h3>
+                                                <h6>المسجلين</h6>
                                             </div>
                                             <div>
                                                 <i className="la la-users info font-large-2 float-right"></i>
                                             </div>
                                         </div>
                                         <div className="progress progress-sm mt-1 mb-0 box-shadow-2">
-                                            <div className="progress-bar bg-gradient-x-info" role="progressbar" style={{ width: '80%' }}></div>
+                                            <div className="progress-bar bg-gradient-x-info" role="progressbar" style={{ width: '100%' }}></div>
                                         </div>
-                                        <Link to="/admin/tuteurs" className="btn btn-sm btn-outline-info mt-2">عرض التفاصيل</Link>
+                                        <Link to="/admin/tuteurs" className="btn btn-sm btn-outline-info mt-2">إدارة أولياء الأمور</Link>
                                     </div>
                                 </div>
                             </div>
@@ -40,17 +52,17 @@ const AdminDashboard = () => {
                                     <div className="card-body">
                                         <div className="media d-flex">
                                             <div className="media-body text-left">
-                                                <h3 className="warning">الأنشطة</h3>
-                                                <h6>إدارة أنشطة الجمعية</h6>
+                                                <h3 className="warning">{stats.activites_count}</h3>
+                                                <h6>الأنشطة</h6>
                                             </div>
                                             <div>
                                                 <i className="la la-calendar warning font-large-2 float-right"></i>
                                             </div>
                                         </div>
                                         <div className="progress progress-sm mt-1 mb-0 box-shadow-2">
-                                            <div className="progress-bar bg-gradient-x-warning" role="progressbar" style={{ width: '65%' }}></div>
+                                            <div className="progress-bar bg-gradient-x-warning" role="progressbar" style={{ width: '100%' }}></div>
                                         </div>
-                                        <Link to="/admin/activites" className="btn btn-sm btn-outline-warning mt-2">عرض التفاصيل</Link>
+                                        <Link to="/admin/activites" className="btn btn-sm btn-outline-warning mt-2">إدارة الأنشطة</Link>
                                     </div>
                                 </div>
                             </div>
@@ -62,17 +74,17 @@ const AdminDashboard = () => {
                                     <div className="card-body">
                                         <div className="media d-flex">
                                             <div className="media-body text-left">
-                                                <h3 className="success">الأخبار</h3>
-                                                <h6>إدارة مستجدات الموقع</h6>
+                                                <h3 className="success">{stats.news_count}</h3>
+                                                <h6>الأخبار</h6>
                                             </div>
                                             <div>
                                                 <i className="la la-newspaper-o success font-large-2 float-right"></i>
                                             </div>
                                         </div>
                                         <div className="progress progress-sm mt-1 mb-0 box-shadow-2">
-                                            <div className="progress-bar bg-gradient-x-success" role="progressbar" style={{ width: '75%' }}></div>
+                                            <div className="progress-bar bg-gradient-x-success" role="progressbar" style={{ width: '100%' }}></div>
                                         </div>
-                                        <Link to="/admin/infos" className="btn btn-sm btn-outline-success mt-2">عرض التفاصيل</Link>
+                                        <Link to="/admin/infos" className="btn btn-sm btn-outline-success mt-2">إدارة الأخبار</Link>
                                     </div>
                                 </div>
                             </div>
@@ -84,17 +96,17 @@ const AdminDashboard = () => {
                                     <div className="card-body">
                                         <div className="media d-flex">
                                             <div className="media-body text-left">
-                                                <h3 className="danger">الشركاء</h3>
-                                                <h6>إدارة شركاء الجمعية</h6>
+                                                <h3 className="danger">{stats.partenaires_count}</h3>
+                                                <h6>الشركاء</h6>
                                             </div>
                                             <div>
                                                 <i className="la la-handshake-o danger font-large-2 float-right"></i>
                                             </div>
                                         </div>
                                         <div className="progress progress-sm mt-1 mb-0 box-shadow-2">
-                                            <div className="progress-bar bg-gradient-x-danger" role="progressbar" style={{ width: '50%' }}></div>
+                                            <div className="progress-bar bg-gradient-x-danger" role="progressbar" style={{ width: '100%' }}></div>
                                         </div>
-                                        <Link to="/admin/partenaires" className="btn btn-sm btn-outline-danger mt-2">عرض التفاصيل</Link>
+                                        <Link to="/admin/partenaires" className="btn btn-sm btn-outline-danger mt-2">إدارة الشركاء</Link>
                                     </div>
                                 </div>
                             </div>

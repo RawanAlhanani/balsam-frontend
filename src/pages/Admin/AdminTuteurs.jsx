@@ -8,13 +8,7 @@ const AdminTuteurs = () => {
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
 
-    useEffect(() => {
-        const isAdmin = localStorage.getItem('is_admin');
-        if (!isAdmin) {
-            navigate('/connecte');
-            return;
-        }
-
+    const fetchTuteurs = () => {
         api.get('/admin/tuteurs')
             .then(res => {
                 setTuteurs(res.data);
@@ -24,7 +18,27 @@ const AdminTuteurs = () => {
                 console.error(err);
                 setLoading(false);
             });
+    };
+
+    useEffect(() => {
+        const isAdmin = localStorage.getItem('is_admin');
+        if (!isAdmin) {
+            navigate('/connecte');
+            return;
+        }
+        fetchTuteurs();
     }, [navigate]);
+
+    const handleDelete = async (id) => {
+        if (window.confirm('هل أنت متأكد من حذف هذا المسجل وجميع بياناته؟')) {
+            try {
+                await api.delete(`/admin/tuteurs/${id}`);
+                fetchTuteurs();
+            } catch (err) {
+                alert('خطأ في الحذف');
+            }
+        }
+    };
 
     if (loading) return <div className="app-content content"><div className="content-wrapper"><div className="content-body" style={{ textAlign: 'center', padding: '100px' }}><h3>جاري التحميل...</h3></div></div></div>;
 
@@ -104,7 +118,7 @@ const AdminTuteurs = () => {
                                                                 <td className="Last">
                                                                     <button type="button" className="btn btn-round btn-primary btn-sm">تفاصيل</button>
                                                                     <Link to={`/admin/editTuteur/${enfant.id}`} className="btn btn-round btn-warning btn-sm">تعديل</Link>
-                                                                    <button type="button" className="btn btn-round btn-danger btn-sm">حذف</button>
+                                                                    <button type="button" className="btn btn-round btn-danger btn-sm" onClick={() => handleDelete(tuteur.id)}>حذف</button>
                                                                 </td>
                                                             </tr>
                                                         ))
