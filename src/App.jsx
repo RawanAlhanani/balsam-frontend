@@ -22,15 +22,14 @@ import AdminLogin from './pages/Auth/AdminLogin';
 import AdminDashboard from './pages/Admin/AdminDashboard';
 import AdminTuteurs from './pages/Admin/AdminTuteurs';
 import AdminActivities from './pages/Admin/AdminActivities';
-import AddActivity from './pages/Admin/AddActivity';
 import AdminNews from './pages/Admin/AdminNews';
-import AddNews from './pages/Admin/AddNews';
 import AdminPartners from './pages/Admin/AdminPartners';
-import AddPartner from './pages/Admin/AddPartner';
 import AdminSettings from './pages/Admin/AdminSettings';
 import AdminAdmins from './pages/Admin/AdminAdmins';
 import AdminImages from './pages/Admin/AdminImages';
 import AdminStaticPages from './pages/Admin/AdminStaticPages';
+import AdminMeetings from './pages/Admin/AdminMeetings';
+import AdminFinance from './pages/Admin/AdminFinance';
 import Contact from './pages/Contact/Contact';
 import ObjectPage from './pages/Static/ObjectPage';
 import ClubPage from './pages/Static/ClubPage';
@@ -78,15 +77,14 @@ function App() {
               <Route path="/dashboard" element={<AdminDashboard />} />
               <Route path="/tuteurs" element={<AdminTuteurs />} />
               <Route path="/activites" element={<AdminActivities />} />
-              <Route path="/ajoutActivite" element={<AddActivity />} />
               <Route path="/infos" element={<AdminNews />} />
-              <Route path="/ajoutInfo" element={<AddNews />} />
               <Route path="/partenaires" element={<AdminPartners />} />
-              <Route path="/ajoutPartenaire" element={<AddPartner />} />
               <Route path="/settings" element={<AdminSettings />} />
               <Route path="/admins" element={<AdminAdmins />} />
               <Route path="/images" element={<AdminImages />} />
               <Route path="/pages" element={<AdminStaticPages />} />
+              <Route path="/meetings" element={<AdminMeetings />} />
+              <Route path="/finance" element={<AdminFinance />} />
             </Routes>
           </AdminLayout>
         } />

@@ -9,8 +9,13 @@ const api = axios.create({
 // Add a request interceptor to include the token in all requests
 api.interceptors.request.use((config) => {
     const token = localStorage.getItem('token');
-    if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
+    const adminToken = localStorage.getItem('admin_token');
+    
+    // Prioritize admin token for admin routes, or just send whichever exists
+    const activeToken = adminToken || token;
+    
+    if (activeToken) {
+        config.headers.Authorization = `Bearer ${activeToken}`;
     }
     return config;
 });

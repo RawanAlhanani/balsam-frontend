@@ -11,68 +11,70 @@ const AdminSidebar = ({ isExpanded }) => {
 
     const menuItems = [
         {
-            title: "المسجلين في الموقع",
-            icon: "la-home",
-            subItems: [
-                { title: "أولياء الأمور وأبناؤهم", to: "/admin/tuteurs" }
-            ]
+            title: "المسجلين",
+            icon: "la-users",
+            to: "/admin/tuteurs"
         },
         {
             title: "الأنشطة",
             icon: "la-calendar",
-            subItems: [
-                { title: "جميع الأنشطة", to: "/admin/activites" },
-                { title: "إضافة نشاط", to: "/admin/ajoutActivite" }
-            ]
+            to: "/admin/activites"
         },
         {
             title: "الأخبار",
             icon: "la-newspaper-o",
-            subItems: [
-                { title: "جميع الأخبار", to: "/admin/infos" },
-                { title: "إضافة خبر", to: "/admin/ajoutInfo" }
-            ]
+            to: "/admin/infos"
         },
         {
             title: "الشركاء",
             icon: "la-handshake-o",
-            subItems: [
-                { title: "جميع الشركاء", to: "/admin/partenaires" },
-                { title: "إضافة شريك", to: "/admin/ajoutPartenaire" }
-            ]
+            to: "/admin/partenaires"
         },
         {
             title: "الصور والمعرض",
             icon: "la-image",
-            subItems: [
-                { title: "إدارة الصور", to: "/admin/images" }
-            ]
+            to: "/admin/images"
         },
         {
             title: "الصفحات الثابتة",
             icon: "la-file-text",
-            subItems: [
-                { title: "إدارة الصفحات", to: "/admin/pages" }
-            ]
+            to: "/admin/pages"
         }
     ];
 
-    // Only President can see system settings and admin accounts
-    if (adminRole === 'president') {
-        menuItems.push({
-            title: "إعدادات النظام",
-            icon: "la-cog",
-            subItems: [
-                { title: "الإعدادات العامة", to: "/admin/settings" },
-                { title: "حسابات الإدارة", to: "/admin/admins" }
-            ]
+    // Role-based simple items
+    const roleItems = [];
+    if (adminRole === 'president' || adminRole === 'secretary') {
+        roleItems.push({
+            title: "الاجتماعات",
+            icon: "la-comments",
+            to: "/admin/meetings"
         });
     }
+
+    if (adminRole === 'president' || adminRole === 'treasurer') {
+        roleItems.push({
+            title: "المالية",
+            icon: "la-money",
+            to: "/admin/finance"
+        });
+    }
+
+    // Settings (The only one keeping a dropdown as it has multiple unique pages)
+    const settingsMenu = {
+        title: "إعدادات النظام",
+        icon: "la-cog",
+        subItems: [
+            { title: "الإعدادات العامة", to: "/admin/settings" },
+            { title: "حسابات الإدارة", to: "/admin/admins" }
+        ]
+    };
 
     const handleLogout = (e) => {
         e.preventDefault();
         localStorage.removeItem('admin_token');
         localStorage.removeItem('is_admin');
+        localStorage.removeItem('admin_role');
         window.location.href = '/connecte';
     };
 
@@ -83,21 +85,34 @@ const AdminSidebar = ({ isExpanded }) => {
                     <li className="nav-item">
                         <Link to="/admin/dashboard"><i className="la la-dashboard"></i><span className="menu-title">لوحة التحكم</span></Link>
                     </li>
-                    {menuItems.map((item, idx) => (
-                        <li key={idx} className={`nav-item ${openMenus[item.title] ? 'open' : ''}`}>
-                            <a href="#" onClick={(e) => { e.preventDefault(); toggleMenu(item.title); }}>
+                    
+                    {/* Direct Links */}
+                    {[...menuItems, ...roleItems].map((item, idx) => (
+                        <li key={idx} className="nav-item">
+                            <Link to={item.to}>
                                 <i className={`la ${item.icon}`}></i>
                                 <span className="menu-title">{item.title}</span>
+                            </Link>
+                        </li>
+                    ))}
+
+                    {/* Settings Dropdown */}
+                    {adminRole === 'president' && (
+                        <li className={`nav-item ${openMenus[settingsMenu.title] ? 'open' : ''}`}>
+                            <a href="#" onClick={(e) => { e.preventDefault(); toggleMenu(settingsMenu.title); }}>
+                                <i className={`la ${settingsMenu.icon}`}></i>
+                                <span className="menu-title">{settingsMenu.title}</span>
                             </a>
-                            <ul className="menu-content" style={{ display: openMenus[item.title] ? 'block' : 'none' }}>
-                                {item.subItems.map((sub, sIdx) => (
+                            <ul className="menu-content" style={{ display: openMenus[settingsMenu.title] ? 'block' : 'none' }}>
+                                {settingsMenu.subItems.map((sub, sIdx) => (
                                     <li key={sIdx}>
                                         <Link className="menu-item" to={sub.to}>{sub.title}</Link>
                                     </li>
                                 ))}
                             </ul>
                         </li>
-                    ))}
+                    )}
+
                     <li className="nav-item">
                         <a href="#" onClick={handleLogout} className="text-danger">
                             <i className="la la-power-off"></i><span className="menu-title">تسجيل الخروج</span>
