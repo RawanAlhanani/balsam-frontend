@@ -8,6 +8,7 @@ const AdminHeader = ({ toggleMenu }) => {
         e.preventDefault();
         localStorage.removeItem('admin_token');
         localStorage.removeItem('is_admin');
+        localStorage.removeItem('admin_role');
         navigate('/connecte');
     };
 
