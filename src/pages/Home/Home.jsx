@@ -7,7 +7,7 @@ import NewsSection from './components/NewsSection';
 import VideoSection from './components/VideoSection';
 import GallerySection from './components/GallerySection';
 import DonationSection from './components/DonationSection';
-
+import Stats from './components/Stats';
 const Home = () => {
     const [data, setData] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -63,7 +63,7 @@ const Home = () => {
             <VideoSection />
 
             <GallerySection images={data.gallery_images} />
-
+            <Stats />
             <DonationSection />
         </div>
     );

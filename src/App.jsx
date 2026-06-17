@@ -34,7 +34,7 @@ import Contact from './pages/Contact/Contact';
 import ObjectPage from './pages/Static/ObjectPage';
 import ClubPage from './pages/Static/ClubPage';
 import ClubMeetPage from './pages/Static/ClubMeetPage';
-
+import SoutienPsychologique from "./pages/Home/components/Centre/SoutienPsychologique";
 function App() {
   return (
     <Router>
@@ -66,6 +66,11 @@ function App() {
               <Route path="/object" element={<ObjectPage />} />
               <Route path="/club" element={<ClubPage />} />
               <Route path="/clubmeet" element={<ClubMeetPage />} />
+              <Route path="/centre/soutien-psychologique" element={<SoutienPsychologique />} />
+              <Route path="/centre/orthophonie" element={<div>تقويم النطق</div>} />
+              <Route path="/centre/psychomoteur" element={<div>النفس حركي</div>} />
+              <Route path="/centre/education-speciale" element={<div>التربية الخاصة</div>} />
+              <Route path="/centre/ergotherapie" element={<div>العلاج الوظيفي</div>} />
             </Routes>
           </MainLayout>
         } />
