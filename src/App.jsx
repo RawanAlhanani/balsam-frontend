@@ -34,7 +34,19 @@ import Contact from './pages/Contact/Contact';
 import ObjectPage from './pages/Static/ObjectPage';
 import ClubPage from './pages/Static/ClubPage';
 import ClubMeetPage from './pages/Static/ClubMeetPage';
-import SoutienPsychologique from "./pages/Home/components/Centre/SoutienPsychologique";
+import CentreAbout from './pages/CentreBalsam/CentreAbout';
+import ServicePath from './pages/CentreBalsam/ServicePath';
+import RegistrePath from './pages/CentreBalsam/RegistrePath';
+import PsychologicalSupport from './pages/CentreBalsam/PsychologicalSupport';
+import SpeechTherapy from './pages/CentreBalsam/SpeechTherapy';
+import MotorTherapy from './pages/CentreBalsam/MotorTherapy';
+import SpecialEducation from './pages/CentreBalsam/SpecialEducation';
+import Ergotherapy from './pages/CentreBalsam/Ergotherapy';
+import ProgramsAndActivities from './pages/CentreBalsam/ProgramsAndActivities';
+import DevenirStagiaire from './pages/CentreBalsam/DevenirStagiaire';
+import AdminStagiaires from './pages/Admin/AdminStagiaires';
+import DevenirBenevole from './pages/CentreBalsam/DevenirBenevole';
+import AdminVolunteers from './pages/Admin/AdminVolunteers';
 function App() {
   return (
     <Router>
@@ -66,11 +78,17 @@ function App() {
               <Route path="/object" element={<ObjectPage />} />
               <Route path="/club" element={<ClubPage />} />
               <Route path="/clubmeet" element={<ClubMeetPage />} />
-              <Route path="/centre/soutien-psychologique" element={<SoutienPsychologique />} />
-              <Route path="/centre/orthophonie" element={<div>تقويم النطق</div>} />
-              <Route path="/centre/psychomoteur" element={<div>النفس حركي</div>} />
-              <Route path="/centre/education-speciale" element={<div>التربية الخاصة</div>} />
-              <Route path="/centre/ergotherapie" element={<div>العلاج الوظيفي</div>} />
+              <Route path="/centre/devenir-stagiaire" element={<DevenirStagiaire />} />
+              <Route path="/centre/about" element={<CentreAbout />} />
+              <Route path="/centre/process" element={<ServicePath />} />
+              <Route path="/centre/programmes" element={<ProgramsAndActivities />} />
+              <Route path="/centre/psychological-support" element={<PsychologicalSupport />} />
+              <Route path="/centre/inscription" element={<RegistrePath />} />
+              <Route path="/centre/orthophonie" element={<SpeechTherapy />} />
+              <Route path="/centre/psychomoteur" element={<MotorTherapy />} />
+              <Route path="/centre/education-speciale" element={<SpecialEducation />} />
+              <Route path="/centre/ergotherapie" element={<Ergotherapy />} />
+              <Route path="/centre/devenir-benevole" element={<DevenirBenevole />} />
             </Routes>
           </MainLayout>
         } />
@@ -90,6 +108,9 @@ function App() {
               <Route path="/pages" element={<AdminStaticPages />} />
               <Route path="/meetings" element={<AdminMeetings />} />
               <Route path="/finance" element={<AdminFinance />} />
+              <Route path="/stagiaires" element={<AdminStagiaires />} />
+              <Route path="/volunteers" element={<AdminVolunteers />} />
+
             </Routes>
           </AdminLayout>
         } />
