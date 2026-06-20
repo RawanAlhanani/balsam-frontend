@@ -50,6 +50,11 @@ const AdminSidebar = ({ isExpanded }) => {
             icon: "la-comments",
             to: "/admin/meetings"
         });
+        roleItems.push({
+            title: "تقارير الأنشطة",
+            icon: "la-clipboard",
+            to: "/admin/activity-reports"
+        });
     }
 
     if (adminRole === 'president' || adminRole === 'treasurer') {

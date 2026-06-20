@@ -29,6 +29,7 @@ import AdminAdmins from './pages/Admin/AdminAdmins';
 import AdminImages from './pages/Admin/AdminImages';
 import AdminStaticPages from './pages/Admin/AdminStaticPages';
 import AdminMeetings from './pages/Admin/AdminMeetings';
+import AdminActivityReports from './pages/Admin/AdminActivityReports';
 import AdminFinance from './pages/Admin/AdminFinance';
 import Contact from './pages/Contact/Contact';
 import ObjectPage from './pages/Static/ObjectPage';
@@ -89,6 +90,7 @@ function App() {
               <Route path="/images" element={<AdminImages />} />
               <Route path="/pages" element={<AdminStaticPages />} />
               <Route path="/meetings" element={<AdminMeetings />} />
+              <Route path="/activity-reports" element={<AdminActivityReports />} />
               <Route path="/finance" element={<AdminFinance />} />
             </Routes>
           </AdminLayout>
