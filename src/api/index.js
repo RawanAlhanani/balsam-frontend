@@ -32,5 +32,9 @@ export const getPartenaires = () => api.get('/partenaires');
 export const getPhotos = () => api.get('/photos');
 export const getAutismePages = () => api.get('/autisme-pages');
 export const getAutismePage = (id) => api.get(`/autisme-pages/${id}`);
+export const submitVolunteerForm = (data) => api.post('/volunteers', data);
+export const getAdminVolunteers = () => api.get('/admin/volunteers');
+export const updateVolunteerStatus = (id, status) => api.put(`/admin/volunteers/${id}/status`, { status });
+export const registerStagiaire = (data) => api.post('/register-stagiaire', data);
 
 export default api;

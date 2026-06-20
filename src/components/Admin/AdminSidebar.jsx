@@ -16,6 +16,16 @@ const AdminSidebar = ({ isExpanded }) => {
             to: "/admin/tuteurs"
         },
         {
+            title: "طلبات التدريب", 
+            icon: "la-user-plus",  
+            to: "/admin/stagiaires"
+        },
+        {
+            title: "طلبات التطوع", 
+            icon: "la-heart-o",  
+            to: "/admin/volunteers"
+        },
+        {
             title: "الأنشطة",
             icon: "la-calendar",
             to: "/admin/activites"

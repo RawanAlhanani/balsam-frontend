@@ -5,18 +5,25 @@ import PageBanner from '../../components/PageBanner';
 
 const Register = () => {
     const navigate = useNavigate();
-    const [step, setStep] = useState(0); // 0: Select Type, 1-4: Beneficiary Steps, 5: Volunteer Form
+    // 0: الاختيار، 1-4: الأسرة، 5: المتطوع، 6: المتدرب منفصل
+    const [step, setStep] = useState(0); 
     const [accountType, setAccountType] = useState('');
     const [regData, setRegData] = useState({ specialites: [], regions: [] });
+    
     const [formData, setFormData] = useState({
+        // حقول مشتركة وحقول الأسرة ومتطوع
         nom_tuteur: '', prenom_tuteur: '', CIN: '', adresse: '', region_id: '',
         email_tuteur: '', telephon: '', whatsapp: '', nom_utilisateur: '', mot_de_pass: '',
         nom_enfant: '', prenom_enfant: '', date_naissance: '', sexeEnfant: '',
         statut: '', parole: '', avs: '', etude: '', type_Tuteur: '', formation: '',
-        doctor: [],
-        professional_field: '', interests: []
+        doctor: [], professional_field: '', interests: [],
+
+        // حقول المتدرب (Stagiaire) الخاصة والجديدة تماماً
+        nom_stagiaire: '', prenom_stagiaire: '',
+        etablissement: '', specialite_stage: '', niveau_etude: '', duree_stage: ''
     });
-    const [photo, setPhoto] = useState(null);
+    
+    const [photo, setPhoto] = useState(null); 
     const [error, setError] = useState('');
 
     useEffect(() => {
@@ -39,11 +46,41 @@ const Register = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         const data = new FormData();
+
+        // ─── الحالة الأولى: إذا كان الحساب طلب تدريب (Stagiaire) مستقل ───
+        if (accountType === 'stagiaire') {
+            data.append('nom_stagiaire', formData.nom_stagiaire);
+            data.append('prenom_stagiaire', formData.prenom_stagiaire);
+            data.append('cin', formData.CIN);
+            data.append('email', formData.email_tuteur);
+            data.append('telephone', formData.telephon);
+            data.append('region_id', formData.region_id);
+            data.append('etablissement', formData.etablissement);
+            data.append('specialite', formData.specialite_stage);
+            data.append('niveau_etude', formData.niveau_etude);
+            data.append('duree_stage', formData.duree_stage);
+            data.append('nom_utilisateur', formData.nom_utilisateur);
+            data.append('mot_de_pass', formData.mot_de_pass);
+            if (photo) data.append('photo', photo); // السيرة الذاتية
+
+            try {
+                // إرسال إلى مسار المتدربين الجديد بالباكيند
+                await api.post('/register-stagiaire', data, {
+                    headers: { 'Content-Type': 'multipart/form-data' }
+                });
+                navigate('/se_connecter');
+            } catch (err) {
+                setError('خطأ في تسجيل طلب التدريب. يرجى التحقق من الحقول.');
+            }
+            return; // إيقاف تنفيذ الكود هنا
+        }
+
+        // ─── الحالة الثانية: التسجيل القديم المعتاد (أسرة أو متطوع) ───
         data.append('account_type', accountType);
         Object.keys(formData).forEach(key => {
             if (key === 'doctor' || key === 'interests') {
                 formData[key].forEach(val => data.append(`${key}[]`, val));
-            } else {
+            } else if (!['nom_stagiaire', 'prenom_stagiaire', 'etablissement', 'specialite_stage', 'niveau_etude', 'duree_stage'].includes(key)) {
                 data.append(key, formData[key]);
             }
         });
@@ -61,24 +98,32 @@ const Register = () => {
 
     const renderTypeSelection = () => (
         <div className="your-submit-message">
-            <h4 className="eco_sm_titles">اختر نوع الحساب</h4>
+            <h4 className="eco_sm_titles">اختر نوع الحساب المراد إنشاؤه</h4>
             <div className="row text-center mt-4">
-                <div className="col-md-6 mb-3">
+                <div className="col-md-4 mb-3">
                     <button className="btn btn-outline-info w-100 p-4" onClick={() => { setAccountType('beneficiary'); setStep(1); }}>
                         <i className="fa fa-users fa-2x mb-2"></i><br/>
                         حساب أسرة مستفيدة
                     </button>
                 </div>
-                <div className="col-md-6">
+                <div className="col-md-4 mb-3">
                     <button className="btn btn-outline-success w-100 p-4" onClick={() => { setAccountType('volunteer'); setStep(5); }}>
                         <i className="fa fa-heart fa-2x mb-2"></i><br/>
                         حساب مهتم/متطوع/داعم
+                    </button>
+                </div>
+                <div className="col-md-4 mb-3">
+                    {/* 👈 تم تعديل الزر هنا ليقوم بالتوجه المباشر لصفحة التقديم على التدريب الخاصة بك */}
+                    <button className="btn btn-outline-warning w-100 p-4" onClick={() => navigate('/centre/devenir-stagiaire')}>
+                        <i className="fa fa-graduation-cap fa-2x mb-2"></i><br/>
+                        طلب تدريب (Stagiaire)
                     </button>
                 </div>
             </div>
         </div>
     );
 
+    /* ─── خطوات الأسرة المستفيدة (1-4) ─── */
     const renderBeneficiaryStep1 = () => (
         <div className="your-submit-message">
             <h4 className="eco_sm_titles">الخطوة 1: معلومات شخصية عن الطفل</h4>
@@ -104,6 +149,7 @@ const Register = () => {
                 </div>
             </div>
             <div className="text-left mt-3">
+                <button className="btn-small xsmall-btn mr-2" onClick={() => setStep(0)}>السابق</button>
                 <button className="btn-small xsmall-btn" onClick={() => setStep(2)}>التالي</button>
             </div>
         </div>
@@ -208,6 +254,7 @@ const Register = () => {
         </div>
     );
 
+    /* ─── استمارة المتطوع (الخطوة 5) ─── */
     const renderVolunteerForm = () => (
         <div className="your-submit-message">
             <h4 className="eco_sm_titles">حساب مهتم / متطوع / داعم</h4>
