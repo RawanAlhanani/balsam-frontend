@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import api from '../../api';
 import { useNavigate } from 'react-router-dom';
+import {
+    AdminPage, AdminPageHeader, AdminCard, AdminFormGroup, AdminFormActions, AdminBtn
+} from '../../components/Admin/ui/AdminUI';
 
 const AddPartner = () => {
     const navigate = useNavigate();
@@ -15,39 +18,32 @@ const AddPartner = () => {
 
         try {
             await api.post('/admin/partners', data);
-            navigate('/admin/partenaires');
+            navigate('/admin/partners');
         } catch (err) {
             alert('خطأ في الإضافة');
         }
     };
 
     return (
-        <div className="app-content content">
-            <div className="content-wrapper">
-                <div className="content-header row">
-                    <div className="content-header-left col-md-6 col-12 mb-2">
-                        <h3 className="content-header-title">إضافة شريك جديد</h3>
-                    </div>
-                </div>
-                <div className="content-body">
-                    <div className="card">
-                        <div className="card-body">
-                            <form onSubmit={handleSubmit}>
-                                <div className="form-group">
-                                    <label>اسم الشريك</label>
-                                    <input type="text" className="form-control" onChange={(e) => setNomPartenaire(e.target.value)} required />
-                                </div>
-                                <div className="form-group">
-                                    <label>الشعار</label>
-                                    <input type="file" className="form-control-file" onChange={(e) => setImage(e.target.files[0])} required />
-                                </div>
-                                <button type="submit" className="btn btn-primary">حفظ</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
+        <AdminPage>
+            <AdminPageHeader title="إضافة شريك جديد" subtitle="إضافة شريك وشعاره" badge="المحتوى" />
+            <div className="content-body">
+                <AdminCard title="بيانات الشريك" icon="la-handshake-o">
+                    <form onSubmit={handleSubmit}>
+                        <AdminFormGroup label="اسم الشريك">
+                            <input type="text" className="form-control" value={nomPartenaire} onChange={(e) => setNomPartenaire(e.target.value)} required />
+                        </AdminFormGroup>
+                        <AdminFormGroup label="الشعار">
+                            <input type="file" className="form-control-file" onChange={(e) => setImage(e.target.files[0])} required />
+                        </AdminFormGroup>
+                        <AdminFormActions>
+                            <AdminBtn variant="primary" type="submit" icon="la-check">حفظ</AdminBtn>
+                            <AdminBtn variant="secondary" icon="la-arrow-right" onClick={() => navigate('/admin/partners')}>رجوع</AdminBtn>
+                        </AdminFormActions>
+                    </form>
+                </AdminCard>
             </div>
-        </div>
+        </AdminPage>
     );
 };
 

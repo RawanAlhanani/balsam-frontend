@@ -1,5 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../api';
+import {
+    AdminPage, AdminPageHeader, AdminCard, AdminFormPanel, AdminFormGroup,
+    AdminFormActions, AdminTableWrap, AdminBtn
+} from '../../components/Admin/ui/AdminUI';
 
 const AdminMeetings = () => {
     const [meetings, setMeetings] = useState([]);
@@ -195,73 +199,87 @@ const AdminMeetings = () => {
     };
 
     return (
-        <div className="app-content content">
-            <div className="content-wrapper">
-                <div className="content-header row">
-                    <div className="content-header-left col-md-6 col-12 mb-2">
-                        <h3 className="content-header-title">تقارير الاجتماعات</h3>
+        <AdminPage>
+            <AdminPageHeader
+                title="تقارير الاجتماعات"
+                subtitle="إنشاء وطباعة محاضر الاجتماعات"
+                badge="التقارير"
+                actions={
+                    <AdminBtn variant={showForm ? 'secondary' : 'primary'} icon={showForm ? 'la-times' : 'la-plus'} onClick={() => setShowForm(!showForm)}>
+                        {showForm ? 'إلغاء' : 'إضافة تقرير'}
+                    </AdminBtn>
+                }
+            />
+            <div className="content-body">
+                <AdminFormPanel title="تقرير اجتماع جديد" open={showForm} onClose={() => setShowForm(false)} onSubmit={handleSubmit}>
+                    <div className="row">
+                        <AdminFormGroup label="التاريخ" className="col-md-4">
+                            <input type="date" className="form-control" onChange={e => setFormData({ ...formData, date: e.target.value })} required />
+                        </AdminFormGroup>
+                        <AdminFormGroup label="المكان" className="col-md-4">
+                            <input className="form-control" onChange={e => setFormData({ ...formData, location: e.target.value })} required />
+                        </AdminFormGroup>
+                        <AdminFormGroup label="ساعة البدء" className="col-md-2">
+                            <input type="time" className="form-control" onChange={e => setFormData({ ...formData, start_time: e.target.value })} required />
+                        </AdminFormGroup>
+                        <AdminFormGroup label="ساعة النهاية" className="col-md-2">
+                            <input type="time" className="form-control" onChange={e => setFormData({ ...formData, end_time: e.target.value })} required />
+                        </AdminFormGroup>
+                        <AdminFormGroup label="الحاضرون" className="col-md-6">
+                            <textarea className="form-control" rows="3" onChange={e => setFormData({ ...formData, attendees: e.target.value })} />
+                        </AdminFormGroup>
+                        <AdminFormGroup label="الغائبون" className="col-md-6">
+                            <textarea className="form-control" rows="3" onChange={e => setFormData({ ...formData, absentees: e.target.value })} />
+                        </AdminFormGroup>
+                        <AdminFormGroup label="جدول الأعمال" className="col-md-12">
+                            <textarea className="form-control" rows="3" onChange={e => setFormData({ ...formData, agenda: e.target.value })} />
+                        </AdminFormGroup>
+                        <AdminFormGroup label="المناقشة" className="col-md-12">
+                            <textarea className="form-control" rows="4" onChange={e => setFormData({ ...formData, discussions: e.target.value })} />
+                        </AdminFormGroup>
+                        <AdminFormGroup label="أهم القرارات" className="col-md-12">
+                            <textarea className="form-control" rows="4" onChange={e => setFormData({ ...formData, decisions: e.target.value })} />
+                        </AdminFormGroup>
+                        <AdminFormGroup label="موعد اللقاء المقبل" className="col-md-4">
+                            <input type="date" className="form-control" onChange={e => setFormData({ ...formData, next_meeting_date: e.target.value })} />
+                        </AdminFormGroup>
                     </div>
-                    <div className="col-md-6 text-right">
-                        <button className="btn btn-primary" onClick={() => setShowForm(!showForm)}>
-                            {showForm ? 'إلغاء' : 'إضافة تقرير اجتماع جديد'}
-                        </button>
-                    </div>
-                </div>
-                <div className="content-body">
-                    {showForm && (
-                        <div className="card mb-4">
-                            <div className="card-body">
-                                <form onSubmit={handleSubmit}>
-                                    <div className="row">
-                                        <div className="col-md-4 mb-2"><label>التاريخ</label><input type="date" className="form-control" onChange={e => setFormData({...formData, date: e.target.value})} required /></div>
-                                        <div className="col-md-4 mb-2"><label>المكان</label><input className="form-control" onChange={e => setFormData({...formData, location: e.target.value})} required /></div>
-                                        <div className="col-md-2 mb-2"><label>ساعة البدء</label><input type="time" className="form-control" onChange={e => setFormData({...formData, start_time: e.target.value})} required /></div>
-                                        <div className="col-md-2 mb-2"><label>ساعة النهاية</label><input type="time" className="form-control" onChange={e => setFormData({...formData, end_time: e.target.value})} required /></div>
-                                        
-                                        <div className="col-md-6 mb-2"><label>الحاضرون</label><textarea className="form-control" rows="3" onChange={e => setFormData({...formData, attendees: e.target.value})}></textarea></div>
-                                        <div className="col-md-6 mb-2"><label>الغائبون</label><textarea className="form-control" rows="3" onChange={e => setFormData({...formData, absentees: e.target.value})}></textarea></div>
-                                        
-                                        <div className="col-md-12 mb-2"><label>جدول الأعمال</label><textarea className="form-control" rows="3" onChange={e => setFormData({...formData, agenda: e.target.value})}></textarea></div>
-                                        <div className="col-md-12 mb-2"><label>المناقشة</label><textarea className="form-control" rows="4" onChange={e => setFormData({...formData, discussions: e.target.value})}></textarea></div>
-                                        <div className="col-md-12 mb-2"><label>أهم القرارات</label><textarea className="form-control" rows="4" onChange={e => setFormData({...formData, decisions: e.target.value})}></textarea></div>
-                                        
-                                        <div className="col-md-4 mb-2"><label>موعد اللقاء المقبل</label><input type="date" className="form-control" onChange={e => setFormData({...formData, next_meeting_date: e.target.value})} /></div>
-                                    </div>
-                                    <button className="btn btn-success mt-3">حفظ التقرير</button>
-                                </form>
-                            </div>
-                        </div>
-                    )}
-                    <div className="card">
-                        <div className="table-responsive">
-                            <table className="table">
-                                <thead>
-                                    <tr>
-                                        <th>التاريخ</th>
-                                        <th>المكان</th>
-                                        <th>ساعة البدء</th>
-                                        <th>العمليات</th>
+                    <AdminFormActions>
+                        <AdminBtn variant="success" type="submit" icon="la-check">حفظ التقرير</AdminBtn>
+                    </AdminFormActions>
+                </AdminFormPanel>
+
+                <AdminCard title="قائمة الاجتماعات" icon="la-comments" flush>
+                    <AdminTableWrap>
+                        <table className="table table-hover admin-table">
+                            <thead>
+                                <tr>
+                                    <th>التاريخ</th>
+                                    <th>المكان</th>
+                                    <th>ساعة البدء</th>
+                                    <th>العمليات</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {meetings.map(m => (
+                                    <tr key={m.id}>
+                                        <td>{m.date}</td>
+                                        <td>{m.location}</td>
+                                        <td>{m.start_time}</td>
+                                        <td>
+                                            <div className="admin-action-group">
+                                                <AdminBtn variant="info" icon="la-print" onClick={() => handlePrint(m)}>طباعة</AdminBtn>
+                                                <AdminBtn variant="danger" icon="la-trash" onClick={() => handleDelete(m.id)}>حذف</AdminBtn>
+                                            </div>
+                                        </td>
                                     </tr>
-                                </thead>
-                                <tbody>
-                                    {meetings.map(m => (
-                                        <tr key={m.id}>
-                                            <td>{m.date}</td>
-                                            <td>{m.location}</td>
-                                            <td>{m.start_time}</td>
-                                            <td>
-                                                <button onClick={() => handleDelete(m.id)} className="btn btn-danger btn-sm">حذف</button>
-                                                <button className="btn btn-info btn-sm ml-1" onClick={() => handlePrint(m)}>طباعة</button>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
+                                ))}
+                            </tbody>
+                        </table>
+                    </AdminTableWrap>
+                </AdminCard>
             </div>
-        </div>
+        </AdminPage>
     );
 };
 

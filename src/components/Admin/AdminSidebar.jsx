@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 
 const AdminSidebar = ({ isExpanded }) => {
     const [openMenus, setOpenMenus] = useState({});
@@ -13,12 +13,12 @@ const AdminSidebar = ({ isExpanded }) => {
         {
             title: "المسجلين",
             icon: "la-users",
-            to: "/admin/tuteurs"
+            to: "/admin/parents"
         },
         {
             title: "طلبات التدريب", 
             icon: "la-user-plus",  
-            to: "/admin/stagiaires"
+            to: "/admin/interns"
         },
         {
             title: "طلبات التطوع", 
@@ -28,27 +28,27 @@ const AdminSidebar = ({ isExpanded }) => {
         {
             title: "الأنشطة",
             icon: "la-calendar",
-            to: "/admin/activites"
+            to: "/admin/activities"
         },
         {
             title: "الأخبار",
             icon: "la-newspaper-o",
-            to: "/admin/infos"
+            to: "/admin/news"
         },
         {
             title: "الشركاء",
-            icon: "la-handshake-o",
-            to: "/admin/partenaires"
+            icon: "la-users", // Changed from la-handshake-o for testing
+            to: "/admin/partners"
         },
         {
             title: "الصور والمعرض",
             icon: "la-image",
-            to: "/admin/images"
+            to: "/admin/media"
         },
         {
             title: "الصفحات الثابتة",
             icon: "la-file-text",
-            to: "/admin/pages"
+            to: "/admin/static-pages"
         }
     ];
 
@@ -95,19 +95,21 @@ const AdminSidebar = ({ isExpanded }) => {
 
     return (
         <div className={`main-menu menu-fixed menu-light menu-accordion menu-shadow ${!isExpanded ? 'menu-hide' : ''}`} data-scroll-to-active="true">
-            <div className="main-menu-content">
+            <div className="main-menu-content" style={{ overflowY: 'auto', maxHeight: 'calc(100vh - 60px)' }}> {/* Added scrolling styles */}
                 <ul className="navigation navigation-main" id="main-menu-navigation">
                     <li className="nav-item">
-                        <Link to="/admin/dashboard"><i className="la la-dashboard"></i><span className="menu-title">لوحة التحكم</span></Link>
+                        <NavLink to="/admin/dashboard" className={({ isActive }) => isActive ? 'active-admin-link' : ''}>
+                            <i className="la la-dashboard"></i><span className="menu-title">لوحة التحكم</span>
+                        </NavLink>
                     </li>
                     
                     {/* Direct Links */}
                     {[...menuItems, ...roleItems].map((item, idx) => (
                         <li key={idx} className="nav-item">
-                            <Link to={item.to}>
+                            <NavLink to={item.to} className={({ isActive }) => isActive ? 'active-admin-link' : ''}>
                                 <i className={`la ${item.icon}`}></i>
                                 <span className="menu-title">{item.title}</span>
-                            </Link>
+                            </NavLink>
                         </li>
                     ))}
 
@@ -121,7 +123,7 @@ const AdminSidebar = ({ isExpanded }) => {
                             <ul className="menu-content" style={{ display: openMenus[settingsMenu.title] ? 'block' : 'none' }}>
                                 {settingsMenu.subItems.map((sub, sIdx) => (
                                     <li key={sIdx}>
-                                        <Link className="menu-item" to={sub.to}>{sub.title}</Link>
+                                        <NavLink className={({ isActive }) => isActive ? 'menu-item active-admin-link' : 'menu-item'} to={sub.to}>{sub.title}</NavLink>
                                     </li>
                                 ))}
                             </ul>

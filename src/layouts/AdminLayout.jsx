@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import AdminHeader from '../components/Admin/AdminHeader';
 import AdminSidebar from '../components/Admin/AdminSidebar';
 import AdminFooter from '../components/Admin/AdminFooter';
+import './admin.css';
 
 const AdminLayout = ({ children }) => {
     const [isMenuExpanded, setIsMenuExpanded] = useState(true);
@@ -13,9 +14,9 @@ const AdminLayout = ({ children }) => {
 
     useEffect(() => {
         // Add admin specific classes to body
-        const baseClasses = "vertical-layout vertical-menu 2-columns fixed-navbar";
+        const baseClasses = ["vertical-layout", "vertical-menu", "2-columns", "fixed-navbar"];
         const menuClass = isMenuExpanded ? "menu-expanded" : "menu-collapsed";
-        document.body.className = `${baseClasses} ${menuClass}`;
+        document.body.classList.add(...baseClasses, menuClass);
         
         document.body.setAttribute("data-open", "click");
         document.body.setAttribute("data-menu", "vertical-menu");
@@ -60,7 +61,7 @@ const AdminLayout = ({ children }) => {
 
         return () => {
             // Clean up admin styles and scripts when leaving admin section
-            document.body.className = "";
+            document.body.classList.remove("vertical-layout", "vertical-menu", "2-columns", "fixed-navbar", "menu-expanded", "menu-collapsed");
             document.body.removeAttribute("data-open");
             document.body.removeAttribute("data-menu");
             document.body.removeAttribute("data-col");
@@ -74,7 +75,7 @@ const AdminLayout = ({ children }) => {
     }, [isMenuExpanded]);
 
     return (
-        <div className="admin-wrapper">
+        <div className="admin-wrapper admin-theme">
             <AdminHeader toggleMenu={toggleMenu} />
             <AdminSidebar isExpanded={isMenuExpanded} />
             {children}

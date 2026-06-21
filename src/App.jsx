@@ -28,6 +28,8 @@ import AdminSettings from './pages/Admin/AdminSettings';
 import AdminAdmins from './pages/Admin/AdminAdmins';
 import AdminImages from './pages/Admin/AdminImages';
 import AdminStaticPages from './pages/Admin/AdminStaticPages';
+import AddStaticPage from './pages/Admin/AddStaticPage'; // Import new component
+import EditStaticPage from './pages/Admin/EditStaticPage'; // Import new component
 import AdminMeetings from './pages/Admin/AdminMeetings';
 import AdminActivityReports from './pages/Admin/AdminActivityReports';
 import AdminFinance from './pages/Admin/AdminFinance';
@@ -48,6 +50,7 @@ import DevenirStagiaire from './pages/CentreBalsam/DevenirStagiaire';
 import AdminStagiaires from './pages/Admin/AdminStagiaires';
 import DevenirBenevole from './pages/CentreBalsam/DevenirBenevole';
 import AdminVolunteers from './pages/Admin/AdminVolunteers';
+
 function App() {
   return (
     <Router>
@@ -99,18 +102,20 @@ function App() {
           <AdminLayout>
             <Routes>
               <Route path="/dashboard" element={<AdminDashboard />} />
-              <Route path="/tuteurs" element={<AdminTuteurs />} />
-              <Route path="/activites" element={<AdminActivities />} />
-              <Route path="/infos" element={<AdminNews />} />
-              <Route path="/partenaires" element={<AdminPartners />} />
+              <Route path="/parents" element={<AdminTuteurs />} />
+              <Route path="/activities" element={<AdminActivities />} />
+              <Route path="/news" element={<AdminNews />} />
+              <Route path="/partners" element={<AdminPartners />} />
               <Route path="/settings" element={<AdminSettings />} />
               <Route path="/admins" element={<AdminAdmins />} />
-              <Route path="/images" element={<AdminImages />} />
-              <Route path="/pages" element={<AdminStaticPages />} />
+              <Route path="/media" element={<AdminImages />} />
+              <Route path="/static-pages/add" element={<AddStaticPage />} /> {/* New route for adding */}
+              <Route path="/static-pages/edit/:type/:id" element={<EditStaticPage />} /> {/* Modified route for editing */}
+              <Route path="/static-pages" element={<AdminStaticPages />} />
               <Route path="/meetings" element={<AdminMeetings />} />
               <Route path="/activity-reports" element={<AdminActivityReports />} />
               <Route path="/finance" element={<AdminFinance />} />
-              <Route path="/stagiaires" element={<AdminStagiaires />} />
+              <Route path="/interns" element={<AdminStagiaires />} />
               <Route path="/volunteers" element={<AdminVolunteers />} />
 
             </Routes>

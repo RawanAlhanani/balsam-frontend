@@ -1,5 +1,37 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../api';
+import {
+    AdminPage, AdminPageHeader, AdminCard, AdminFormPanel, AdminFormGroup,
+    AdminFormActions, AdminTableWrap, AdminBtn, AdminLoading, AdminAlert, AdminEmptyState
+} from '../../components/Admin/ui/AdminUI';
+
+// Simple Delete Confirmation Modal Component (re-used from AdminSettings)
+const DeleteConfirmModal = ({ show, onClose, onConfirm, itemName, isDeleting }) => {
+    if (!show) return null;
+    return (
+        <div className="modal show d-block" tabIndex="-1" role="dialog">
+            <div className="modal-dialog" role="document" style={{ zIndex: 1060 }}>
+                <div className="modal-content">
+                    <div className="modal-header">
+                        <h5 className="modal-title">تأكيد الحذف</h5>
+                        <button type="button" className="close" onClick={onClose}>&times;</button>
+                    </div>
+                    <div className="modal-body">
+                        هل أنت متأكد أنك تريد حذف "{itemName}"؟
+                    </div>
+                    <div className="modal-footer">
+                        <button type="button" className="btn btn-secondary" onClick={onClose}>إلغاء</button>
+                        <button type="button" className="btn btn-danger" disabled={isDeleting} onClick={onConfirm}>
+                            {isDeleting ? <span className="spinner-border spinner-border-sm"/> : 'حذف'}
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div className="modal-backdrop show" onClick={onClose} style={{ zIndex: 1050 }}></div>
+        </div>
+    );
+};
+
 
 const AdminActivityReports = () => {
     const [activities, setActivities] = useState([]);
@@ -9,27 +41,84 @@ const AdminActivityReports = () => {
         moderator: '', presentation_title: '', start_time: '', end_time: '',
         summary: ''
     });
+    const [loading, setLoading] = useState(true);
+    const [submitting, setSubmitting] = useState(false);
+    const [deleting, setDeleting] = useState(false);
+    const [alert, setAlert] = useState({ message: '', type: '' });
+
+    // State for delete confirmation modal
+    const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState(false);
+    const [deleteTargetId, setDeleteTargetId] = useState(null);
+    const [deleteTargetName, setDeleteTargetName] = useState('');
+
 
     useEffect(() => { fetchActivities(); }, []);
 
+    // Lock background scroll when modal is open
+    useEffect(() => {
+        if (showDeleteConfirmModal) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = '';
+        }
+        return () => { document.body.style.overflow = ''; };
+    }, [showDeleteConfirmModal]);
+
+
     const fetchActivities = async () => {
-        const res = await api.get('/admin/activity-reports');
-        setActivities(res.data);
+        setLoading(true);
+        try {
+            const res = await api.get('/admin/activity-reports');
+            setActivities(res.data);
+        } catch (err) {
+            setAlert({ message: 'خطأ في تحميل تقارير الأنشطة', type: 'danger' });
+        } finally {
+            setLoading(false);
+        }
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setSubmitting(true);
         try {
             await api.post('/admin/activity-reports', formData);
             setShowForm(false);
-            fetchActivities();
-        } catch (err) { alert('خطأ في الحفظ'); }
+            setFormData({ // Reset form
+                date: '', location: '', activity_type: '', beneficiaries: '',
+                moderator: '', presentation_title: '', start_time: '', end_time: '',
+                summary: ''
+            });
+            await fetchActivities();
+            setAlert({ message: 'تم حفظ التقرير بنجاح', type: 'success' });
+        } catch (err) {
+            setAlert({ message: 'خطأ في حفظ التقرير', type: 'danger' });
+        } finally {
+            setSubmitting(false);
+            setTimeout(() => setAlert({ message: '', type: '' }), 3500);
+        }
     };
 
-    const handleDelete = async (id) => {
-        if (window.confirm('حذف هذا التقرير؟')) {
-            await api.delete(`/admin/activity-reports/${id}`);
-            fetchActivities();
+    const promptDelete = (id, name) => {
+        setDeleteTargetId(id);
+        setDeleteTargetName(name);
+        setShowDeleteConfirmModal(true);
+    };
+
+    const confirmDelete = async () => {
+        if (!deleteTargetId || deleting) return;
+        setDeleting(true);
+        try {
+            await api.delete(`/admin/activity-reports/${deleteTargetId}`);
+            await fetchActivities();
+            setAlert({ message: 'تم حذف التقرير بنجاح', type: 'success' });
+            setShowDeleteConfirmModal(false);
+            setDeleteTargetId(null);
+            setDeleteTargetName('');
+        } catch (err) {
+            setAlert({ message: 'خطأ في حذف التقرير', type: 'danger' });
+        } finally {
+            setDeleting(false);
+            setTimeout(() => setAlert({ message: '', type: '' }), 3500);
         }
     };
 
@@ -175,45 +264,64 @@ const AdminActivityReports = () => {
     };
 
     return (
-        <div className="app-content content">
-            <div className="content-wrapper">
-                <div className="content-header row">
-                    <div className="content-header-left col-md-6 col-12 mb-2">
-                        <h3 className="content-header-title">تقارير الأنشطة</h3>
+        <>
+        <AdminPage>
+            <AdminPageHeader
+                title="تقارير الأنشطة"
+                subtitle="توثيق وطباعة تقارير الأنشطة"
+                badge="التقارير"
+                actions={
+                    <AdminBtn variant={showForm ? 'secondary' : 'primary'} icon={showForm ? 'la-times' : 'la-plus'} onClick={() => setShowForm(!showForm)}>
+                        {showForm ? 'إلغاء' : 'إضافة تقرير'}
+                    </AdminBtn>
+                }
+            />
+            <div className="content-body">
+                <AdminFormPanel title="تقرير نشاط جديد" open={showForm} onClose={() => setShowForm(false)} onSubmit={handleSubmit}>
+                    <div className="row">
+                        <AdminFormGroup label="التاريخ" className="col-md-4">
+                            <input type="date" className="form-control" value={formData.date} onChange={e => setFormData({ ...formData, date: e.target.value })} required />
+                        </AdminFormGroup>
+                        <AdminFormGroup label="المكان" className="col-md-4">
+                            <input className="form-control" value={formData.location} onChange={e => setFormData({ ...formData, location: e.target.value })} />
+                        </AdminFormGroup>
+                        <AdminFormGroup label="نوع النشاط" className="col-md-4">
+                            <input className="form-control" value={formData.activity_type} onChange={e => setFormData({ ...formData, activity_type: e.target.value })} />
+                        </AdminFormGroup>
+                        <AdminFormGroup label="المستفيدون" className="col-md-4">
+                            <input className="form-control" value={formData.beneficiaries} onChange={e => setFormData({ ...formData, beneficiaries: e.target.value })} />
+                        </AdminFormGroup>
+                        <AdminFormGroup label="المؤطر" className="col-md-4">
+                            <input className="form-control" value={formData.moderator} onChange={e => setFormData({ ...formData, moderator: e.target.value })} />
+                        </AdminFormGroup>
+                        <AdminFormGroup label="عنوان العرض" className="col-md-4">
+                            <input className="form-control" value={formData.presentation_title} onChange={e => setFormData({ ...formData, presentation_title: e.target.value })} />
+                        </AdminFormGroup>
+                        <AdminFormGroup label="ساعة البدء" className="col-md-2">
+                            <input type="time" className="form-control" value={formData.start_time} onChange={e => setFormData({ ...formData, start_time: e.target.value })} />
+                        </AdminFormGroup>
+                        <AdminFormGroup label="ساعة النهاية" className="col-md-2">
+                            <input type="time" className="form-control" value={formData.end_time} onChange={e => setFormData({ ...formData, end_time: e.target.value })} />
+                        </AdminFormGroup>
+                        <AdminFormGroup label="ملخص عن النشاط" className="col-md-12">
+                            <textarea className="form-control" rows="6" value={formData.summary} onChange={e => setFormData({ ...formData, summary: e.target.value })} />
+                        </AdminFormGroup>
                     </div>
-                    <div className="col-md-6 text-right">
-                        <button className="btn btn-primary" onClick={() => setShowForm(!showForm)}>
-                            {showForm ? 'إلغاء' : 'إضافة تقرير نشاط جديد'}
-                        </button>
-                    </div>
-                </div>
-                <div className="content-body">
-                    {showForm && (
-                        <div className="card mb-4">
-                            <div className="card-body">
-                                <form onSubmit={handleSubmit}>
-                                    <div className="row">
-                                        <div className="col-md-4 mb-2"><label>التاريخ</label><input type="date" className="form-control" onChange={e => setFormData({...formData, date: e.target.value})} required /></div>
-                                        <div className="col-md-4 mb-2"><label>المكان</label><input className="form-control" onChange={e => setFormData({...formData, location: e.target.value})} /></div>
-                                        <div className="col-md-4 mb-2"><label>نوع النشاط</label><input className="form-control" onChange={e => setFormData({...formData, activity_type: e.target.value})} /></div>
-                                        
-                                        <div className="col-md-4 mb-2"><label>المستفيدون</label><input className="form-control" onChange={e => setFormData({...formData, beneficiaries: e.target.value})} /></div>
-                                        <div className="col-md-4 mb-2"><label>المؤطر</label><input className="form-control" onChange={e => setFormData({...formData, moderator: e.target.value})} /></div>
-                                        <div className="col-md-4 mb-2"><label>عنوان العرض</label><input className="form-control" onChange={e => setFormData({...formData, presentation_title: e.target.value})} /></div>
+                    <AdminFormActions>
+                        <AdminBtn variant="success" type="submit" icon="la-check" disabled={submitting}>
+                            {submitting ? <span className="spinner-border spinner-border-sm"/> : 'حفظ التقرير'}
+                        </AdminBtn>
+                    </AdminFormActions>
+                </AdminFormPanel>
 
-                                        <div className="col-md-2 mb-2"><label>ساعة البدء</label><input type="time" className="form-control" onChange={e => setFormData({...formData, start_time: e.target.value})} /></div>
-                                        <div className="col-md-2 mb-2"><label>ساعة النهاية</label><input type="time" className="form-control" onChange={e => setFormData({...formData, end_time: e.target.value})} /></div>
-                                        
-                                        <div className="col-md-12 mb-2"><label>ملخص عن النشاط</label><textarea className="form-control" rows="6" onChange={e => setFormData({...formData, summary: e.target.value})}></textarea></div>
-                                    </div>
-                                    <button className="btn btn-success mt-3">حفظ التقرير</button>
-                                </form>
-                            </div>
-                        </div>
-                    )}
-                    <div className="card">
-                        <div className="table-responsive">
-                            <table className="table">
+                <AdminCard title="قائمة التقارير" icon="la-clipboard" flush>
+                    {loading ? (
+                        <AdminLoading />
+                    ) : activities.length === 0 ? (
+                        <AdminEmptyState message="لا توجد تقارير أنشطة لعرضها." />
+                    ) : (
+                        <AdminTableWrap>
+                            <table className="table table-hover admin-table">
                                 <thead>
                                     <tr>
                                         <th>التاريخ</th>
@@ -231,18 +339,33 @@ const AdminActivityReports = () => {
                                             <td>{a.activity_type}</td>
                                             <td>{a.moderator}</td>
                                             <td>
-                                                <button onClick={() => handleDelete(a.id)} className="btn btn-danger btn-sm">حذف</button>
-                                                <button className="btn btn-info btn-sm ml-1" onClick={() => handlePrint(a)}>طباعة</button>
+                                                <div className="admin-action-group">
+                                                    <AdminBtn variant="info" icon="la-print" onClick={() => handlePrint(a)}>طباعة</AdminBtn>
+                                                    <AdminBtn variant="danger" icon="la-trash" onClick={() => promptDelete(a.id, a.presentation_title || `تقرير بتاريخ ${a.date}`)}>حذف</AdminBtn>
+                                                </div>
                                             </td>
                                         </tr>
                                     ))}
                                 </tbody>
                             </table>
-                        </div>
-                    </div>
-                </div>
+                        </AdminTableWrap>
+                    )}
+                </AdminCard>
             </div>
-        </div>
+        </AdminPage>
+
+        <DeleteConfirmModal
+            show={showDeleteConfirmModal}
+            onClose={() => setShowDeleteConfirmModal(false)}
+            onConfirm={confirmDelete}
+            itemName={deleteTargetName}
+            isDeleting={deleting}
+        />
+
+        {alert.message && (
+            <AdminAlert message={alert.message} type={alert.type} onClose={() => setAlert({ message: '', type: '' })} />
+        )}
+        </>
     );
 };
 

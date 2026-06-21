@@ -1,5 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../api';
+import {
+    AdminPage, AdminPageHeader, AdminCard, AdminStatCard, AdminFormPanel,
+    AdminFormGroup, AdminFormActions, AdminTableWrap, AdminBtn
+} from '../../components/Admin/ui/AdminUI';
 
 const AdminFinance = () => {
     const [financeData, setFinanceData] = useState({ transactions: [], total_income: 0, total_expense: 0, previous_balance: 0, balance: 0 });
@@ -189,130 +193,114 @@ const AdminFinance = () => {
     };
 
     return (
-        <div className="app-content content">
-            <div className="content-wrapper">
-                <div className="content-header row">
-                    <div className="content-header-left col-md-6 col-12 mb-2">
-                        <h3 className="content-header-title">التقرير المالي</h3>
+        <AdminPage>
+            <AdminPageHeader
+                title="التقرير المالي"
+                subtitle="متابعة المداخيل والمصاريف والرصيد الشهري"
+                badge="المالية"
+                actions={
+                    <AdminBtn variant={showForm ? 'secondary' : 'primary'} icon={showForm ? 'la-times' : 'la-plus'} onClick={() => setShowForm(!showForm)}>
+                        {showForm ? 'إلغاء' : 'إضافة عملية'}
+                    </AdminBtn>
+                }
+            />
+            <div className="content-body">
+                <div className="row">
+                    <div className="col-md-4">
+                        <AdminStatCard label="إجمالي المداخيل" value={financeData.total_income} suffix=" DH" icon="la-arrow-up" color="success" />
                     </div>
-                    <div className="col-md-6 text-right">
-                        <button className="btn btn-primary" onClick={() => setShowForm(!showForm)}>
-                            {showForm ? 'إلغاء' : 'إضافة عملية مالية'}
-                        </button>
+                    <div className="col-md-4">
+                        <AdminStatCard label="إجمالي المصاريف" value={financeData.total_expense} suffix=" DH" icon="la-arrow-down" color="danger" />
+                    </div>
+                    <div className="col-md-4">
+                        <AdminStatCard label="الباقي" value={financeData.balance} suffix=" DH" icon="la-wallet" color="info" />
                     </div>
                 </div>
-                <div className="content-body">
-                    {/* Summary Cards */}
+
+                <div className="admin-filter-bar">
+                    <label>الشهر:</label>
+                    <select className="form-control" value={filter.month} onChange={e => setFilter({ ...filter, month: e.target.value })}>
+                        {[...Array(12)].map((_, i) => <option key={i + 1} value={i + 1}>{i + 1}</option>)}
+                    </select>
+                    <label>السنة:</label>
+                    <input type="number" className="form-control" value={filter.year} onChange={e => setFilter({ ...filter, year: e.target.value })} />
+                </div>
+
+                <AdminFormPanel
+                    title={isEditing ? 'تعديل العملية' : 'إضافة عملية مالية'}
+                    open={showForm}
+                    onClose={() => { setShowForm(false); setIsEditing(null); }}
+                    onSubmit={handleSubmit}
+                >
                     <div className="row">
-                        <div className="col-md-4">
-                            <div className="card text-white bg-success">
-                                <div className="card-body text-center">
-                                    <h4>إجمالي المداخيل</h4>
-                                    <h2>{financeData.total_income} DH</h2>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="col-md-4">
-                            <div className="card text-white bg-danger">
-                                <div className="card-body text-center">
-                                    <h4>إجمالي المصاريف</h4>
-                                    <h2>{financeData.total_expense} DH</h2>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="col-md-4">
-                            <div className="card text-white bg-info">
-                                <div className="card-body text-center">
-                                    <h4>الباقي</h4>
-                                    <h2>{financeData.balance} DH</h2>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Filter */}
-                    <div className="card mb-4">
-                        <div className="card-body d-flex align-items-center">
-                            <label className="mr-2">الشهر:</label>
-                            <select className="form-control col-md-2 mr-3" value={filter.month} onChange={e => setFilter({...filter, month: e.target.value})}>
-                                {[...Array(12)].map((_, i) => <option key={i+1} value={i+1}>{i+1}</option>)}
+                        <AdminFormGroup label="النوع" className="col-md-2">
+                            <select className="form-control" value={formData.type} onChange={e => {
+                                const type = e.target.value;
+                                setFormData({ ...formData, type, category: categories[type][0] });
+                            }}>
+                                <option value="income">مدخول (+)</option>
+                                <option value="expense">مصروف (-)</option>
                             </select>
-                            <label className="mr-2">السنة:</label>
-                            <input type="number" className="form-control col-md-2" value={filter.year} onChange={e => setFilter({...filter, year: e.target.value})} />
-                        </div>
+                        </AdminFormGroup>
+                        <AdminFormGroup label="الفئة" className="col-md-3">
+                            <select className="form-control" value={formData.category} onChange={e => setFormData({ ...formData, category: e.target.value })}>
+                                {categories[formData.type].map(c => <option key={c} value={c}>{c}</option>)}
+                            </select>
+                        </AdminFormGroup>
+                        <AdminFormGroup label="المبلغ" className="col-md-2">
+                            <input type="number" className="form-control" value={formData.amount} onChange={e => setFormData({ ...formData, amount: e.target.value })} required />
+                        </AdminFormGroup>
+                        <AdminFormGroup label="التاريخ" className="col-md-2">
+                            <input type="date" className="form-control" value={formData.date} onChange={e => setFormData({ ...formData, date: e.target.value })} required />
+                        </AdminFormGroup>
+                        <AdminFormGroup label="الوصف" className="col-md-3">
+                            <input className="form-control" value={formData.description} onChange={e => setFormData({ ...formData, description: e.target.value })} />
+                        </AdminFormGroup>
                     </div>
+                    <AdminFormActions>
+                        <AdminBtn variant="success" type="submit" icon="la-check">حفظ العملية</AdminBtn>
+                    </AdminFormActions>
+                </AdminFormPanel>
 
-                    {showForm && (
-                        <div className="card mb-4 border-primary">
-                            <div className="card-body">
-                                <form onSubmit={handleSubmit}>
-                                    <div className="row">
-                                        <div className="col-md-2">
-                                            <label>النوع</label>
-                                            <select className="form-control" onChange={e => {
-                                                const type = e.target.value;
-                                                setFormData({...formData, type, category: categories[type][0]});
-                                            }}>
-                                                <option value="income">مدخول (+)</option>
-                                                <option value="expense">مصروف (-)</option>
-                                            </select>
-                                        </div>
-                                        <div className="col-md-3">
-                                            <label>الفئة</label>
-                                            <select className="form-control" value={formData.category} onChange={e => setFormData({...formData, category: e.target.value})}>
-                                                {categories[formData.type].map(c => <option key={c} value={c}>{c}</option>)}
-                                            </select>
-                                        </div>
-                                        <div className="col-md-2"><label>المبلغ</label><input type="number" className="form-control" onChange={e => setFormData({...formData, amount: e.target.value})} required /></div>
-                                        <div className="col-md-2"><label>التاريخ</label><input type="date" className="form-control" value={formData.date} onChange={e => setFormData({...formData, date: e.target.value})} required /></div>
-                                        <div className="col-md-3"><label>الوصف</label><input className="form-control" onChange={e => setFormData({...formData, description: e.target.value})} /></div>
-                                    </div>
-                                    <button className="btn btn-success mt-3">حفظ العملية</button>
-                                </form>
-                            </div>
-                        </div>
-                    )}
-
-                    <div className="text-right mb-2">
-                        <button className="btn btn-info" onClick={handlePrint}>
-                            <i className="la la-print"></i> استخراج التقرير الشهري (PDF)
-                        </button>
-                    </div>
-
-                    <div className="card">
-                        <div className="table-responsive">
-                            <table className="table table-striped">
-                                <thead>
-                                    <tr>
-                                        <th>التاريخ</th>
-                                        <th>النوع</th>
-                                        <th>الفئة</th>
-                                        <th>المبلغ</th>
-                                        <th>الوصف</th>
-                                        <th>العمليات</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {financeData.transactions.map(t => (
-                                        <tr key={t.id} className={t.type === 'income' ? 'table-success' : 'table-danger'}>
-                                            <td>{t.date}</td>
-                                            <td>{t.type === 'income' ? 'مدخول' : 'مصروف'}</td>
-                                            <td>{t.category}</td>
-                                            <td>{t.amount} DH</td>
-                                            <td>{t.description}</td>
-                                            <td>
-                                                <button onClick={() => handleEdit(t)} className="btn btn-sm btn-outline-primary mr-1">تعديل</button>
-                                                <button onClick={() => handleDelete(t.id)} className="btn btn-sm btn-outline-dark">حذف</button>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+                <div className="text-right mb-3">
+                    <AdminBtn variant="info" icon="la-print" onClick={handlePrint}>استخراج التقرير الشهري</AdminBtn>
                 </div>
+
+                <AdminCard title="سجل العمليات" icon="la-list" flush>
+                    <AdminTableWrap>
+                        <table className="table table-hover admin-table">
+                            <thead>
+                                <tr>
+                                    <th>التاريخ</th>
+                                    <th>النوع</th>
+                                    <th>الفئة</th>
+                                    <th>المبلغ</th>
+                                    <th>الوصف</th>
+                                    <th>العمليات</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {financeData.transactions.map(t => (
+                                    <tr key={t.id} className={t.type === 'income' ? 'table-success' : 'table-danger'}>
+                                        <td>{t.date}</td>
+                                        <td>{t.type === 'income' ? 'مدخول' : 'مصروف'}</td>
+                                        <td>{t.category}</td>
+                                        <td><strong>{t.amount} DH</strong></td>
+                                        <td>{t.description}</td>
+                                        <td>
+                                            <div className="admin-action-group">
+                                                <AdminBtn variant="outline-primary" icon="la-edit" onClick={() => handleEdit(t)}>تعديل</AdminBtn>
+                                                <AdminBtn variant="outline-danger" icon="la-trash" onClick={() => handleDelete(t.id)}>حذف</AdminBtn>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </AdminTableWrap>
+                </AdminCard>
             </div>
-        </div>
+        </AdminPage>
     );
 };
 

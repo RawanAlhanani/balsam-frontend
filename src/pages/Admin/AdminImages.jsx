@@ -1,11 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../api';
 import { getStorageUrl } from '../../utils/formatters';
+import {
+    AdminPage, AdminPageHeader, AdminCard, AdminFormGroup, AdminBtn
+} from '../../components/Admin/ui/AdminUI';
 
 const AdminImages = () => {
     const [sliders, setSliders] = useState([]);
     const [gallery, setGallery] = useState([]);
-    const [image, setImage] = useState(null);
+    const [sliderImage, setSliderImage] = useState(null);
+    const [galleryImage, setGalleryImage] = useState(null);
 
     useEffect(() => { fetchImages(); }, []);
 
@@ -16,68 +20,79 @@ const AdminImages = () => {
         setGallery(g.data);
     };
 
-    const handleUpload = async (type) => {
-        if (!image) return;
+    const handleUpload = async (type, file) => {
+        if (!file) return;
         const data = new FormData();
-        data.append('image', image);
+        data.append('image', file);
         await api.post(`/admin/${type}`, data);
-        setImage(null);
+        if (type === 'sliders') setSliderImage(null);
+        else setGalleryImage(null);
         fetchImages();
     };
 
     const handleDelete = async (type, id) => {
-        await api.delete(`/admin/${type}/${id}`);
-        fetchImages();
+        if (window.confirm('حذف هذه الصورة؟')) {
+            await api.delete(`/admin/${type}/${id}`);
+            fetchImages();
+        }
     };
 
     return (
-        <div className="app-content content">
-            <div className="content-wrapper">
-                <div className="content-header row">
-                    <div className="content-header-left col-md-12 mb-2">
-                        <h3 className="content-header-title">إدارة الصور والمعرض</h3>
+        <AdminPage>
+            <AdminPageHeader
+                title="إدارة الصور والمعرض"
+                subtitle="رفع وإدارة صور السلايدر ومعرض الصور"
+                badge="الوسائط"
+            />
+            <div className="content-body">
+                <div className="row">
+                    <div className="col-md-6">
+                        <AdminCard title="الصور الرئيسية (Slider)" icon="la-image">
+                            <AdminFormGroup label="رفع صورة جديدة">
+                                <input type="file" className="form-control mb-2" onChange={e => setSliderImage(e.target.files[0])} />
+                                <AdminBtn variant="info" icon="la-upload" className="w-100 mb-3" onClick={() => handleUpload('sliders', sliderImage)}>
+                                    رفع للسلايدر
+                                </AdminBtn>
+                            </AdminFormGroup>
+                            {sliders.length === 0 ? (
+                                <p className="text-muted text-center py-3">لا توجد صور في السلايدر</p>
+                            ) : (
+                                <div className="admin-image-grid">
+                                    {sliders.map(s => (
+                                        <div key={s.id} className="admin-image-item">
+                                            <img src={getStorageUrl(s.nomImage)} alt="" />
+                                            <AdminBtn variant="danger" size="sm" icon="la-trash" onClick={() => handleDelete('sliders', s.id)}>حذف</AdminBtn>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </AdminCard>
                     </div>
-                </div>
-                <div className="content-body">
-                    <div className="row">
-                        <div className="col-md-6">
-                            <div className="card">
-                                <div className="card-header"><h4>الصور الرئيسية (Slider)</h4></div>
-                                <div className="card-body">
-                                    <input type="file" onChange={e => setImage(e.target.files[0])} className="form-control mb-2" />
-                                    <button className="btn btn-info w-100 mb-3" onClick={() => handleUpload('sliders')}>رفع صورة للسلايدر</button>
-                                    <div className="row">
-                                        {sliders.map(s => (
-                                            <div key={s.id} className="col-4 mb-2">
-                                                <img src={getStorageUrl(s.nomImage)} className="img-fluid rounded" alt="" />
-                                                <button onClick={() => handleDelete('sliders', s.id)} className="btn btn-danger btn-sm w-100 mt-1">حذف</button>
-                                            </div>
-                                        ))}
-                                    </div>
+                    <div className="col-md-6">
+                        <AdminCard title="معرض الصور (Gallery)" icon="la-images">
+                            <AdminFormGroup label="رفع صورة جديدة">
+                                <input type="file" className="form-control mb-2" onChange={e => setGalleryImage(e.target.files[0])} />
+                                <AdminBtn variant="success" icon="la-upload" className="w-100 mb-3" onClick={() => handleUpload('gallery', galleryImage)}>
+                                    رفع للمعرض
+                                </AdminBtn>
+                            </AdminFormGroup>
+                            {gallery.length === 0 ? (
+                                <p className="text-muted text-center py-3">لا توجد صور في المعرض</p>
+                            ) : (
+                                <div className="admin-image-grid">
+                                    {gallery.map(g => (
+                                        <div key={g.id} className="admin-image-item">
+                                            <img src={getStorageUrl(g.nomImage)} alt="" />
+                                            <AdminBtn variant="danger" size="sm" icon="la-trash" onClick={() => handleDelete('gallery', g.id)}>حذف</AdminBtn>
+                                        </div>
+                                    ))}
                                 </div>
-                            </div>
-                        </div>
-                        <div className="col-md-6">
-                            <div className="card">
-                                <div className="card-header"><h4>معرض الصور (Gallery)</h4></div>
-                                <div className="card-body">
-                                    <input type="file" onChange={e => setImage(e.target.files[0])} className="form-control mb-2" />
-                                    <button className="btn btn-success w-100 mb-3" onClick={() => handleUpload('gallery')}>رفع صورة للمعرض</button>
-                                    <div className="row">
-                                        {gallery.map(g => (
-                                            <div key={g.id} className="col-4 mb-2">
-                                                <img src={getStorageUrl(g.nomImage)} className="img-fluid rounded" alt="" />
-                                                <button onClick={() => handleDelete('gallery', g.id)} className="btn btn-danger btn-sm w-100 mt-1">حذف</button>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                            )}
+                        </AdminCard>
                     </div>
                 </div>
             </div>
-        </div>
+        </AdminPage>
     );
 };
 

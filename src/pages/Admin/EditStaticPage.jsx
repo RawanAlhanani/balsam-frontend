@@ -6,9 +6,9 @@ import {
 } from '../../components/Admin/ui/AdminUI';
 
 const EditStaticPage = () => {
-    const { id } = useParams();
+    const { type, id } = useParams(); // Get both type and id from URL params
     const navigate = useNavigate();
-    const [formData, setFormData] = useState({ type: 'about', titre: '', description: '' });
+    const [formData, setFormData] = useState({ type: type, titre: '', description: '' }); // Initialize type with URL param
     const [sections, setSections] = useState([{ subtitle: '', text: '' }]);
     const [image, setImage] = useState(null);
     const [alert, setAlert] = useState({ message: '', type: '' });
@@ -18,14 +18,14 @@ const EditStaticPage = () => {
     useEffect(() => {
         const fetchPage = async () => {
             try {
-                const res = await api.get(`/admin/static-pages/single/${id}`);
+                const res = await api.get(`/admin/static-pages/${type}/${id}`); // Use both type and id in the API call
                 const page = res.data;
                 setFormData({
-                    type: page.type,
+                    type: type, // Ensure type is set from URL param
                     titre: page.titre,
                     description: page.description || ''
                 });
-                if (page.type === 'autism' && page.structured_description && page.structured_description.sections) {
+                if (type === 'autism' && page.structured_description && page.structured_description.sections) {
                     setSections(page.structured_description.sections.map(sec => ({ subtitle: sec.subtitle || '', text: sec.text || '' })));
                 } else {
                     setSections([{ subtitle: '', text: '' }]);
@@ -37,7 +37,7 @@ const EditStaticPage = () => {
             }
         };
         fetchPage();
-    }, [id]);
+    }, [type, id]); // Add type to dependency array
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -54,7 +54,8 @@ const EditStaticPage = () => {
 
         setSubmitting(true);
         try {
-            await api.post('/admin/static-pages', data); // Assuming the same endpoint handles update based on ID
+            // Assuming the same endpoint handles update based on ID and type
+            await api.post('/admin/static-pages', data);
             setAlert({ message: 'تم التحديث بنجاح', type: 'success' });
             navigate('/admin/static-pages'); // Redirect to the list page
         } catch (err) {

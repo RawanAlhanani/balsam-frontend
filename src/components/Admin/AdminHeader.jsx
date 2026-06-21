@@ -3,6 +3,14 @@ import { Link, useNavigate } from 'react-router-dom';
 
 const AdminHeader = ({ toggleMenu }) => {
     const navigate = useNavigate();
+    const adminRole = localStorage.getItem('admin_role');
+
+    const roleLabels = {
+        president: 'رئيس الجمعية',
+        vice_president: 'نائب الرئيس',
+        secretary: 'الكاتب العام',
+        treasurer: 'أمين المال',
+    };
 
     const handleLogout = (e) => {
         e.preventDefault();
@@ -13,7 +21,7 @@ const AdminHeader = ({ toggleMenu }) => {
     };
 
     return (
-        <nav className="header-navbar navbar-expand-md navbar navbar-with-menu navbar-without-dd-arrow fixed-top navbar-semi-light bg-info navbar-shadow">
+        <nav className="header-navbar navbar-expand-md navbar navbar-with-menu fixed-top navbar-shadow">
             <div className="navbar-wrapper">
                 <div className="navbar-header">
                     <ul className="nav navbar-nav flex-row">
@@ -24,7 +32,7 @@ const AdminHeader = ({ toggleMenu }) => {
                         </li>
                         <li className="nav-item">
                             <Link className="navbar-brand" to="/admin/dashboard">
-                                <img className="brand-logo" alt="modern admin logo" src="/backend/app-assets/images/logo/logo.png" />
+                                <img className="brand-logo" alt="شعار باسم" src="/backend/app-assets/images/logo/logo.png" />
                                 <h3 className="brand-text">باسم</h3>
                             </Link>
                         </li>
@@ -44,10 +52,18 @@ const AdminHeader = ({ toggleMenu }) => {
                                 </a>
                             </li>
                         </ul>
-                        <ul className="nav navbar-nav float-right">
+                        <ul className="nav navbar-nav float-right align-items-center">
+                            {adminRole && (
+                                <li className="nav-item d-none d-md-block mr-2">
+                                    <span className="admin-header-role">
+                                        {roleLabels[adminRole] || adminRole}
+                                    </span>
+                                </li>
+                            )}
                             <li className="dropdown dropdown-user nav-item">
                                 <a className="dropdown-toggle nav-link dropdown-user-link" href="#" onClick={handleLogout}>
-                                    <span className="mr-1">تسجيل الخروج</span>
+                                    <i className="la la-sign-out mr-1" />
+                                    <span>تسجيل الخروج</span>
                                 </a>
                             </li>
                         </ul>
