@@ -50,6 +50,7 @@ import DevenirStagiaire from './pages/CentreBalsam/DevenirStagiaire';
 import AdminStagiaires from './pages/Admin/AdminStagiaires';
 import DevenirBenevole from './pages/CentreBalsam/DevenirBenevole';
 import AdminVolunteers from './pages/Admin/AdminVolunteers';
+import TeamPage from './pages/CentreBalsam/TeamPage';
 
 function App() {
   return (
@@ -93,6 +94,7 @@ function App() {
               <Route path="/centre/education-speciale" element={<SpecialEducation />} />
               <Route path="/centre/ergotherapie" element={<Ergotherapy />} />
               <Route path="/centre/devenir-benevole" element={<DevenirBenevole />} />
+              <Route path="/centre/team" element={<TeamPage />} />
             </Routes>
           </MainLayout>
         } />

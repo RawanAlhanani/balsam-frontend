@@ -248,18 +248,7 @@ const DevenirStagiaire = () => {
                   <input type="file" accept=".pdf,.doc,.docx" className="form-control" onChange={handleFileChange} required />
                 </div>
 
-                {/* 🔒 Section des identifiants du compte ajoutée */}
-                <h4 className="account-section-title">بيانات الحساب (لتسجيل الدخول لاحقاً)</h4>
-                <div className="row">
-                  <div className="col-md-6 mb-4">
-                    <label className="form-label">اسم المستخدم <span style={{ color: '#f05074' }}>*</span></label>
-                    <input type="text" name="nom_utilisateur" className="form-control" placeholder="اختر اسم مستخدم باللاتينية" value={formData.nom_utilisateur} onChange={handleChange} required />
-                  </div>
-                  <div className="col-md-6 mb-4">
-                    <label className="form-label">كلمة السر <span style={{ color: '#f05074' }}>*</span></label>
-                    <input type="password" name="mot_de_pass" className="form-control" placeholder="••••••••" value={formData.mot_de_pass} onChange={handleChange} required />
-                  </div>
-                </div>
+              
 
                 <button type="submit" className="btn-submit-classic" disabled={loading}>
                   {loading ? 'جاري معالجة الطلب وإرساله...' : 'إرسال الملف عبر المنصة'}
