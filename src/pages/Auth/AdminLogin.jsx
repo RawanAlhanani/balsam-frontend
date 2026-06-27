@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api from '../../api';
+import api, { adminLogin, initializeCsrfToken } from '../../api';
 
 const AdminLogin = () => {
     const [login, setLogin] = useState('');
@@ -9,6 +9,9 @@ const AdminLogin = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
+        // Initialize CSRF token on component mount
+        initializeCsrfToken();
+        
         // Apply body classes and attributes exactly like the original Blade
         document.body.className = "vertical-layout vertical-menu 1-column menu-expanded blank-page blank-page";
         document.body.setAttribute("data-open", "click");
@@ -61,8 +64,9 @@ const AdminLogin = () => {
         e.preventDefault();
         setError('');
         try {
-            const response = await api.post('/admin-login', { login, mdp });
+            const response = await adminLogin({ login, mdp });
             localStorage.setItem('admin_token', response.data.token);
+            localStorage.setItem('refresh_token', response.data.refresh_token);
             localStorage.setItem('is_admin', 'true');
             localStorage.setItem('admin_role', response.data.user.role);
             navigate('/admin/dashboard');

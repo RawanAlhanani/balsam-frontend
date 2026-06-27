@@ -1,24 +1,31 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import api from '../../api';
+import api, { login, initializeCsrfToken } from '../../api';
 import PageBanner from '../../components/PageBanner';
 
 const Login = () => {
-    const [login, setLogin] = useState('');
+    const [username, setUsername] = useState('');
     const [mdp, setMdp] = useState('');
     const [error, setError] = useState('');
     const navigate = useNavigate();
+
+    useEffect(() => {
+        // Initialize CSRF token on component mount
+        initializeCsrfToken();
+    }, []);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
         try {
-            const response = await api.post('/login', { login, mdp });
+            const response = await login({ login: username, mdp });
             localStorage.setItem('token', response.data.access_token);
+            localStorage.setItem('refresh_token', response.data.refresh_token);
             localStorage.setItem('user', JSON.stringify(response.data.user));
             navigate('/');
             window.location.reload();
         } catch (err) {
+            console.error('Login error:', err);
             setError(err.response?.data?.message || 'اسم المستخدم أوكلمة المرور غير صحيحة.');
         }
     };
@@ -46,8 +53,8 @@ const Login = () => {
                                         <input 
                                             type="text" 
                                             className="form-control" 
-                                            value={login} 
-                                            onChange={(e) => setLogin(e.target.value)} 
+                                            value={username} 
+                                            onChange={(e) => setUsername(e.target.value)} 
                                             dir="ltr"
                                             required
                                         />
