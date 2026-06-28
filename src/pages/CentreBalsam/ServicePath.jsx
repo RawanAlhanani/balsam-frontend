@@ -1,5 +1,6 @@
 import React from 'react';
 import { getStorageUrl } from '../../utils/formatters';
+import PageBanner from "../../components/PageBanner.jsx";
 
 const PATH_STEPS = [
   {

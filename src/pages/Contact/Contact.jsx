@@ -3,9 +3,11 @@ import PageBanner from '../../components/PageBanner';
 
 const Contact = () => {
     return (
+
+
+
         <div className="content">
             <PageBanner/>
-
             <section>
                 <div className="container">
                     <div className="eco_contact_form">
@@ -54,7 +56,10 @@ const Contact = () => {
                 </div>
             </section>
         </div>
+
     );
 };
+
+
 
 export default Contact;

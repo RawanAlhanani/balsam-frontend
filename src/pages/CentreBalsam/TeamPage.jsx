@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../api';
+import PageBanner from "../../components/PageBanner.jsx";
+
 
 const TeamPage = () => {
     const [team, setTeam] = useState([]);

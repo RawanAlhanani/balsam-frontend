@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import PageBanner from "../../components/PageBanner";
 import api from "../../api";
 
+
 const DevenirBenevole = () => {
     const navigate = useNavigate();
     const [regData, setRegData] = useState({ regions: [] });

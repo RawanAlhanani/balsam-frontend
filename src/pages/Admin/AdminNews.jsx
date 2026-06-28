@@ -6,6 +6,36 @@ import {
     AdminFormPanel, AdminFormGroup, AdminFormActions, AdminTableWrap, AdminBtn, AdminAlert
 } from '../../components/Admin/ui/AdminUI';
 
+// Helper function to personalize error messages
+const getPersonalizedErrorMessage = (error) => {
+    let rawMessage = '';
+    if (error.response && error.response.data && error.response.data.message) {
+        rawMessage = error.response.data.message.toLowerCase();
+    } else if (error.message) {
+        rawMessage = error.message.toLowerCase();
+    }
+
+    // Specific backend/SQL error patterns
+    if (rawMessage.includes('sqlstate') || rawMessage.includes('database error') || rawMessage.includes('syntax error')) {
+        return 'حدث خطأ في قاعدة البيانات. الرجاء إبلاغ الدعم الفني.'; // Database error. Please contact support.
+    }
+    if (rawMessage.includes('internal server error') || rawMessage.includes('undefined')) {
+        return 'حدث خطأ غير متوقع من الخادم. الرجاء المحاولة مرة أخرى لاحقًا.'; // An unexpected server error occurred. Please try again later.
+    }
+    if (rawMessage.includes('network error') || rawMessage.includes('failed to fetch')) {
+        return 'فشل الاتصال بالخادم. الرجاء التحقق من اتصالك بالإنترنت والمحاولة مرة أخرى.'; // Failed to connect to the server. Please check your internet connection and try again.
+    }
+
+    // If the backend provided a message that doesn't match technical patterns, use it.
+    // Assuming the backend message is already in Arabic or user-friendly if it's not a technical error.
+    if (error.response && error.response.data && error.response.data.message) {
+        return error.response.data.message;
+    }
+
+    // Fallback for any other unhandled errors
+    return 'حدث خطأ ما. الرجاء المحاولة مرة أخرى.'; // Something went wrong. Please try again.
+};
+
 // Re-using the DeleteConfirmModal for consistency
 const DeleteConfirmModal = ({ show, onClose, onConfirm, itemName, isDeleting }) => {
     if (!show) return null;
@@ -71,7 +101,8 @@ const AdminNews = () => {
             const res = await api.get('/admin/news');
             setNews(res.data);
         } catch (err) {
-            setAlert({ message: 'خطأ في تحميل الأخبار', type: 'danger' });
+            const errorMessage = getPersonalizedErrorMessage(err);
+            setAlert({ message: errorMessage, type: 'danger' });
             console.error(err);
         } finally {
             setLoading(false);
@@ -98,7 +129,8 @@ const AdminNews = () => {
             setDeleteTargetId(null);
             setDeleteTargetName('');
         } catch (err) {
-            setAlert({ message: 'خطأ في الحذف', type: 'danger' });
+            const errorMessage = getPersonalizedErrorMessage(err);
+            setAlert({ message: errorMessage, type: 'danger' });
             console.error(err);
         } finally {
             setDeleting(false);

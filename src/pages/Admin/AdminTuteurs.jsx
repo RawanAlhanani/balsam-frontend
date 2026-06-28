@@ -2,15 +2,132 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../../api';
 import {
-    AdminPage, AdminPageHeader, AdminCard, AdminLoading, AdminEmptyState, AdminBtn
+    AdminPage, AdminPageHeader, AdminCard, AdminLoading, AdminEmptyState, AdminBtn, AdminAlert
 } from '../../components/Admin/ui/AdminUI';
 import { useNavigate } from 'react-router-dom';
 import { getStorageUrl } from '../../utils/formatters';
+
+// Helper function to personalize error messages
+const getPersonalizedErrorMessage = (error) => {
+    let rawMessage = '';
+    if (error.response && error.response.data && error.response.data.message) {
+        rawMessage = error.response.data.message.toLowerCase();
+    } else if (error.message) {
+        rawMessage = error.message.toLowerCase();
+    }
+
+    // Specific backend/SQL error patterns
+    if (rawMessage.includes('sqlstate') || rawMessage.includes('database error') || rawMessage.includes('syntax error')) {
+        return 'حدث خطأ في قاعدة البيانات. الرجاء إبلاغ الدعم الفني.'; // Database error. Please contact support.
+    }
+    if (rawMessage.includes('internal server error') || rawMessage.includes('undefined')) {
+        return 'حدث خطأ غير متوقع من الخادم. الرجاء المحاولة مرة أخرى لاحقًا.'; // An unexpected server error occurred. Please try again later.
+    }
+    if (rawMessage.includes('network error') || rawMessage.includes('failed to fetch')) {
+        return 'فشل الاتصال بالخادم. الرجاء التحقق من اتصالك بالإنترنت والمحاولة مرة أخرى.'; // Failed to connect to the server. Please check your internet connection and try again.
+    }
+
+    // If the backend provided a message that doesn't match technical patterns, use it.
+    // Assuming the backend message is already in Arabic or user-friendly if it's not a technical error.
+    if (error.response && error.response.data && error.response.data.message) {
+        return error.response.data.message;
+    }
+
+    // Fallback for any other unhandled errors
+    return 'حدث خطأ ما. الرجاء المحاولة مرة أخرى.'; // Something went wrong. Please try again.
+};
+
+// DeleteConfirmModal component (copied for consistency)
+const DeleteConfirmModal = ({ show, onClose, onConfirm, itemName, isDeleting }) => {
+    if (!show) return null;
+
+    return (
+        <>
+            {/* Backdrop */}
+            <div
+                className="modal-backdrop fade show"
+                onClick={onClose}
+                style={{
+                    zIndex: 1040
+                }}
+            ></div>
+
+            {/* Modal */}
+            <div
+                className="modal fade show d-block"
+                tabIndex="-1"
+                role="dialog"
+                style={{
+                    position: "fixed",
+                    top: 0,
+                    left: 0,
+                    width: "100%",
+                    height: "100%",
+                    zIndex: 1055,
+                    overflowY: "auto"
+                }}
+            >
+                <div
+                    className="modal-dialog modal-dialog-centered"
+                    role="document"
+                >
+                    <div className="modal-content">
+                        <div className="modal-header">
+                            <h5 className="modal-title">تأكيد الحذف</h5>
+
+                            <button
+                                type="button"
+                                className="close"
+                                onClick={onClose}
+                            >
+                                &times;
+                            </button>
+                        </div>
+
+                        <div className="modal-body">
+                            هل أنت متأكد أنك تريد حذف "{itemName}"؟
+                        </div>
+
+                        <div className="modal-footer">
+                            <button
+                                type="button"
+                                className="btn btn-secondary"
+                                onClick={onClose}
+                            >
+                                إلغاء
+                            </button>
+
+                            <button
+                                type="button"
+                                className="btn btn-danger"
+                                onClick={onConfirm}
+                                disabled={isDeleting}
+                            >
+                                {isDeleting ? (
+                                    <span className="spinner-border spinner-border-sm"></span>
+                                ) : (
+                                    "حذف"
+                                )}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </>
+    );
+};
 
 const AdminTuteurs = () => {
     const [tuteurs, setTuteurs] = useState([]);
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
+    const [alert, setAlert] = useState({ message: '', type: '' });
+    const [deleting, setDeleting] = useState(false);
+
+    // State for delete confirmation modal
+    const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState(false);
+    const [deleteTargetId, setDeleteTargetId] = useState(null);
+    const [deleteTargetName, setDeleteTargetName] = useState('');
 
     useEffect(() => {
         const isAdmin = localStorage.getItem('is_admin');
@@ -21,26 +138,56 @@ const AdminTuteurs = () => {
         fetchTuteurs();
     }, [navigate]);
 
-    const fetchTuteurs = () => {
-        api.get('/admin/tuteurs')
-            .then(res => {
-                setTuteurs(res.data);
-                setLoading(false);
-            })
-            .catch(err => {
-                console.error(err);
-                setLoading(false);
-            });
+    // Lock background scroll and interactions when delete modal is open
+    useEffect(() => {
+        if (showDeleteConfirmModal) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = '';
+        }
+        return () => { document.body.style.overflow = ''; };
+    }, [showDeleteConfirmModal]);
+
+    const fetchTuteurs = async () => {
+        setLoading(true);
+        try {
+            const res = await api.get('/admin/tuteurs');
+            setTuteurs(res.data);
+        } catch (err) {
+            const errorMessage = getPersonalizedErrorMessage(err);
+            setAlert({ message: errorMessage, type: 'danger' });
+            console.error(err);
+        } finally {
+            setLoading(false);
+        }
     };
 
-    const handleDelete = async (id) => {
-        if (window.confirm('هل أنت متأكد من حذف هذا المسجل وجميع بياناته؟')) {
-            try {
-                await api.delete(`/admin/tuteurs/${id}`);
-                fetchTuteurs();
-            } catch (err) {
-                alert('خطأ في الحذف');
-            }
+    const promptDelete = (id, name) => {
+        setDeleteTargetId(id);
+        setDeleteTargetName(name);
+        setShowDeleteConfirmModal(true);
+    };
+
+    const confirmDelete = async () => {
+        if (!deleteTargetId || deleting) return;
+        setDeleting(true);
+        try {
+            await api.delete(`/admin/tuteurs/${deleteTargetId}`);
+            setAlert({ message: 'تم حذف المسجل بنجاح', type: 'success' });
+            setShowDeleteConfirmModal(false);
+            setDeleteTargetId(null);
+            setDeleteTargetName('');
+            fetchTuteurs();
+        } catch (err) {
+            const errorMessage = getPersonalizedErrorMessage(err);
+            setAlert({ message: errorMessage, type: 'danger' });
+            setShowDeleteConfirmModal(false);
+            setDeleteTargetId(null);
+            setDeleteTargetName('');
+            console.error(err);
+        } finally {
+            setDeleting(false);
+            setTimeout(() => setAlert({ message: '', type: '' }), 3500);
         }
     };
 
@@ -49,84 +196,98 @@ const AdminTuteurs = () => {
     );
 
     return (
-        <AdminPage>
-            <AdminPageHeader
-                title="أولياء الأمور والأبناء"
-                subtitle="عرض بيانات المسجلين وأطفالهم"
-                badge="المسجلين"
-            />
-            <div className="content-body">
-                <AdminCard title="قائمة المسجلين" icon="la-users" flush>
-                    {loading ? (
-                        <AdminLoading />
-                    ) : rows.length === 0 ? (
-                        <AdminEmptyState icon="la-users" message="لا يوجد مسجلين حالياً" />
-                    ) : (
-                        <div className="table-responsive admin-table-wrap admin-table-scroll">
-                            <table className="table table-hover admin-table">
-                                <thead>
-                                    <tr>
-                                        <th>الاسم العائلي</th>
-                                        <th>الاسم الشخصي</th>
-                                        <th>الهاتف</th>
-                                        <th>الواتساب</th>
-                                        <th>تكوين</th>
-                                        <th>رقم البطاقة</th>
-                                        <th>العنوان</th>
-                                        <th>المنطقة</th>
-                                        <th>اسم الطفل</th>
-                                        <th>تاريخ الازدياد</th>
-                                        <th>جنس الطفل</th>
-                                        <th>حالة التوحد</th>
-                                        <th>كلام الطفل</th>
-                                        <th>مرافق</th>
-                                        <th>متمدرس</th>
-                                        <th>الصورة</th>
-                                        <th>العمليات</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {rows.map(({ tuteur, enfant }) => (
-                                        <tr key={enfant.id}>
-                                            <td>{tuteur.nom_tuteur}</td>
-                                            <td>{tuteur.prenom_tuteur}</td>
-                                            <td>{tuteur.telephon}</td>
-                                            <td>{tuteur.whatsapp}</td>
-                                            <td>{tuteur.formation == 1 ? 'نعم' : 'لا'}</td>
-                                            <td>{tuteur.CIN}</td>
-                                            <td>{tuteur.adresse}</td>
-                                            <td>{tuteur.region?.nom_region}</td>
-                                            <td>{enfant.prenom_enfant} {enfant.nom_enfant}</td>
-                                            <td>{enfant.date_naissance}</td>
-                                            <td>{enfant.sexeEnfant == 2 ? 'ذكر' : 'أنثى'}</td>
-                                            <td>
-                                                {enfant.statut == 1 ? 'خفيف' : enfant.statut == 2 ? 'متوسط' : 'شديد'}
-                                            </td>
-                                            <td>
-                                                {enfant.parole == 1 ? 'غير متكلم' : enfant.parole == 2 ? 'أصوات' : enfant.parole == 3 ? 'كلمات' : 'يتكلم'}
-                                            </td>
-                                            <td>{enfant.avs == 1 ? 'نعم' : 'لا'}</td>
-                                            <td>{enfant.etude == 1 ? 'نعم' : 'لا'}</td>
-                                            <td>
-                                                <img className="admin-child-photo" src={getStorageUrl(enfant.photo || 'Profile.png')} alt="" />
-                                            </td>
-                                            <td>
-                                                <div className="admin-action-group">
-                                                    <Link to={`/admin/editTuteur/${enfant.id}`} className="btn btn-sm btn-warning admin-action-btn">
-                                                        <i className="la la-edit" /> تعديل
-                                                    </Link>
-                                                    <AdminBtn variant="danger" icon="la-trash" onClick={() => handleDelete(tuteur.id)}>حذف</AdminBtn>
-                                                </div>
-                                            </td>
+        <>
+            <AdminPage>
+                <AdminPageHeader
+                    title="أولياء الأمور والأبناء"
+                    subtitle="عرض بيانات المسجلين وأطفالهم"
+                    badge="المسجلين"
+                />
+                <div className="content-body">
+                    <AdminCard title="قائمة المسجلين" icon="la-users" flush>
+                        {loading ? (
+                            <AdminLoading />
+                        ) : rows.length === 0 ? (
+                            <AdminEmptyState icon="la-users" message="لا يوجد مسجلين حالياً" />
+                        ) : (
+                            <div className="table-responsive admin-table-wrap admin-table-scroll">
+                                <table className="table table-hover admin-table">
+                                    <thead>
+                                        <tr>
+                                            <th>الاسم العائلي</th>
+                                            <th>الاسم الشخصي</th>
+                                            <th>الهاتف</th>
+                                            <th>الواتساب</th>
+                                            <th>تكوين</th>
+                                            <th>رقم البطاقة</th>
+                                            <th>العنوان</th>
+                                            <th>المنطقة</th>
+                                            <th>اسم الطفل</th>
+                                            <th>تاريخ الازدياد</th>
+                                            <th>جنس الطفل</th>
+                                            <th>حالة التوحد</th>
+                                            <th>كلام الطفل</th>
+                                            <th>مرافق</th>
+                                            <th>متمدرس</th>
+                                            <th>الصورة</th>
+                                            <th>العمليات</th>
                                         </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-                    )}
-                </AdminCard>
-            </div>
-        </AdminPage>
+                                    </thead>
+                                    <tbody>
+                                        {rows.map(({ tuteur, enfant }) => (
+                                            <tr key={enfant.id}>
+                                                <td>{tuteur.nom_tuteur}</td>
+                                                <td>{tuteur.prenom_tuteur}</td>
+                                                <td>{tuteur.telephon}</td>
+                                                <td>{tuteur.whatsapp}</td>
+                                                <td>{tuteur.formation == 1 ? 'نعم' : 'لا'}</td>
+                                                <td>{tuteur.CIN}</td>
+                                                <td>{tuteur.adresse}</td>
+                                                <td>{tuteur.region?.nom_region}</td>
+                                                <td>{enfant.prenom_enfant} {enfant.nom_enfant}</td>
+                                                <td>{enfant.date_naissance}</td>
+                                                <td>{enfant.sexeEnfant == 2 ? 'ذكر' : 'أنثى'}</td>
+                                                <td>
+                                                    {enfant.statut == 1 ? 'خفيف' : enfant.statut == 2 ? 'متوسط' : 'شديد'}
+                                                </td>
+                                                <td>
+                                                    {enfant.parole == 1 ? 'غير متكلم' : enfant.parole == 2 ? 'أصوات' : enfant.parole == 3 ? 'كلمات' : 'يتكلم'}
+                                                </td>
+                                                <td>{enfant.avs == 1 ? 'نعم' : 'لا'}</td>
+                                                <td>{enfant.etude == 1 ? 'نعم' : 'لا'}</td>
+                                                <td>
+                                                    <img className="admin-child-photo" src={getStorageUrl(enfant.photo || 'Profile.png')} alt="" />
+                                                </td>
+                                                <td>
+                                                    <div className="admin-action-group">
+                                                        <Link to={`/admin/editTuteur/${enfant.id}`} className="btn btn-sm btn-warning admin-action-btn">
+                                                            <i className="la la-edit" /> تعديل
+                                                        </Link>
+                                                        <AdminBtn variant="danger" icon="la-trash" onClick={() => promptDelete(tuteur.id, `${tuteur.nom_tuteur} ${tuteur.prenom_tuteur}`)}>حذف</AdminBtn>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        )}
+                    </AdminCard>
+                </div>
+            </AdminPage>
+
+            <DeleteConfirmModal
+                show={showDeleteConfirmModal}
+                onClose={() => setShowDeleteConfirmModal(false)}
+                onConfirm={confirmDelete}
+                itemName={deleteTargetName}
+                isDeleting={deleting}
+            />
+
+            {alert.message && (
+                <AdminAlert message={alert.message} type={alert.type} onClose={() => setAlert({ message: '', type: '' })} />
+            )}
+        </>
     );
 };
 

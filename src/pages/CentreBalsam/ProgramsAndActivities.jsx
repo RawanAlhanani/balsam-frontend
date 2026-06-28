@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { getActivities, getProjects } from '../../api';
 import { Link } from 'react-router-dom';
 import { getStorageUrl } from '../../utils/formatters';
-import PageBanner from '../../components/PageBanner';
+import PageBanner from "../../components/PageBanner.jsx";
+
 
 const ProgramsAndActivities = () => {
 const [activities, setActivities] = useState([]);
@@ -33,7 +34,7 @@ useEffect(() => {
 if (loading) {
     return (
         <div style={{ direction: 'rtl', fontFamily: 'Segoe UI, sans-serif', textAlign: 'center', padding: '100px 20px' }}>
-            <PageBanner title="البرامج والأنشطة" />
+
             <h3 style={{ color: '#1e3c72', marginTop: '30px' }}>جاري تحميل الأنشطة والمشاريع...</h3>
         </div>
     );
@@ -61,7 +62,8 @@ const filteredItems = [
 
 return (
     <>
-        <PageBanner/>
+        <PageBanner  />
+
     <div style={{ direction: 'rtl', fontFamily: 'Segoe UI, Arial, sans-serif', textAlign: 'right', background: '#f9fbfe', minHeight: '100vh', paddingBottom: '80px' }}>
         
         {/* التنسيقات العصرية مدمجة داخلياً لضمان عدم ضياعها */}
@@ -105,7 +107,7 @@ return (
             .action-link:hover { color: #1e3c72; }
         `}</style>
 
-        <PageBanner title="البرامج والأنشطة" />
+
 
         {/* سكشن التمهيد والترحيب المعبر */}
         <div className="hub-header">

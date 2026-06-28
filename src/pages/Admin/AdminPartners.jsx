@@ -6,6 +6,36 @@ import {
     AdminFormPanel, AdminFormGroup, AdminFormActions, AdminTableWrap, AdminBtn, AdminAlert
 } from '../../components/Admin/ui/AdminUI';
 
+// Helper function to personalize error messages
+const getPersonalizedErrorMessage = (error) => {
+    let rawMessage = '';
+    if (error.response && error.response.data && error.response.data.message) {
+        rawMessage = error.response.data.message.toLowerCase();
+    } else if (error.message) {
+        rawMessage = error.message.toLowerCase();
+    }
+
+    // Specific backend/SQL error patterns
+    if (rawMessage.includes('sqlstate') || rawMessage.includes('database error') || rawMessage.includes('syntax error')) {
+        return 'حدث خطأ في قاعدة البيانات. الرجاء إبلاغ الدعم الفني.'; // Database error. Please contact support.
+    }
+    if (rawMessage.includes('internal server error') || rawMessage.includes('undefined')) {
+        return 'حدث خطأ غير متوقع من الخادم. الرجاء المحاولة مرة أخرى لاحقًا.'; // An unexpected server error occurred. Please try again later.
+    }
+    if (rawMessage.includes('network error') || rawMessage.includes('failed to fetch')) {
+        return 'فشل الاتصال بالخادم. الرجاء التحقق من اتصالك بالإنترنت والمحاولة مرة أخرى.'; // Failed to connect to the server. Please check your internet connection and try again.
+    }
+
+    // If the backend provided a message that doesn't match technical patterns, use it.
+    // Assuming the backend message is already in Arabic or user-friendly if it's not a technical error.
+    if (error.response && error.response.data && error.response.data.message) {
+        return error.response.data.message;
+    }
+
+    // Fallback for any other unhandled errors
+    return 'حدث خطأ ما. الرجاء المحاولة مرة أخرى.'; // Something went wrong. Please try again.
+};
+
 // Re-using the DeleteConfirmModal for consistency
 const DeleteConfirmModal = ({ show, onClose, onConfirm, itemName, isDeleting }) => {
     if (!show) return null;
@@ -43,6 +73,7 @@ const AdminPartners = () => {
     const [alert, setAlert] = useState({ message: '', type: '' });
     const [submitting, setSubmitting] = useState(false);
     const [deleting, setDeleting] = useState(false);
+    const [formErrors, setFormErrors] = useState({}); // New state for form errors
 
     // State for editing
     const [isEditing, setIsEditing] = useState(false);
@@ -76,7 +107,8 @@ const AdminPartners = () => {
             const res = await api.get('/admin/partners');
             setPartners(res.data);
         } catch (err) {
-            setAlert({ message: 'خطأ في تحميل الشركاء', type: 'danger' });
+            const errorMessage = getPersonalizedErrorMessage(err);
+            setAlert({ message: errorMessage, type: 'danger' });
             console.error(err);
         } finally {
             setLoading(false);
@@ -89,6 +121,26 @@ const AdminPartners = () => {
         setIsEditing(false);
         setEditingPartnerId(null);
         setCurrentImage(null);
+        setFormErrors({}); // Clear form errors on reset
+    };
+
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        if (name === 'nomPartenaire') {
+            setNomPartenaire(value);
+        }
+        // Clear error for this field when user starts typing
+        if (formErrors[name]) {
+            setFormErrors(prev => ({ ...prev, [name]: null }));
+        }
+    };
+
+    const handleImageChange = (e) => {
+        setImage(e.target.files[0]);
+        // Clear image error if present
+        if (formErrors.imagePartenaire) {
+            setFormErrors(prev => ({ ...prev, imagePartenaire: null }));
+        }
     };
 
     const handleOpenAddForm = () => {
@@ -102,18 +154,23 @@ const AdminPartners = () => {
         setIsEditing(true);
         setEditingPartnerId(partner.id);
         setShowForm(true);
+        setFormErrors({}); // Clear form errors when opening edit form
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setSubmitting(true);
+        setFormErrors({}); // Clear previous errors
+        setAlert({ message: '', type: '' }); // Clear general alert
+
         const data = new FormData();
         data.append('nomPartenaire', nomPartenaire);
         if (image) data.append('imagePartenaire', image);
 
         try {
             if (isEditing) {
-                await api.post(`/admin/partners/${editingPartnerId}`, data); // Use POST for FormData with PUT/PATCH method override
+                data.append('_method', 'PUT'); // Important for Laravel to handle PUT with FormData
+                await api.post(`/admin/partners/${editingPartnerId}`, data);
                 setAlert({ message: 'تم تحديث الشريك بنجاح', type: 'success' });
             } else {
                 await api.post('/admin/partners', data);
@@ -123,7 +180,15 @@ const AdminPartners = () => {
             resetForm();
             fetchPartners();
         } catch (err) {
-            setAlert({ message: `خطأ في ${isEditing ? 'التحديث' : 'الإضافة'}`, type: 'danger' });
+            if (err.response && err.response.status === 422) {
+                // Validation errors from Laravel
+                setFormErrors(err.response.data.errors);
+                setAlert({ message: 'الرجاء مراجعة الأخطاء في النموذج.', type: 'danger' });
+            } else {
+                // Other API errors
+                const errorMessage = getPersonalizedErrorMessage(err);
+                setAlert({ message: errorMessage, type: 'danger' });
+            }
             console.error(err);
         } finally {
             setSubmitting(false);
@@ -148,7 +213,8 @@ const AdminPartners = () => {
             setDeleteTargetId(null);
             setDeleteTargetName('');
         } catch (err) {
-            setAlert({ message: 'خطأ في الحذف', type: 'danger' });
+            const errorMessage = getPersonalizedErrorMessage(err);
+            setAlert({ message: errorMessage, type: 'danger' });
             console.error(err);
         } finally {
             setDeleting(false);
@@ -182,16 +248,18 @@ const AdminPartners = () => {
                 >
                     <div className="row">
                         <AdminFormGroup label="اسم الشريك" className="col-md-6">
-                            <input type="text" className="form-control" value={nomPartenaire} onChange={(e) => setNomPartenaire(e.target.value)} required />
+                            <input type="text" className="form-control" name="nomPartenaire" value={nomPartenaire} onChange={handleInputChange} required />
+                            {formErrors.nomPartenaire && <div className="text-danger small mt-1">{formErrors.nomPartenaire[0]}</div>}
                         </AdminFormGroup>
                         <AdminFormGroup label="الشعار" className="col-md-6">
-                            <input type="file" className="form-control-file" onChange={(e) => setImage(e.target.files[0])} />
+                            <input type="file" className="form-control-file" name="imagePartenaire" onChange={handleImageChange} />
                             {currentImage && !image && ( // Show current image if editing and no new image selected
                                 <div className="mt-2">
                                     <img src={currentImage} alt="Current Partner" style={{ maxWidth: '100px', maxHeight: '100px', objectFit: 'contain' }} />
                                     <small className="d-block text-muted">الشعار الحالي</small>
                                 </div>
                             )}
+                            {formErrors.imagePartenaire && <div className="text-danger small mt-1">{formErrors.imagePartenaire[0]}</div>}
                         </AdminFormGroup>
                     </div>
                     <AdminFormActions>

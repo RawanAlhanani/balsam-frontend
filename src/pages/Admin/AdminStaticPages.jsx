@@ -5,13 +5,123 @@ import {
     AdminPage, AdminPageHeader, AdminCard, AdminLoading, AdminAlert, AdminBtn
 } from '../../components/Admin/ui/AdminUI';
 
+// DeleteConfirmModal component (copied from AdminActivities.jsx)
+const DeleteConfirmModal = ({ show, onClose, onConfirm, itemName, isDeleting }) => {
+    if (!show) return null;
+
+    return (
+        <>
+            {/* Backdrop */}
+            <div
+                className="modal-backdrop fade show"
+                onClick={onClose}
+                style={{
+                    zIndex: 1040
+                }}
+            ></div>
+
+            {/* Modal */}
+            <div
+                className="modal fade show d-block"
+                tabIndex="-1"
+                role="dialog"
+                style={{
+                    position: "fixed",
+                    top: 0,
+                    left: 0,
+                    width: "100%",
+                    height: "100%",
+                    zIndex: 1055,
+                    overflowY: "auto"
+                }}
+            >
+                <div
+                    className="modal-dialog modal-dialog-centered"
+                    role="document"
+                >
+                    <div className="modal-content">
+                        <div className="modal-header">
+                            <h5 className="modal-title">تأكيد الحذف</h5>
+
+                            <button
+                                type="button"
+                                className="close"
+                                onClick={onClose}
+                            >
+                                &times;
+                            </button>
+                        </div>
+
+                        <div className="modal-body">
+                            هل أنت متأكد أنك تريد حذف "{itemName}"؟
+                        </div>
+
+                        <div className="modal-footer">
+                            <button
+                                type="button"
+                                className="btn btn-secondary"
+                                onClick={onClose}
+                            >
+                                إلغاء
+                            </button>
+
+                            <button
+                                type="button"
+                                className="btn btn-danger"
+                                onClick={onConfirm}
+                                disabled={isDeleting}
+                            >
+                                {isDeleting ? (
+                                    <span className="spinner-border spinner-border-sm"></span>
+                                ) : (
+                                    "حذف"
+                                )}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </>
+    );
+};
+
+// Helper function to personalize error messages
+const getPersonalizedErrorMessage = (error) => {
+    let rawMessage = '';
+    if (error.response && error.response.data && error.response.data.message) {
+        rawMessage = error.response.data.message.toLowerCase();
+    } else if (error.message) {
+        rawMessage = error.message.toLowerCase();
+    }
+
+    // Specific backend/SQL error patterns
+    if (rawMessage.includes('sqlstate') || rawMessage.includes('database error') || rawMessage.includes('syntax error')) {
+        return 'حدث خطأ في قاعدة البيانات. الرجاء إبلاغ الدعم الفني.'; // Database error. Please contact support.
+    }
+    if (rawMessage.includes('internal server error') || rawMessage.includes('undefined')) {
+        return 'حدث خطأ غير متوقع من الخادم. الرجاء المحاولة مرة أخرى لاحقًا.'; // An unexpected server error occurred. Please try again later.
+    }
+    if (rawMessage.includes('network error') || rawMessage.includes('failed to fetch')) {
+        return 'فشل الاتصال بالخادم. الرجاء التحقق من اتصالك بالإنترنت والمحاولة مرة أخرى.'; // Failed to connect to the server. Please check your internet connection and try again.
+    }
+
+    // If the backend provided a message that doesn't match technical patterns, use it.
+    // Assuming the backend message is already in Arabic or user-friendly if it's not a technical error.
+    if (error.response && error.response.data && error.response.data.message) {
+        return error.response.data.message;
+    }
+
+    // Fallback for any other unhandled errors
+    return 'حدث خطأ ما. الرجاء المحاولة مرة أخرى.'; // Something went wrong. Please try again.
+};
+
 
 const AdminStaticPages = () => {
     const navigate = useNavigate();
     const [pages, setPages] = useState({ about: [], autism: [], projects: [] });
     const [selectedType, setSelectedType] = useState('about');
     const [selectedPage, setSelectedPage] = useState(null);
-    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState(false); // Renamed for consistency
     const [deleteTarget, setDeleteTarget] = useState(null);
     const [alert, setAlert] = useState({ message: '', type: '' });
     const [loading, setLoading] = useState(false);
@@ -22,19 +132,23 @@ const AdminStaticPages = () => {
 
     // Lock background scroll and interactions when delete modal is open
     useEffect(() => {
-        if (showDeleteModal) {
+        if (showDeleteConfirmModal) { // Changed from showDeleteModal
             document.body.style.overflow = 'hidden';
         } else {
             document.body.style.overflow = '';
         }
         return () => { document.body.style.overflow = ''; };
-    }, [showDeleteModal]);
+    }, [showDeleteConfirmModal]); // Changed from showDeleteModal
 
     const fetchPages = async () => {
         setLoading(true);
         try {
             const res = await api.get('/admin/static-pages');
             setPages(res.data);
+        } catch (err) {
+            const errorMessage = getPersonalizedErrorMessage(err);
+            setAlert({ message: errorMessage, type: 'danger' });
+            setTimeout(() => setAlert({ message: '', type: '' }), 3500);
         } finally {
             setLoading(false);
         }
@@ -50,7 +164,7 @@ const AdminStaticPages = () => {
 
     const promptDelete = (type, page) => {
         setDeleteTarget({ type, id: page.id, titre: page.titre });
-        setShowDeleteModal(true);
+        setShowDeleteConfirmModal(true); // Changed from setShowDeleteModal
     };
 
     const confirmDelete = async () => {
@@ -59,13 +173,14 @@ const AdminStaticPages = () => {
         try {
             await api.delete(`/admin/static-pages/${deleteTarget.type}/${deleteTarget.id}`);
             setAlert({ message: 'تم الحذف بنجاح', type: 'success' });
-            setShowDeleteModal(false);
+            setShowDeleteConfirmModal(false); // Changed from setShowDeleteModal
             setDeleteTarget(null);
             await fetchPages();
             setSelectedPage(null); // Clear selected page after deletion
         } catch (err) {
-            setAlert({ message: 'خطأ أثناء الحذف', type: 'danger' });
-            setShowDeleteModal(false);
+            const errorMessage = getPersonalizedErrorMessage(err);
+            setAlert({ message: errorMessage, type: 'danger' });
+            setShowDeleteConfirmModal(false); // Changed from setShowDeleteModal
         } finally {
             setDeleting(false);
             setTimeout(() => setAlert({ message: '', type: '' }), 3500);
@@ -246,26 +361,13 @@ const AdminStaticPages = () => {
             </div>
         </AdminPage>
 
-        {showDeleteModal && deleteTarget && (
-            <div className="modal show d-block" tabIndex="-1" role="dialog">
-                <div className="modal-dialog" role="document">
-                    <div className="modal-content">
-                        <div className="modal-header">
-                            <h5 className="modal-title">تأكيد الحذف</h5>
-                            <button type="button" className="close" onClick={() => setShowDeleteModal(false)}>&times;</button>
-                        </div>
-                        <div className="modal-body">
-                            هل تريد فعلاً حذف "{deleteTarget.titre}"؟
-                        </div>
-                        <div className="modal-footer">
-                            <button type="button" className="btn btn-secondary" onClick={() => setShowDeleteModal(false)}>إلغاء</button>
-                            <button type="button" className="btn btn-danger" disabled={deleting} onClick={confirmDelete}>{deleting ? <span className="spinner-border spinner-border-sm"/> : 'حذف'}</button>
-                        </div>
-                    </div>
-                </div>
-                <div className="modal-backdrop show" onClick={() => setShowDeleteModal(false)}></div>
-            </div>
-        )}
+        <DeleteConfirmModal
+            show={showDeleteConfirmModal}
+            onClose={() => setShowDeleteConfirmModal(false)}
+            onConfirm={confirmDelete}
+            itemName={deleteTarget ? deleteTarget.titre : ''}
+            isDeleting={deleting}
+        />
 
         {alert.message && (
             <AdminAlert message={alert.message} type={alert.type} onClose={() => setAlert({ message: '', type: '' })} />

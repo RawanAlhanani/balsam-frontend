@@ -2,8 +2,118 @@ import React, { useState, useEffect } from 'react';
 import api from '../../api';
 import {
     AdminPage, AdminPageHeader, AdminCard, AdminStatCard, AdminFormPanel,
-    AdminFormGroup, AdminFormActions, AdminTableWrap, AdminBtn
+    AdminFormGroup, AdminFormActions, AdminTableWrap, AdminBtn, AdminAlert, AdminLoading, AdminEmptyState
 } from '../../components/Admin/ui/AdminUI';
+
+// Helper function to personalize error messages
+const getPersonalizedErrorMessage = (error) => {
+    let rawMessage = '';
+    if (error.response && error.response.data && error.response.data.message) {
+        rawMessage = error.response.data.message.toLowerCase();
+    } else if (error.message) {
+        rawMessage = error.message.toLowerCase();
+    }
+
+    // Specific backend/SQL error patterns
+    if (rawMessage.includes('sqlstate') || rawMessage.includes('database error') || rawMessage.includes('syntax error')) {
+        return 'حدث خطأ في قاعدة البيانات. الرجاء إبلاغ الدعم الفني.'; // Database error. Please contact support.
+    }
+    if (rawMessage.includes('internal server error') || rawMessage.includes('undefined')) {
+        return 'حدث خطأ غير متوقع من الخادم. الرجاء المحاولة مرة أخرى لاحقًا.'; // An unexpected server error occurred. Please try again later.
+    }
+    if (rawMessage.includes('network error') || rawMessage.includes('failed to fetch')) {
+        return 'فشل الاتصال بالخادم. الرجاء التحقق من اتصالك بالإنترنت والمحاولة مرة أخرى.'; // Failed to connect to the server. Please check your internet connection and try again.
+    }
+
+    // If the backend provided a message that doesn't match technical patterns, use it.
+    // Assuming the backend message is already in Arabic or user-friendly if it's not a technical error.
+    if (error.response && error.response.data && error.response.data.message) {
+        return error.response.data.message;
+    }
+
+    // Fallback for any other unhandled errors
+    return 'حدث خطأ ما. الرجاء المحاولة مرة أخرى.'; // Something went wrong. Please try again.
+};
+
+// DeleteConfirmModal component (copied from AdminActivities.jsx for consistency)
+const DeleteConfirmModal = ({ show, onClose, onConfirm, itemName, isDeleting }) => {
+    if (!show) return null;
+
+    return (
+        <>
+            {/* Backdrop */}
+            <div
+                className="modal-backdrop fade show"
+                onClick={onClose}
+                style={{
+                    zIndex: 1040
+                }}
+            ></div>
+
+            {/* Modal */}
+            <div
+                className="modal fade show d-block"
+                tabIndex="-1"
+                role="dialog"
+                style={{
+                    position: "fixed",
+                    top: 0,
+                    left: 0,
+                    width: "100%",
+                    height: "100%",
+                    zIndex: 1055,
+                    overflowY: "auto"
+                }}
+            >
+                <div
+                    className="modal-dialog modal-dialog-centered"
+                    role="document"
+                >
+                    <div className="modal-content">
+                        <div className="modal-header">
+                            <h5 className="modal-title">تأكيد الحذف</h5>
+
+                            <button
+                                type="button"
+                                className="close"
+                                onClick={onClose}
+                            >
+                                &times;
+                            </button>
+                        </div>
+
+                        <div className="modal-body">
+                            هل أنت متأكد أنك تريد حذف "{itemName}"؟
+                        </div>
+
+                        <div className="modal-footer">
+                            <button
+                                type="button"
+                                className="btn btn-secondary"
+                                onClick={onClose}
+                            >
+                                إلغاء
+                            </button>
+
+                            <button
+                                type="button"
+                                className="btn btn-danger"
+                                onClick={onConfirm}
+                                disabled={isDeleting}
+                            >
+                                {isDeleting ? (
+                                    <span className="spinner-border spinner-border-sm"></span>
+                                ) : (
+                                    "حذف"
+                                )}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </>
+    );
+};
 
 const AdminFinance = () => {
     const [financeData, setFinanceData] = useState({ transactions: [], total_income: 0, total_expense: 0, previous_balance: 0, balance: 0 });
@@ -11,18 +121,43 @@ const AdminFinance = () => {
     const [showForm, setShowForm] = useState(false);
     const [isEditing, setIsEditing] = useState(null); // ID of transaction being edited
     const [filter, setFilter] = useState({ month: new Date().getMonth() + 1, year: new Date().getFullYear() });
-    const [formData, setFormData] = useState({ 
-        type: 'income', 
-        category: '', 
-        amount: '', 
-        date: new Date().toISOString().split('T')[0], 
-        description: '' 
+    const [formData, setFormData] = useState({
+        type: 'income',
+        category: '',
+        amount: '',
+        date: new Date().toISOString().split('T')[0],
+        description: ''
     });
+    const [loading, setLoading] = useState(true);
+    const [submitting, setSubmitting] = useState(false);
+    const [alert, setAlert] = useState({ message: '', type: '' });
+    const [formErrors, setFormErrors] = useState({}); // New state for form errors
+    const [deleting, setDeleting] = useState(false);
 
-    useEffect(() => { 
-        fetchFinance(); 
+    // State for delete confirmation modal
+    const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState(false);
+    const [deleteTargetId, setDeleteTargetId] = useState(null);
+    const [deleteTargetName, setDeleteTargetName] = useState('');
+
+
+    useEffect(() => {
         fetchCategories();
-    }, [filter]);
+    }, []); // Fetch categories once on mount
+
+    useEffect(() => {
+        fetchFinance();
+    }, [filter]); // Refetch finance data when filter changes
+
+    // Lock background scroll and interactions when delete modal is open
+    useEffect(() => {
+        if (showDeleteConfirmModal) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = '';
+        }
+        return () => { document.body.style.overflow = ''; };
+    }, [showDeleteConfirmModal]);
+
 
     const fetchCategories = async () => {
         try {
@@ -31,14 +166,39 @@ const AdminFinance = () => {
             res.data.forEach(c => sorted[c.type].push(c.name));
             setCategories(sorted);
             if (!formData.category && sorted.income.length > 0) {
-                setFormData(prev => ({...prev, category: sorted.income[0]}));
+                setFormData(prev => ({ ...prev, category: sorted.income[0] }));
             }
-        } catch (err) { console.error(err); }
+        } catch (err) {
+            const errorMessage = getPersonalizedErrorMessage(err);
+            setAlert({ message: errorMessage, type: 'danger' });
+            console.error(err);
+        }
     };
 
     const fetchFinance = async () => {
-        const res = await api.get(`/admin/finance?month=${filter.month}&year=${filter.year}`);
-        setFinanceData(res.data);
+        setLoading(true);
+        try {
+            const res = await api.get(`/admin/finance?month=${filter.month}&year=${filter.year}`);
+            setFinanceData(res.data);
+        } catch (err) {
+            const errorMessage = getPersonalizedErrorMessage(err);
+            setAlert({ message: errorMessage, type: 'danger' });
+            console.error(err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const resetForm = () => {
+        setFormData({
+            type: 'income',
+            category: categories.income.length > 0 ? categories.income[0] : '',
+            amount: '',
+            date: new Date().toISOString().split('T')[0],
+            description: ''
+        });
+        setIsEditing(null);
+        setFormErrors({}); // Clear form errors on reset
     };
 
     const handleEdit = (transaction) => {
@@ -51,13 +211,23 @@ const AdminFinance = () => {
         });
         setIsEditing(transaction.id);
         setShowForm(true);
+        setFormErrors({}); // Clear form errors when opening edit form
         window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setFormData({ ...formData, [name]: value });
+        // Clear error for this field when user starts typing
+        if (formErrors[name]) {
+            setFormErrors(prev => ({ ...prev, [name]: null }));
+        }
     };
 
     const handlePrint = () => {
         const printWindow = window.open('', '_blank');
         const logoUrl = window.location.origin + '/backend/app-assets/images/logo/meeting.jpg';
-        
+
         const incomes = financeData.transactions.filter(t => t.type === 'income');
         const expenses = financeData.transactions.filter(t => t.type === 'expense');
 
@@ -72,7 +242,7 @@ const AdminFinance = () => {
                     @import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap');
                     @page { size: A4; margin: 0; }
                     body { font-family: 'Amiri', serif; margin: 0; padding: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-                    
+
                     .background-frame { position: fixed; top: 0; left: 0; width: 210mm; height: 297mm; z-index: -1; }
                     .background-frame img { width: 100%; height: 100%; display: block; }
 
@@ -80,9 +250,9 @@ const AdminFinance = () => {
                     .header-space { height: 55mm; }
                     .footer-space { height: 45mm; }
                     .content-cell { padding: 0 20mm; vertical-align: top; }
-                    
+
                     .report-title { text-align: center; font-size: 24px; font-weight: bold; color: #1a5a96; margin-bottom: 20px; text-decoration: underline; }
-                    
+
                     .summary-grid { display: flex; justify-content: space-between; margin-bottom: 30px; border: 2px solid #1a5a96; padding: 15px; border-radius: 10px; background: rgba(26, 90, 150, 0.05); }
                     .summary-item { text-align: center; flex: 1; }
                     .summary-label { font-weight: bold; font-size: 16px; display: block; }
@@ -95,7 +265,7 @@ const AdminFinance = () => {
                     .income-row { background-color: rgba(40, 167, 69, 0.03); }
                     .expense-row { background-color: rgba(220, 53, 69, 0.03); }
                     .carry-over-row { background-color: #fff9c4; font-weight: bold; }
-                    
+
                     .total-line { font-weight: bold; background: #f5f5f5 !important; }
                     .final-balance-box { margin-top: 20px; padding: 15px; border: 2px solid #1a5a96; text-align: center; font-size: 20px; background: #e3f2fd; }
                 </style>
@@ -110,7 +280,7 @@ const AdminFinance = () => {
                         <tr>
                             <td class="content-cell">
                                 <div class="report-title">التقرير المالي لشهر ${filter.month} سنة ${filter.year}</div>
-                                
+
                                 <div class="summary-grid">
                                     <div class="summary-item"><span class="summary-label">رصيد الشهر السابق</span><span class="summary-value">${financeData.previous_balance} DH</span></div>
                                     <div class="summary-item"><span class="summary-label">مداخيل الشهر</span><span class="summary-value">${financeData.total_income} DH</span></div>
@@ -173,134 +343,200 @@ const AdminFinance = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setSubmitting(true);
+        setFormErrors({}); // Clear previous errors
+        setAlert({ message: '', type: '' }); // Clear general alert
+
         try {
             if (isEditing) {
                 await api.put(`/admin/finance/${isEditing}`, formData);
+                setAlert({ message: 'تم تحديث العملية بنجاح', type: 'success' });
             } else {
                 await api.post('/admin/finance', formData);
+                setAlert({ message: 'تم إضافة العملية بنجاح', type: 'success' });
             }
             setShowForm(false);
-            setIsEditing(null);
+            resetForm();
             fetchFinance();
-        } catch (err) { alert('خطأ في الحفظ'); }
+        } catch (err) {
+            if (err.response && err.response.status === 422) {
+                setFormErrors(err.response.data.errors);
+                setAlert({ message: 'الرجاء مراجعة الأخطاء في النموذج.', type: 'danger' });
+            } else {
+                const errorMessage = getPersonalizedErrorMessage(err);
+                setAlert({ message: errorMessage, type: 'danger' });
+            }
+            console.error(err);
+        } finally {
+            setSubmitting(false);
+            setTimeout(() => setAlert({ message: '', type: '' }), 3500);
+        }
     };
 
-    const handleDelete = async (id) => {
-        if (window.confirm('حذف هذه العملية؟')) {
-            await api.delete(`/admin/finance/${id}`);
+    const promptDelete = (id, description) => {
+        setDeleteTargetId(id);
+        setDeleteTargetName(description || 'هذه العملية');
+        setShowDeleteConfirmModal(true);
+    };
+
+    const confirmDelete = async () => {
+        if (!deleteTargetId || deleting) return;
+        setDeleting(true);
+        try {
+            await api.delete(`/admin/finance/${deleteTargetId}`);
+            setAlert({ message: 'تم حذف العملية بنجاح', type: 'success' });
+            setShowDeleteConfirmModal(false);
+            setDeleteTargetId(null);
+            setDeleteTargetName('');
             fetchFinance();
+        } catch (err) {
+            const errorMessage = getPersonalizedErrorMessage(err);
+            setAlert({ message: errorMessage, type: 'danger' });
+            setShowDeleteConfirmModal(false);
+            setDeleteTargetId(null);
+            setDeleteTargetName('');
+            console.error(err);
+        } finally {
+            setDeleting(false);
+            setTimeout(() => setAlert({ message: '', type: '' }), 3500);
         }
     };
 
     return (
-        <AdminPage>
-            <AdminPageHeader
-                title="التقرير المالي"
-                subtitle="متابعة المداخيل والمصاريف والرصيد الشهري"
-                badge="المالية"
-                actions={
-                    <AdminBtn variant={showForm ? 'secondary' : 'primary'} icon={showForm ? 'la-times' : 'la-plus'} onClick={() => setShowForm(!showForm)}>
-                        {showForm ? 'إلغاء' : 'إضافة عملية'}
-                    </AdminBtn>
-                }
-            />
-            <div className="content-body">
-                <div className="row">
-                    <div className="col-md-4">
-                        <AdminStatCard label="إجمالي المداخيل" value={financeData.total_income} suffix=" DH" icon="la-arrow-up" color="success" />
-                    </div>
-                    <div className="col-md-4">
-                        <AdminStatCard label="إجمالي المصاريف" value={financeData.total_expense} suffix=" DH" icon="la-arrow-down" color="danger" />
-                    </div>
-                    <div className="col-md-4">
-                        <AdminStatCard label="الباقي" value={financeData.balance} suffix=" DH" icon="la-wallet" color="info" />
-                    </div>
-                </div>
-
-                <div className="admin-filter-bar">
-                    <label>الشهر:</label>
-                    <select className="form-control" value={filter.month} onChange={e => setFilter({ ...filter, month: e.target.value })}>
-                        {[...Array(12)].map((_, i) => <option key={i + 1} value={i + 1}>{i + 1}</option>)}
-                    </select>
-                    <label>السنة:</label>
-                    <input type="number" className="form-control" value={filter.year} onChange={e => setFilter({ ...filter, year: e.target.value })} />
-                </div>
-
-                <AdminFormPanel
-                    title={isEditing ? 'تعديل العملية' : 'إضافة عملية مالية'}
-                    open={showForm}
-                    onClose={() => { setShowForm(false); setIsEditing(null); }}
-                    onSubmit={handleSubmit}
-                >
+        <>
+            <AdminPage>
+                <AdminPageHeader
+                    title="التقرير المالي"
+                    subtitle="متابعة المداخيل والمصاريف والرصيد الشهري"
+                    badge="المالية"
+                    actions={
+                        <AdminBtn variant={showForm ? 'secondary' : 'primary'} icon={showForm ? 'la-times' : 'la-plus'} onClick={() => { setShowForm(!showForm); resetForm(); }}>
+                            {showForm ? 'إلغاء' : 'إضافة عملية'}
+                        </AdminBtn>
+                    }
+                />
+                <div className="content-body">
                     <div className="row">
-                        <AdminFormGroup label="النوع" className="col-md-2">
-                            <select className="form-control" value={formData.type} onChange={e => {
-                                const type = e.target.value;
-                                setFormData({ ...formData, type, category: categories[type][0] });
-                            }}>
-                                <option value="income">مدخول (+)</option>
-                                <option value="expense">مصروف (-)</option>
-                            </select>
-                        </AdminFormGroup>
-                        <AdminFormGroup label="الفئة" className="col-md-3">
-                            <select className="form-control" value={formData.category} onChange={e => setFormData({ ...formData, category: e.target.value })}>
-                                {categories[formData.type].map(c => <option key={c} value={c}>{c}</option>)}
-                            </select>
-                        </AdminFormGroup>
-                        <AdminFormGroup label="المبلغ" className="col-md-2">
-                            <input type="number" className="form-control" value={formData.amount} onChange={e => setFormData({ ...formData, amount: e.target.value })} required />
-                        </AdminFormGroup>
-                        <AdminFormGroup label="التاريخ" className="col-md-2">
-                            <input type="date" className="form-control" value={formData.date} onChange={e => setFormData({ ...formData, date: e.target.value })} required />
-                        </AdminFormGroup>
-                        <AdminFormGroup label="الوصف" className="col-md-3">
-                            <input className="form-control" value={formData.description} onChange={e => setFormData({ ...formData, description: e.target.value })} />
-                        </AdminFormGroup>
+                        <div className="col-md-4">
+                            <AdminStatCard label="إجمالي المداخيل" value={financeData.total_income} suffix=" DH" icon="la-arrow-up" color="success" />
+                        </div>
+                        <div className="col-md-4">
+                            <AdminStatCard label="إجمالي المصاريف" value={financeData.total_expense} suffix=" DH" icon="la-arrow-down" color="danger" />
+                        </div>
+                        <div className="col-md-4">
+                            <AdminStatCard label="الباقي" value={financeData.balance} suffix=" DH" icon="la-wallet" color="info" />
+                        </div>
                     </div>
-                    <AdminFormActions>
-                        <AdminBtn variant="success" type="submit" icon="la-check">حفظ العملية</AdminBtn>
-                    </AdminFormActions>
-                </AdminFormPanel>
 
-                <div className="text-right mb-3">
-                    <AdminBtn variant="info" icon="la-print" onClick={handlePrint}>استخراج التقرير الشهري</AdminBtn>
+                    <div className="admin-filter-bar">
+                        <label>الشهر:</label>
+                        <select className="form-control" value={filter.month} onChange={e => setFilter({ ...filter, month: parseInt(e.target.value) })}>
+                            {[...Array(12)].map((_, i) => <option key={i + 1} value={i + 1}>{i + 1}</option>)}
+                        </select>
+                        <label>السنة:</label>
+                        <input type="number" className="form-control" value={filter.year} onChange={e => setFilter({ ...filter, year: parseInt(e.target.value) })} />
+                        <AdminBtn variant="info" icon="la-print" onClick={handlePrint}>استخراج التقرير الشهري</AdminBtn>
+                    </div>
+
+                    <AdminFormPanel
+                        title={isEditing ? 'تعديل العملية' : 'إضافة عملية مالية'}
+                        open={showForm}
+                        onClose={() => { setShowForm(false); resetForm(); }}
+                        onSubmit={handleSubmit}
+                    >
+                        <div className="row">
+                            <AdminFormGroup label="النوع" className="col-md-2">
+                                <select className="form-control" name="type" value={formData.type} onChange={e => {
+                                    const type = e.target.value;
+                                    setFormData({ ...formData, type, category: categories[type].length > 0 ? categories[type][0] : '' });
+                                    if (formErrors.type) setFormErrors(prev => ({ ...prev, type: null }));
+                                }}>
+                                    <option value="income">مدخول (+)</option>
+                                    <option value="expense">مصروف (-)</option>
+                                </select>
+                                {formErrors.type && <div className="text-danger small mt-1">{formErrors.type[0]}</div>}
+                            </AdminFormGroup>
+                            <AdminFormGroup label="الفئة" className="col-md-3">
+                                <select className="form-control" name="category" value={formData.category} onChange={handleInputChange}>
+                                    {categories[formData.type].map(c => <option key={c} value={c}>{c}</option>)}
+                                </select>
+                                {formErrors.category && <div className="text-danger small mt-1">{formErrors.category[0]}</div>}
+                            </AdminFormGroup>
+                            <AdminFormGroup label="المبلغ" className="col-md-2">
+                                <input type="number" className="form-control" name="amount" value={formData.amount} onChange={handleInputChange} required />
+                                {formErrors.amount && <div className="text-danger small mt-1">{formErrors.amount[0]}</div>}
+                            </AdminFormGroup>
+                            <AdminFormGroup label="التاريخ" className="col-md-2">
+                                <input type="date" className="form-control" name="date" value={formData.date} onChange={handleInputChange} required />
+                                {formErrors.date && <div className="text-danger small mt-1">{formErrors.date[0]}</div>}
+                            </AdminFormGroup>
+                            <AdminFormGroup label="الوصف" className="col-md-3">
+                                <input className="form-control" name="description" value={formData.description} onChange={handleInputChange} />
+                                {formErrors.description && <div className="text-danger small mt-1">{formErrors.description[0]}</div>}
+                            </AdminFormGroup>
+                        </div>
+                        <AdminFormActions>
+                            <AdminBtn variant="success" type="submit" icon="la-check" disabled={submitting}>
+                                {submitting ? <><span className="spinner-border spinner-border-sm mr-2" role="status" aria-hidden="true"></span> جارٍ...</> : 'حفظ العملية'}
+                            </AdminBtn>
+                            <AdminBtn variant="secondary" icon="la-times" onClick={() => { setShowForm(false); resetForm(); }}>إلغاء</AdminBtn>
+                        </AdminFormActions>
+                    </AdminFormPanel>
+
+                    <AdminCard title="سجل العمليات" icon="la-list" flush>
+                        {loading ? (
+                            <AdminLoading />
+                        ) : financeData.transactions.length === 0 ? (
+                            <AdminEmptyState icon="la-list" message="لا توجد عمليات مالية مسجلة لهذا الشهر" hint="أضف عملية مالية جديدة من الزر أعلاه" />
+                        ) : (
+                            <AdminTableWrap>
+                                <table className="table table-hover admin-table">
+                                    <thead>
+                                        <tr>
+                                            <th>التاريخ</th>
+                                            <th>النوع</th>
+                                            <th>الفئة</th>
+                                            <th>المبلغ</th>
+                                            <th>الوصف</th>
+                                            <th>العمليات</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {financeData.transactions.map(t => (
+                                            <tr key={t.id} className={t.type === 'income' ? 'table-success' : 'table-danger'}>
+                                                <td>{t.date}</td>
+                                                <td>{t.type === 'income' ? 'مدخول' : 'مصروف'}</td>
+                                                <td>{t.category}</td>
+                                                <td><strong>{t.amount} DH</strong></td>
+                                                <td>{t.description}</td>
+                                                <td>
+                                                    <div className="admin-action-group">
+                                                        <AdminBtn variant="outline-primary" icon="la-edit" onClick={() => handleEdit(t)}>تعديل</AdminBtn>
+                                                        <AdminBtn variant="outline-danger" icon="la-trash" onClick={() => promptDelete(t.id, t.description)}>حذف</AdminBtn>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </AdminTableWrap>
+                        )}
+                    </AdminCard>
                 </div>
+            </AdminPage>
 
-                <AdminCard title="سجل العمليات" icon="la-list" flush>
-                    <AdminTableWrap>
-                        <table className="table table-hover admin-table">
-                            <thead>
-                                <tr>
-                                    <th>التاريخ</th>
-                                    <th>النوع</th>
-                                    <th>الفئة</th>
-                                    <th>المبلغ</th>
-                                    <th>الوصف</th>
-                                    <th>العمليات</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {financeData.transactions.map(t => (
-                                    <tr key={t.id} className={t.type === 'income' ? 'table-success' : 'table-danger'}>
-                                        <td>{t.date}</td>
-                                        <td>{t.type === 'income' ? 'مدخول' : 'مصروف'}</td>
-                                        <td>{t.category}</td>
-                                        <td><strong>{t.amount} DH</strong></td>
-                                        <td>{t.description}</td>
-                                        <td>
-                                            <div className="admin-action-group">
-                                                <AdminBtn variant="outline-primary" icon="la-edit" onClick={() => handleEdit(t)}>تعديل</AdminBtn>
-                                                <AdminBtn variant="outline-danger" icon="la-trash" onClick={() => handleDelete(t.id)}>حذف</AdminBtn>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </AdminTableWrap>
-                </AdminCard>
-            </div>
-        </AdminPage>
+            <DeleteConfirmModal
+                show={showDeleteConfirmModal}
+                onClose={() => setShowDeleteConfirmModal(false)}
+                onConfirm={confirmDelete}
+                itemName={deleteTargetName}
+                isDeleting={deleting}
+            />
+
+            {alert.message && (
+                <AdminAlert message={alert.message} type={alert.type} onClose={() => setAlert({ message: '', type: '' })} />
+            )}
+        </>
     );
 };
 

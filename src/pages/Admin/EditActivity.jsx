@@ -5,6 +5,36 @@ import {
     AdminPage, AdminPageHeader, AdminFormPanel, AdminFormGroup, AdminFormActions, AdminBtn, AdminAlert, AdminLoading
 } from '../../components/Admin/ui/AdminUI';
 
+// Helper function to personalize error messages
+const getPersonalizedErrorMessage = (error) => {
+    let rawMessage = '';
+    if (error.response && error.response.data && error.response.data.message) {
+        rawMessage = error.response.data.message.toLowerCase();
+    } else if (error.message) {
+        rawMessage = error.message.toLowerCase();
+    }
+
+    // Specific backend/SQL error patterns
+    if (rawMessage.includes('sqlstate') || rawMessage.includes('database error') || rawMessage.includes('syntax error')) {
+        return 'حدث خطأ في قاعدة البيانات. الرجاء إبلاغ الدعم الفني.'; // Database error. Please contact support.
+    }
+    if (rawMessage.includes('internal server error') || rawMessage.includes('undefined')) {
+        return 'حدث خطأ غير متوقع من الخادم. الرجاء المحاولة مرة أخرى لاحقًا.'; // An unexpected server error occurred. Please try again later.
+    }
+    if (rawMessage.includes('network error') || rawMessage.includes('failed to fetch')) {
+        return 'فشل الاتصال بالخادم. الرجاء التحقق من اتصالك بالإنترنت والمحاولة مرة أخرى.'; // Failed to connect to the server. Please check your internet connection and try again.
+    }
+
+    // If the backend provided a message that doesn't match technical patterns, use it.
+    // Assuming the backend message is already in Arabic or user-friendly if it's not a technical error.
+    if (error.response && error.response.data && error.response.data.message) {
+        return error.response.data.message;
+    }
+
+    // Fallback for any other unhandled errors
+    return 'حدث خطأ ما. الرجاء المحاولة مرة أخرى.'; // Something went wrong. Please try again.
+};
+
 const EditActivity = () => {
     const { id } = useParams();
     const navigate = useNavigate();
@@ -16,6 +46,7 @@ const EditActivity = () => {
     const [loadingTypes, setLoadingTypes] = useState(true);
     const [alert, setAlert] = useState({ message: '', type: '' });
     const [currentImage, setCurrentImage] = useState(null);
+    const [formErrors, setFormErrors] = useState({}); // New state for form errors
 
     useEffect(() => {
         fetchActivity();
@@ -35,7 +66,8 @@ const EditActivity = () => {
             });
             setCurrentImage(activity.image_activite ? `http://localhost:8000/storage/MesImages/${activity.image_activite}` : null);
         } catch (err) {
-            setAlert({ message: 'خطأ في تحميل النشاط', type: 'danger' });
+            const errorMessage = getPersonalizedErrorMessage(err);
+            setAlert({ message: errorMessage, type: 'danger' });
             console.error(err);
         } finally {
             setLoadingActivity(false);
@@ -48,16 +80,37 @@ const EditActivity = () => {
             const res = await api.get('/admin/types');
             setTypes(res.data);
         } catch (err) {
-            setAlert({ message: 'خطأ في تحميل أنواع الأنشطة', type: 'danger' });
+            const errorMessage = getPersonalizedErrorMessage(err);
+            setAlert({ message: errorMessage, type: 'danger' });
             console.error(err);
         } finally {
             setLoadingTypes(false);
         }
     };
 
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setFormData({ ...formData, [name]: value });
+        // Clear error for this field when user starts typing
+        if (formErrors[name]) {
+            setFormErrors(prev => ({ ...prev, [name]: null }));
+        }
+    };
+
+    const handleImageChange = (e) => {
+        setImage(e.target.files[0]);
+        // Clear image error if present
+        if (formErrors.image_activite) {
+            setFormErrors(prev => ({ ...prev, image_activite: null }));
+        }
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setSubmitting(true);
+        setFormErrors({}); // Clear previous errors
+        setAlert({ message: '', type: '' }); // Clear general alert
+
         const data = new FormData();
         Object.keys(formData).forEach(key => data.append(key, formData[key]));
         if (image) data.append('image_activite', image);
@@ -68,7 +121,15 @@ const EditActivity = () => {
             setAlert({ message: 'تم تحديث النشاط بنجاح', type: 'success' });
             navigate('/admin/activities'); // Redirect to list page
         } catch (err) {
-            setAlert({ message: 'خطأ في التحديث', type: 'danger' });
+            if (err.response && err.response.status === 422) {
+                // Validation errors from Laravel
+                setFormErrors(err.response.data.errors);
+                setAlert({ message: 'الرجاء مراجعة الأخطاء في النموذج.', type: 'danger' });
+            } else {
+                // Other API errors
+                const errorMessage = getPersonalizedErrorMessage(err);
+                setAlert({ message: errorMessage, type: 'danger' });
+            }
             console.error(err);
         } finally {
             setSubmitting(false);
@@ -105,28 +166,33 @@ const EditActivity = () => {
                 >
                     <div className="row">
                         <AdminFormGroup label="العنوان" className="col-md-4">
-                            <input type="text" className="form-control" value={formData.titre} onChange={(e) => setFormData({ ...formData, titre: e.target.value })} required />
+                            <input type="text" className="form-control" name="titre" value={formData.titre} onChange={handleInputChange} required />
+                            {formErrors.titre && <div className="text-danger small mt-1">{formErrors.titre[0]}</div>}
                         </AdminFormGroup>
                         <AdminFormGroup label="النوع" className="col-md-4">
-                            <select className="form-control" value={formData.type_activite_id} onChange={(e) => setFormData({ ...formData, type_activite_id: e.target.value })} required>
+                            <select className="form-control" name="type_activite_id" value={formData.type_activite_id} onChange={handleInputChange} required>
                                 <option value="">اختر النوع</option>
                                 {types.map(t => <option key={t.id} value={t.id}>{t.nomActivite}</option>)}
                             </select>
+                            {formErrors.type_activite_id && <div className="text-danger small mt-1">{formErrors.type_activite_id[0]}</div>}
                         </AdminFormGroup>
                         <AdminFormGroup label="التاريخ" className="col-md-4">
-                            <input type="date" className="form-control" value={formData.date_activite} onChange={(e) => setFormData({ ...formData, date_activite: e.target.value })} required />
+                            <input type="date" className="form-control" name="date_activite" value={formData.date_activite} onChange={handleInputChange} required />
+                            {formErrors.date_activite && <div className="text-danger small mt-1">{formErrors.date_activite[0]}</div>}
                         </AdminFormGroup>
                         <AdminFormGroup label="الوصف" className="col-md-12">
-                            <textarea className="form-control" rows="3" value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} required />
+                            <textarea className="form-control" rows="3" name="description" value={formData.description} onChange={handleInputChange} required />
+                            {formErrors.description && <div className="text-danger small mt-1">{formErrors.description[0]}</div>}
                         </AdminFormGroup>
                         <AdminFormGroup label="الصورة" className="col-md-4">
-                            <input type="file" className="form-control-file" onChange={(e) => setImage(e.target.files[0])} />
+                            <input type="file" className="form-control-file" name="image_activite" onChange={handleImageChange} />
                             {currentImage && !image && ( // Show current image if editing and no new image selected
                                 <div className="mt-2">
                                     <img src={currentImage} alt="Current Activity" style={{ maxWidth: '100px', maxHeight: '100px', objectFit: 'cover' }} />
                                     <small className="d-block text-muted">الصورة الحالية</small>
                                 </div>
                             )}
+                            {formErrors.image_activite && <div className="text-danger small mt-1">{formErrors.image_activite[0]}</div>}
                         </AdminFormGroup>
                     </div>
                     <AdminFormActions>
