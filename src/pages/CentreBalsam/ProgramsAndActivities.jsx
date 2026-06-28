@@ -60,6 +60,8 @@ const filteredItems = [
 });
 
 return (
+    <>
+        <PageBanner/>
     <div style={{ direction: 'rtl', fontFamily: 'Segoe UI, Arial, sans-serif', textAlign: 'right', background: '#f9fbfe', minHeight: '100vh', paddingBottom: '80px' }}>
         
         {/* التنسيقات العصرية مدمجة داخلياً لضمان عدم ضياعها */}
@@ -178,6 +180,8 @@ return (
         </div>
 
     </div>
+        </>
+
 );
 };
 

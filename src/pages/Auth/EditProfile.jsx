@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import api from '../../api';
 import PageBanner from '../../components/PageBanner';
+import Loading from '../../components/Loading';
 
 const EditProfile = () => {
     const navigate = useNavigate();
@@ -81,11 +82,11 @@ const EditProfile = () => {
         }
     };
 
-    if (loading) return <div style={{ textAlign: 'center', padding: '100px' }} className="eco_headings"><h3>جاري التحميل...</h3></div>;
+    if (loading) return <Loading message="جاري تحميل البيانات..." />;
 
     return (
         <div className="content">
-            <PageBanner title="تعديل حسابي" />
+            <PageBanner />
 
             <section className="eco_services_environment">
                 <div className="container">

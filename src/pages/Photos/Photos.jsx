@@ -26,7 +26,7 @@ const Photos = () => {
 
     return (
         <div className="content">
-            <PageBanner title="معرض الصور" />
+            <PageBanner />
 
             <section className="eco_services_environment">
                 <div className="container">

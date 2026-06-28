@@ -48,6 +48,8 @@ const PATH_STEPS = [
 
 export default function ServicePath() {
   return (
+      <>
+        <PageBanner/>
     <div style={{ direction: 'rtl', fontFamily: 'Segoe UI, Arial, sans-serif', textAlign: 'right' }}>
       <style>{`
         /* ── Variables ── */
@@ -335,5 +337,6 @@ export default function ServicePath() {
 
       </div>
     </div>
+        </>
   );
 }

@@ -27,7 +27,7 @@ const Projects = () => {
 
     return (
         <div className="content">
-            <PageBanner title="مشاريعنا" />
+            <PageBanner />
 
             <section>
                 <div className="container">

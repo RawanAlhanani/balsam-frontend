@@ -21,6 +21,35 @@ const SingleProject = () => {
             });
     }, [id]);
 
+    const renderContent = (item) => {
+        if (item.structured_description && item.structured_description.sections && item.structured_description.sections.length > 0) {
+            return item.structured_description.sections.map((section, index) => {
+                switch (section.type) {
+                    case 'heading':
+                        const HeadingTag = `h${section.level || 2}`; // Default to h2 if level is not specified
+                        return <HeadingTag key={index}>{section.content}</HeadingTag>;
+                    case 'paragraph':
+                        return <p key={index} dangerouslySetInnerHTML={{ __html: section.content }} />;
+                    case 'list':
+                        const ListTag = section.listType === 'number' ? 'ol' : 'ul';
+                        return (
+                            <ListTag key={index}>
+                                {section.items && section.items.map((listItem, itemIndex) => (
+                                    <li key={itemIndex} dangerouslySetInnerHTML={{ __html: listItem }} />
+                                ))}
+                            </ListTag>
+                        );
+                    default:
+                        return null;
+                }
+            });
+        } else if (item.description) {
+            // Fallback to old description if structured_description is not available
+            return <div dangerouslySetInnerHTML={{ __html: formatDescription(item.description) }} />;
+        }
+        return null;
+    };
+
     if (loading) return <div style={{ textAlign: 'center', padding: '100px' }}>جاري التحميل...</div>;
     if (!project) return <div style={{ textAlign: 'center', padding: '100px' }}>المشروع غير موجود.</div>;
 
@@ -36,11 +65,13 @@ const SingleProject = () => {
                     </div>
                     <div className="row">
                         <div className="col-md-12">
-                            <figure style={{ textAlign: 'center', marginBottom: '30px' }}>
-                                <img src={getStorageUrl(project.projet_image)} alt={project.titre} style={{ maxWidth: '100%', borderRadius: '8px' }} />
-                            </figure>
+                            {project.projet_image && (
+                                <figure style={{ textAlign: 'center', marginBottom: '30px' }}>
+                                    <img src={getStorageUrl(project.projet_image)} alt={project.titre} style={{ maxWidth: '100%', borderRadius: '8px' }} />
+                                </figure>
+                            )}
                             <div className="aboutus" style={{ fontSize: '16px', lineHeight: '1.8' }}>
-                                <div dangerouslySetInnerHTML={{ __html: formatDescription(project.description) }} />
+                                {renderContent(project)}
                             </div>
                         </div>
                     </div>

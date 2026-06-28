@@ -8,9 +8,11 @@ const SingleNews = () => {
     const { id } = useParams();
     const [data, setData] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null); // Added error state
 
     useEffect(() => {
         setLoading(true);
+        setError(null); // Clear previous errors
         window.scrollTo(0, 0);
 
         getSingleNews(id)
@@ -18,86 +20,104 @@ const SingleNews = () => {
                 setData(response.data);
                 setLoading(false);
             })
-            .catch(error => {
-                console.error("Error fetching news detail:", error);
+            .catch(err => {
+                console.error("Error fetching news detail:", err);
+                setError("حدث خطأ أثناء تحميل تفاصيل الخبر."); // User-friendly error
                 setLoading(false);
             });
     }, [id]);
 
+    // Placeholder image URL (you can replace this with a local asset if preferred)
+    const PLACEHOLDER_IMAGE = "https://via.placeholder.com/600x400?text=No+Image";
+
+    // Consistent loading state
     if (loading) return (
-        <div className="content">
-            <PageBanner title="جاري التحميل..." />
-            <div style={{ textAlign: 'center', padding: '100px' }} className="eco_headings">
-                <h3>جاري التحميل...</h3>
-            </div>
+        <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '80vh' }}>
+            <div className="spinner-border text-primary" role="status"><span className="sr-only">Loading...</span></div>
         </div>
     );
 
+    // Consistent error state
+    if (error) return (
+        <div className="alert alert-danger text-center m-5">{error}</div>
+    );
+
+    // Consistent not found state
     if (!data || !data.news) return (
-        <div className="content">
-            <PageBanner title="خطأ" />
-            <div style={{ textAlign: 'center', padding: '100px' }} className="eco_headings">
-                <h3>الخبر غير موجود.</h3>
-            </div>
-        </div>
+        <div className="text-center m-5 eco_headings"><h3>الخبر غير موجود.</h3></div>
     );
 
     const { news, latest_news } = data;
 
     return (
         <div className="content" key={id}>
-            <PageBanner title={news.titre} />
+            <PageBanner />
 
-            <section className="eco_services_environment" style={{ padding: '60px 0' }}>
+            <section className="eco_services_environment py-5"> {/* Added padding */}
                 <div className="container">
-                    <div className="row">
-                        <div className="col-md-8">
-                            <div className="eco_headings" style={{ textAlign: 'right', marginBottom: '30px' }}>
-                                <h2 style={{ fontSize: '32px', fontWeight: 'bold', color: '#0d5377' }}>{news.titre}</h2>
-                                <span style={{ marginTop: '15px' }}><i className="icon-nature-2"></i></span>
+                    <div className="row justify-content-center"> {/* Centered content */}
+                        <div className="col-lg-8 col-md-12"> {/* Changed col-md-10 to col-md-12 for main content */}
+                            <div className="eco_headings mb-5 text-center"> {/* Centered heading */}
+                                <h1 className="display-4 mb-3"><b>{news.titre}</b></h1> {/* Larger, more prominent title */}
+                                <small className="text-muted d-block mb-4">
+                                    <i className="fa fa-clock-o ml-1"></i> {new Date(news.updated_at).toLocaleDateString('ar-MA')}
+                                </small>
+                                <span><i className="icon-nature-2"></i></span>
                             </div>
-                            
-                            <figure style={{ marginBottom: '30px', boxShadow: '0 10px 30px rgba(0,0,0,0.1)', borderRadius: '12px', overflow: 'hidden' }}>
-                                <img src={getStorageUrl(news.image_info)} alt={news.titre} style={{ width: '100%', display: 'block' }} />
+
+                            <figure className="mb-5 text-center"> {/* Increased margin-bottom */}
+                                <img
+                                    src={news.image_info ? getStorageUrl(news.image_info) : PLACEHOLDER_IMAGE}
+                                    alt={news.titre}
+                                    className="img-fluid rounded shadow-sm" // Responsive image, rounded corners, shadow
+                                    style={{ maxHeight: '450px', objectFit: 'cover', width: '100%' }}
+                                />
                             </figure>
 
-                            <div className="aboutus" style={{ fontSize: '18px', lineHeight: '1.8', color: '#555', textAlign: 'justify' }}>
-                                <div dangerouslySetInnerHTML={{ __html: news.description?.replace(/\n/g, '<br />') }} />
+                            <div className="aboutus text-justify"> {/* Justified text for better readability */}
+                                <p className="lead" dangerouslySetInnerHTML={{ __html: news.description?.replace(/\n/g, '<br />') }} />
                             </div>
                         </div>
 
-                        {/* Sidebar */}
-                        <div className="col-md-4">
-                            <div className="eco_headings" style={{ textAlign: 'right', marginBottom: '25px' }}>
-                                <h4 style={{ fontSize: '24px', fontWeight: 'bold' }}><b>أحدث الأخبار</b></h4>
+                        {/* Sidebar for Latest News */}
+                        <div className="col-lg-4 col-md-12 mt-5 mt-lg-0"> {/* Changed col-md-10 to col-md-12 for sidebar */}
+                            <div className="mb-4">
+                                <h4 className="h3 mb-3">   أخبار أخرى</h4>
                             </div>
-                            <ul className="eco_widget_post" style={{ padding: 0 }}>
-                                {latest_news?.map(item => (
-                                    <li key={item.id} style={{ marginBottom: '25px', listStyle: 'none', borderBottom: '1px solid #eee', paddingBottom: '15px' }}>
-                                        <div className="eco_recent_posts" style={{ display: 'flex', alignItems: 'flex-start' }}>
-                                            <figure style={{ margin: 0, flexShrink: 0 }}>
-                                                <div className="eco_thumb eco_hover_effect" style={{ width: '100px', height: '75px', borderRadius: '6px', overflow: 'hidden' }}>
+                            <ul className="list-unstyled"> {/* Removed default list styling */}
+                                {latest_news?.length > 0 ? (
+                                    latest_news.map(item => (
+                                        <li key={item.id} className="mb-4 pb-3 border-bottom">
+                                            <div className="d-flex align-items-center">
+                                                <div className="flex-shrink-0 ml-3">
                                                     <Link to={`/Information/${item.id}`}>
-                                                        <img src={getStorageUrl(item.image_info)} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                                        <img
+                                                            src={item.image_info ? getStorageUrl(item.image_info) : PLACEHOLDER_IMAGE}
+                                                            alt={item.titre || "News Image"}
+                                                            className="rounded"
+                                                            style={{ width: '90px', height: '60px', objectFit: 'cover' }}
+                                                        />
                                                     </Link>
                                                 </div>
-                                            </figure>
-                                            <div className="eco_post-content" style={{ padding: '0 15px', flexGrow: 1 }}>
-                                                <p style={{ margin: 0 }}>
-                                                    <Link 
-                                                        to={`/Information/${item.id}`} 
-                                                        style={{ fontSize: '17px', color: '#333', fontWeight: '600', lineHeight: '1.4' }}
-                                                    >
-                                                        {item.titre}
-                                                    </Link>
-                                                </p>
-                                                <small style={{ color: '#888', display: 'block', marginTop: '5px' }}>
-                                                    <i className="fa fa-clock-o"></i> {new Date(item.updated_at).toLocaleDateString('ar-MA')}
-                                                </small>
+                                                <div className="flex-grow-1">
+                                                    <h6 className="mb-1">
+                                                        <Link
+                                                            to={`/Information/${item.id}`}
+                                                            className="text-dark font-weight-bold"
+                                                        >
+                                                            {item.titre}
+                                                        </Link>
+                                                    </h6>
+                                                    <small className="text-muted">
+                                                        <i className="fa fa-clock-o ml-1"></i> {new Date(item.updated_at).toLocaleDateString('ar-MA')}
+                                                    </small>
+                                                </div>
                                             </div>
-                                        </div>
-                                    </li>
-                                ))}
+                                        </li>
+                                    ))
+                                ) : (
+                                    <li className="text-muted text-center">لا توجد أخبار أخرى.</li>
+                                )}
                             </ul>
                         </div>
                     </div>

@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types'; // Import PropTypes
 import { AdminCard, AdminFormGroup, AdminBtn } from '../../../components/Admin/ui/AdminUI';
 
 const AdminDoctors = ({
@@ -72,6 +73,30 @@ const AdminDoctors = ({
             </AdminCard>
         </div>
     );
+};
+
+AdminDoctors.propTypes = {
+    openCategory: PropTypes.string,
+    toggleCategory: PropTypes.func.isRequired,
+    doctors: PropTypes.arrayOf(PropTypes.shape({
+        id: PropTypes.number.isRequired,
+        specialite: PropTypes.string.isRequired,
+    })).isRequired,
+    newDoctor: PropTypes.shape({
+        specialite: PropTypes.string.isRequired,
+    }).isRequired,
+    setNewDoctor: PropTypes.func.isRequired,
+    editingDoctorId: PropTypes.number,
+    editingDoctorData: PropTypes.shape({
+        specialite: PropTypes.string.isRequired,
+    }).isRequired,
+    setEditingDoctorData: PropTypes.func.isRequired,
+    handleAddDoctor: PropTypes.func.isRequired,
+    promptDeleteDoctor: PropTypes.func.isRequired,
+    handleEditDoctor: PropTypes.func.isRequired,
+    handleCancelEditDoctor: PropTypes.func.isRequired,
+    handleSaveEditDoctor: PropTypes.func.isRequired,
+    doctorsSubmitting: PropTypes.bool.isRequired,
 };
 
 export default AdminDoctors;

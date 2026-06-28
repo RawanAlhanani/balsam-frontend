@@ -21,12 +21,41 @@ const About = () => {
             });
     }, []);
 
+    const renderContent = (page) => {
+        if (page.structured_description && page.structured_description.sections && page.structured_description.sections.length > 0) {
+            return page.structured_description.sections.map((section, index) => {
+                switch (section.type) {
+                    case 'heading':
+                        const HeadingTag = `h${section.level || 2}`; // Default to h2 if level is not specified
+                        return <HeadingTag key={index}>{section.content}</HeadingTag>;
+                    case 'paragraph':
+                        return <p key={index} dangerouslySetInnerHTML={{ __html: section.content }} />;
+                    case 'list':
+                        const ListTag = section.listType === 'number' ? 'ol' : 'ul';
+                        return (
+                            <ListTag key={index}>
+                                {section.items && section.items.map((item, itemIndex) => (
+                                    <li key={itemIndex} dangerouslySetInnerHTML={{ __html: item }} />
+                                ))}
+                            </ListTag>
+                        );
+                    default:
+                        return null;
+                }
+            });
+        } else if (page.description) {
+            // Fallback to old description if structured_description is not available
+            return <div dangerouslySetInnerHTML={{ __html: formatDescription(page.description) }} />;
+        }
+        return null;
+    };
+
     if (loading) return <div style={{ textAlign: 'center', padding: '100px' }} className="eco_headings"><h3>جاري التحميل...</h3></div>;
     if (error) return <div style={{ textAlign: 'center', padding: '100px' }} className="alert alert-danger">{error}</div>;
 
     return (
         <div className="content">
-            <PageBanner title="من نحن" />
+            <PageBanner/>
             
             <section className="eco_services_environment">
                 <div className="container">
@@ -41,7 +70,7 @@ const About = () => {
                                     <div className="aboutus">
                                         <div style={{ fontSize: '15px' }}>
                                             <h4 style={{ color: '#0d5377', marginBottom: '20px' }}>{ab.titre}</h4>
-                                            <div dangerouslySetInnerHTML={{ __html: formatDescription(ab.description) }} />
+                                            {renderContent(ab)} {/* Render content using the new function */}
                                         </div>
                                     </div>
                                 </div>

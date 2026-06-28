@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../api';
+import PageBanner from "../../components/PageBanner.jsx";
 
 export default function RegisterPath() {
     const navigate = useNavigate();
@@ -194,6 +195,8 @@ export default function RegisterPath() {
     );
 
     return (
+        <>
+            <PageBanner/>
         <div style={{ direction: 'rtl', fontFamily: 'Segoe UI, Arial, sans-serif', textAlign: 'right' }}>
             <style>{`
                 /* ── الـ Variables الأساسية للموقع ── */
@@ -481,5 +484,6 @@ export default function RegisterPath() {
 
             </div>
         </div>
+        </>
     );
 }

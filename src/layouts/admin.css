@@ -891,3 +891,14 @@
         flex: 1;
     }
 }
+
+/* Temporary fix for RTL layout gap in admin dashboard */
+body.menu-expanded .admin-wrapper .app-content.content {
+    margin-right: 150px !important; /* Reduced from 240px */
+    margin-left: 0 !important;
+}
+
+body.menu-collapsed .admin-wrapper .app-content.content {
+    margin-right: 60px !important;
+    margin-left: 0 !important;
+}

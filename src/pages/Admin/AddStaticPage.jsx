@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../api';
+import BlockEditor from '../../components/Admin/BlockEditor';
 import {
     AdminPage, AdminPageHeader, AdminCard, AdminLoading, AdminAlert, AdminBtn
 } from '../../components/Admin/ui/AdminUI';
@@ -8,7 +9,7 @@ import {
 const AddStaticPage = () => {
     const navigate = useNavigate();
     const [formData, setFormData] = useState({ type: 'about', titre: '', description: '' });
-    const [sections, setSections] = useState([{ subtitle: '', text: '' }]);
+    const [blockContent, setBlockContent] = useState({ sections: [] });
     const [image, setImage] = useState(null);
     const [alert, setAlert] = useState({ message: '', type: '' });
     const [submitting, setSubmitting] = useState(false);
@@ -21,8 +22,11 @@ const AddStaticPage = () => {
         Object.keys(formData).forEach(k => data.append(k, formData[k]));
         if (image) data.append('image', image);
 
-        if (formData.type === 'autism') {
-            data.append('description_json', JSON.stringify({ main: formData.titre, sections }));
+        // Use BlockEditor content for 'autism', 'about', and 'projects' types
+        if (formData.type === 'autism' || formData.type === 'about' || formData.type === 'projects') {
+            data.append('description_json', JSON.stringify(blockContent));
+            // Ensure the regular description field is empty or not sent to avoid conflicts
+            data.delete('description'); 
         }
 
         setSubmitting(true);
@@ -72,17 +76,15 @@ const AddStaticPage = () => {
                             </div>
                         </div>
                         <div className="form-group">
-                            {formData.type === 'autism' ? (
+                            {/* Use BlockEditor for 'autism', 'about', and 'projects' types */}
+                            {formData.type === 'autism' || formData.type === 'about' || formData.type === 'projects' ? (
                                 <div>
-                                    <small>أضف التفرعات التفصيلية (subtitle + text)</small>
-                                    {sections.map((s, idx) => (
-                                        <div key={idx} className="d-flex mb-2">
-                                            <input className="form-control mr-2" placeholder="عنوان فرعي" value={s.subtitle} onChange={e => { const copy = [...sections]; copy[idx].subtitle = e.target.value; setSections(copy); }} />
-                                            <input className="form-control" placeholder="النص" value={s.text} onChange={e => { const copy = [...sections]; copy[idx].text = e.target.value; setSections(copy); }} />
-                                            <button type="button" className="btn btn-sm btn-danger ml-2" onClick={() => { const copy = sections.filter((_, i) => i !== idx); setSections(copy.length?copy:[{ subtitle: '', text: '' }]); }}>حذف</button>
-                                        </div>
-                                    ))}
-                                    <button type="button" className="btn btn-sm btn-secondary" onClick={() => setSections([...sections, { subtitle: '', text: '' }])}>أضف تفرع</button>
+                                    <label>المحتوى التفصيلي</label>
+                                    <BlockEditor 
+                                        value={blockContent}
+                                        onChange={setBlockContent}
+                                        placeholder="أضف عناوين وفقرات وقوائم لإنشاء محتوى منظم"
+                                    />
                                 </div>
                             ) : (
                                 <textarea className="form-control" placeholder="الوصف" value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} required />

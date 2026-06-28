@@ -28,9 +28,10 @@ const AdminAuthLayout = ({ children }) => {
 
         // Admin JS files (order matters)
         const adminJsFiles = [
-            "/backend/app-assets/js/core/libraries/jquery.min.js",
-            "https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.7/js/tether.min.js", // CDN for Tether
-            "/backend/app-assets/js/core/libraries/bootstrap.min.js",
+            "/backend/app-assets/js/core/libraries/jquery.min.js", // Admin's own jQuery
+            "https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.7/js/tether.min.js", // Tether for Bootstrap 4
+            "/backend/app-assets/js/core/libraries/bootstrap.min.js", // Admin's own Bootstrap
+            "/backend/app-assets/vendors/js/ui/unison.min.js", // ADDED: Unison.js for breakpoint detection
             "/backend/app-assets/js/core/app-menu.js",
             "/backend/app-assets/js/core/app.js"
         ];

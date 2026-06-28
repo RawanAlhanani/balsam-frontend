@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types'; // Import PropTypes
 import { AdminCard, AdminFormGroup, AdminBtn } from '../../../components/Admin/ui/AdminUI';
 
 const AdminFinanceCategories = ({
@@ -138,6 +139,33 @@ const AdminFinanceCategories = ({
             </div>
         </div>
     );
+};
+
+AdminFinanceCategories.propTypes = {
+    openCategory: PropTypes.string,
+    toggleCategory: PropTypes.func.isRequired,
+    financeCats: PropTypes.arrayOf(PropTypes.shape({
+        id: PropTypes.number.isRequired,
+        name: PropTypes.string.isRequired,
+        type: PropTypes.oneOf(['income', 'expense']).isRequired,
+    })).isRequired,
+    newCat: PropTypes.shape({
+        name: PropTypes.string.isRequired,
+        type: PropTypes.oneOf(['income', 'expense']).isRequired,
+    }).isRequired,
+    setNewCat: PropTypes.func.isRequired,
+    editingCatId: PropTypes.number,
+    editingCatData: PropTypes.shape({
+        name: PropTypes.string.isRequired,
+        type: PropTypes.oneOf(['income', 'expense']).isRequired,
+    }).isRequired,
+    setEditingCatData: PropTypes.func.isRequired,
+    handleAddCat: PropTypes.func.isRequired,
+    promptDeleteCat: PropTypes.func.isRequired,
+    handleEditCat: PropTypes.func.isRequired,
+    handleCancelEditCat: PropTypes.func.isRequired,
+    handleSaveEditCat: PropTypes.func.isRequired,
+    financeCatsSubmitting: PropTypes.bool.isRequired,
 };
 
 export default AdminFinanceCategories;

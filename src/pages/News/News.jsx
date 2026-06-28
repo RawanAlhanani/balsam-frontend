@@ -27,7 +27,7 @@ const News = () => {
 
     return (
         <div className="content">
-            <PageBanner title="أخبارنا" />
+            <PageBanner />
 
             <section>
                 <div className="container">

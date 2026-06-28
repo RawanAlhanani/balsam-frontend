@@ -8,9 +8,11 @@ const SingleActivity = () => {
     const { id } = useParams();
     const [data, setData] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null); // Added error state
 
     useEffect(() => {
         setLoading(true);
+        setError(null); // Clear previous errors
         window.scrollTo(0, 0);
 
         getActivity(id)
@@ -18,28 +20,31 @@ const SingleActivity = () => {
                 setData(response.data);
                 setLoading(false);
             })
-            .catch(error => {
-                console.error("Error fetching activity detail:", error);
+            .catch(err => {
+                console.error("Error fetching activity detail:", err);
+                setError("حدث خطأ أثناء تحميل تفاصيل النشاط."); // User-friendly error
                 setLoading(false);
             });
     }, [id]);
 
+    // Placeholder image URL (you can replace this with a local asset if preferred)
+    const PLACEHOLDER_IMAGE = "https://via.placeholder.com/600x400?text=No+Image";
+
+    // Consistent loading state
     if (loading) return (
-        <div className="content">
-            <PageBanner title="جاري التحميل..." />
-            <div style={{ textAlign: 'center', padding: '100px' }} className="eco_headings">
-                <h3>جاري التحميل...</h3>
-            </div>
+        <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '80vh' }}>
+            <div className="spinner-border text-primary" role="status"><span className="sr-only">Loading...</span></div>
         </div>
     );
 
+    // Consistent error state
+    if (error) return (
+        <div className="alert alert-danger text-center m-5">{error}</div>
+    );
+
+    // Consistent not found state
     if (!data || !data.activity) return (
-        <div className="content">
-            <PageBanner title="خطأ" />
-            <div style={{ textAlign: 'center', padding: '100px' }} className="eco_headings">
-                <h3>النشاط غير موجود.</h3>
-            </div>
-        </div>
+        <div className="text-center m-5 eco_headings"><h3>النشاط غير موجود.</h3></div>
     );
 
     const { activity, latest_activities } = data;
@@ -48,71 +53,83 @@ const SingleActivity = () => {
         <div className="content" key={id}>
             <PageBanner title={activity.titre} />
 
-            <section className="eco_services_environment" style={{ padding: '60px 0' }}>
+            <section className="eco_services_environment py-5"> {/* Added padding */}
                 <div className="container">
-                    <div className="row">
-                        <div className="col-md-8">
-                            <div className="eco_headings" style={{ textAlign: 'right', marginBottom: '30px' }}>
-                                <h2 style={{ fontSize: '32px', fontWeight: 'bold', color: '#0d5377' }}>{activity.titre}</h2>
+                    <div className="row justify-content-center"> {/* Centered content */}
+                        <div className="col-lg-8 col-md-12"> {/* Changed col-md-10 to col-md-12 for main content */}
+                            <div className="eco_headings mb-5 text-center"> {/* Centered heading */}
+                                <h1 className="display-4 mb-3"><b>{activity.titre}</b></h1> {/* Larger, more prominent title */}
                                 {activity.typeactivite && (
-                                    <h6 style={{ color: '#f05c7d', marginTop: '10px', fontSize: '18px' }}>
-                                        {activity.typeactivite.nom_type}
+                                    <h6 className="text-primary mt-3 mb-4 h4"> {/* Styled type */}
+                                        {activity.typeactivite.nomActivite} {/* Corrected property name from nom_type to nomActivite */}
                                     </h6>
                                 )}
-                                <span style={{ marginTop: '15px' }}><i className="icon-nature-2"></i></span>
+                                <span><i className="icon-nature-2"></i></span>
                             </div>
-                            
-                            <figure style={{ marginBottom: '30px', boxShadow: '0 10px 30px rgba(0,0,0,0.1)', borderRadius: '12px', overflow: 'hidden' }}>
-                                <img src={getStorageUrl(activity.image_activite)} alt={activity.titre} style={{ width: '100%', display: 'block' }} />
+
+                            <figure className="mb-5 text-center"> {/* Increased margin-bottom */}
+                                <img
+                                    src={activity.image_activite ? getStorageUrl(activity.image_activite) : PLACEHOLDER_IMAGE}
+                                    alt={activity.titre}
+                                    className="img-fluid rounded shadow-sm" // Responsive image, rounded corners, shadow
+                                    style={{ maxHeight: '450px', objectFit: 'cover', width: '100%' }}
+                                />
                             </figure>
 
-                            <div className="aboutus" style={{ fontSize: '18px', lineHeight: '1.8', color: '#555', textAlign: 'justify' }}>
-                                <div style={{ background: '#f9f9f9', padding: '20px', borderRadius: '8px', marginBottom: '25px', borderRight: '5px solid #0d5377' }}>
-                                    <p style={{ margin: '5px 0' }}><strong><i className="fa fa-calendar"></i> التاريخ:</strong> {activity.date_activite}</p>
-                                    <p style={{ margin: '5px 0' }}><strong><i className="fa fa-map-marker"></i> المكان:</strong> {activity.lieu_activite}</p>
+                            <div className="aboutus text-justify"> {/* Justified text for better readability */}
+                                <div className="bg-light p-4 rounded mb-4 border-right border-primary border-5"> {/* Styled info box */}
+                                    <p className="mb-2"><strong><i className="fa fa-calendar text-primary ml-2"></i> التاريخ:</strong> {activity.date_activite}</p> {/* Changed mr-2 to ml-2 for RTL */}
+                                    <p className="mb-0"><strong><i className="fa fa-map-marker text-primary ml-2"></i> المكان:</strong> {activity.lieu_activite || 'غير محدد'}</p> {/* Changed mr-2 to ml-2 for RTL */}
                                 </div>
-                                <div dangerouslySetInnerHTML={{ __html: activity.description?.replace(/\n/g, '<br />') }} />
+                                <p className="lead" dangerouslySetInnerHTML={{ __html: activity.description?.replace(/\n/g, '<br />') }} />
                             </div>
 
-                            <div style={{ marginTop: '40px' }}>
-                                <Link to={`/vouloirParticiper/${activity.id}`} className="aread" style={{ padding: '15px 40px', fontSize: '18px' }}>
-                                    المشاركة في النشاط
+                            <div className="text-center mt-5"> {/* Centered button */}
+                                <Link to={`/vouloirParticiper/${activity.id}`} className="btn btn-primary btn-lg">
+                                    المشاركة في النشاط <i className="la la-arrow-left ml-2"></i> {/* Added icon, changed mr-2 to ml-2 */}
                                 </Link>
                             </div>
                         </div>
 
-                        {/* Sidebar */}
-                        <div className="col-md-4">
-                            <div className="eco_headings" style={{ textAlign: 'right', marginBottom: '25px' }}>
-                                <h4 style={{ fontSize: '24px', fontWeight: 'bold' }}><b>أنشطة أخرى</b></h4>
+                        {/* Sidebar for Latest Activities */}
+                        <div className="col-lg-4 col-md-12 mt-5 mt-lg-0 "> {/* Changed col-md-10 to col-md-12 for sidebar */}
+                            <div className="mb-4">
+                                <h4 className="h3 mb-3">أنشطة أخرى</h4>
                             </div>
-                            <ul className="eco_widget_post" style={{ padding: 0 }}>
-                                {latest_activities?.map(item => (
-                                    <li key={item.id} style={{ marginBottom: '25px', listStyle: 'none', borderBottom: '1px solid #eee', paddingBottom: '15px' }}>
-                                        <div className="eco_recent_posts" style={{ display: 'flex', alignItems: 'flex-start' }}>
-                                            <figure style={{ margin: 0, flexShrink: 0 }}>
-                                                <div className="eco_thumb eco_hover_effect" style={{ width: '100px', height: '75px', borderRadius: '6px', overflow: 'hidden' }}>
+                            <ul className="list-unstyled mr-auto"> {/* Removed default list styling */}
+                                {latest_activities?.length > 0 ? (
+                                    latest_activities.map(item => (
+                                        <li key={item.id} className="mb-4 pb-3 border-bottom">
+                                            <div className="d-flex align-items-center">
+                                                <div className="flex-shrink-0 ml-3"> {/* Changed mr-3 to ml-3 */}
                                                     <Link to={`/uneActivite/${item.id}`}>
-                                                        <img src={getStorageUrl(item.image_activite)} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                                        <img
+                                                            src={item.image_activite ? getStorageUrl(item.image_activite) : PLACEHOLDER_IMAGE}
+                                                            alt={item.titre || "Activity Image"}
+                                                            className="rounded"
+                                                            style={{ width: '90px', height: '60px', objectFit: 'cover' }}
+                                                        />
                                                     </Link>
                                                 </div>
-                                            </figure>
-                                            <div className="eco_post-content" style={{ padding: '0 15px', flexGrow: 1 }}>
-                                                <p style={{ margin: 0 }}>
-                                                    <Link 
-                                                        to={`/uneActivite/${item.id}`} 
-                                                        style={{ fontSize: '17px', color: '#333', fontWeight: '600', lineHeight: '1.4' }}
-                                                    >
-                                                        {item.titre}
-                                                    </Link>
-                                                </p>
-                                                <small style={{ color: '#888', display: 'block', marginTop: '5px' }}>
-                                                    <i className="fa fa-calendar-o"></i> {item.date_activite}
-                                                </small>
+                                                <div className="flex-grow-1">
+                                                    <h6 className="mb-1">
+                                                        <Link
+                                                            to={`/uneActivite/${item.id}`}
+                                                            className="text-dark font-weight-bold"
+                                                        >
+                                                            {item.titre}
+                                                        </Link>
+                                                    </h6>
+                                                    <small className="text-muted">
+                                                        <i className="fa fa-calendar-o ml-1"></i> {item.date_activite} {/* Changed mr-1 to ml-1 */}
+                                                    </small>
+                                                </div>
                                             </div>
-                                        </div>
-                                    </li>
-                                ))}
+                                        </li>
+                                    ))
+                                ) : (
+                                    <li className="text-muted text-center">لا توجد أنشطة أخرى.</li>
+                                )}
                             </ul>
                         </div>
                     </div>

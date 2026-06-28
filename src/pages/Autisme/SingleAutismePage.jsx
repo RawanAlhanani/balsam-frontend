@@ -8,6 +8,7 @@ const SingleAutismePage = () => {
     const { id } = useParams();
     const [page, setPage] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null); // Added error state
 
     useEffect(() => {
         getAutismePage(id)
@@ -17,30 +18,71 @@ const SingleAutismePage = () => {
             })
             .catch(error => {
                 console.error("Error fetching autisme page:", error);
+                setError("حدث خطأ أثناء تحميل الصفحة."); // Set user-friendly error message
                 setLoading(false);
             });
     }, [id]);
 
-    if (loading) return <div style={{ textAlign: 'center', padding: '100px' }}>جاري التحميل...</div>;
-    if (!page) return <div style={{ textAlign: 'center', padding: '100px' }}>الصفحة غير موجودة.</div>;
+    const renderContent = () => {
+        if (page.structured_description && page.structured_description.sections && page.structured_description.sections.length > 0) {
+            return page.structured_description.sections.map((section, index) => {
+                switch (section.type) {
+                    case 'heading':
+                        const HeadingTag = `h${section.level || 2}`; // Default to h2 if level is not specified
+                        return <HeadingTag key={index} className={`mt-4 mb-3 h${section.level || 2}`}>{section.content}</HeadingTag>; // Added Bootstrap heading classes
+                    case 'paragraph':
+                        return <p key={index} className="lead mb-3" dangerouslySetInnerHTML={{ __html: section.content }} />; // Added Bootstrap paragraph classes
+                    case 'list':
+                        const ListTag = section.listType === 'number' ? 'ol' : 'ul';
+                        return (
+                            <ListTag key={index} className="mb-3 pl-4"> {/* Added Bootstrap list classes */}
+                                {section.items && section.items.map((item, itemIndex) => (
+                                    <li key={itemIndex} dangerouslySetInnerHTML={{ __html: item }} />
+                                ))}
+                            </ListTag>
+                        );
+                    default:
+                        return null;
+                }
+            });
+        } else if (page.description) {
+            // Fallback to old description if structured_description is not available
+            return <p className="lead mb-3" dangerouslySetInnerHTML={{ __html: page.description.replace(/\n/g, '<br />') }} />; // Added Bootstrap paragraph classes
+        }
+        return null;
+    };
+
+    if (loading) return <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '80vh' }}><div className="spinner-border text-primary" role="status"><span className="sr-only">Loading...</span></div></div>;
+    if (error) return <div className="alert alert-danger text-center m-5">{error}</div>;
+    if (!page && !loading) return <div className="text-center m-5 eco_headings"><h3>الصفحة غير موجودة.</h3></div>;
+
 
     return (
         <div className="content">
-            <PageBanner title={page.titre} />
+            <PageBanner />
 
-            <section className="eco_services_environment">
+            <section className="eco_services_environment py-5"> {/* Added padding */}
                 <div className="container">
-                    <div className="eco_headings">
-                        <h3><b>{page.titre}</b></h3>
-                        <span><i className="icon-nature-2"></i></span>
-                    </div>
-                    <div className="row">
-                        <div className="col-md-12">
-                            <figure style={{ textAlign: 'center', marginBottom: '30px' }}>
-                                <img src={getStorageUrl(page.page_image)} alt={page.titre} style={{ maxWidth: '100%', borderRadius: '8px' }} />
-                            </figure>
-                            <div className="aboutus" style={{ fontSize: '16px', lineHeight: '1.8' }}>
-                                <div dangerouslySetInnerHTML={{ __html: page.description.replace(/\n/g, '<br />') }} />
+                    <div className="row justify-content-center"> {/* Centered content */}
+                        <div className="col-lg-8 col-md-10"> {/* Content column */}
+                            <div className="eco_headings mb-5 text-center"> {/* Centered heading */}
+                                <h1 className="display-4 mb-3"><b>{page.titre}</b></h1> {/* Larger, more prominent title */}
+                                <span><i className="icon-nature-2"></i></span>
+                            </div>
+
+                            {page.page_image && (
+                                <figure className="mb-5 text-center"> {/* Increased margin-bottom */}
+                                    <img 
+                                        src={getStorageUrl(page.page_image)} 
+                                        alt={page.titre} 
+                                        className="img-fluid rounded shadow-sm" // Responsive image, rounded corners, shadow
+                                        style={{ maxHeight: '450px', objectFit: 'cover', width: '100%' }} 
+                                    />
+                                </figure>
+                            )}
+
+                            <div className="aboutus text-justify"> {/* Justified text for better readability */}
+                                {renderContent()}
                             </div>
                         </div>
                     </div>

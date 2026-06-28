@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../api';
 import PageBanner from '../../components/PageBanner';
+import Loading from '../../components/Loading';
 
 const Register = () => {
     const navigate = useNavigate();
@@ -22,11 +23,22 @@ const Register = () => {
     
     const [photo, setPhoto] = useState(null); 
     const [error, setError] = useState('');
+    const [loading, setLoading] = useState(true);
+    const [submitting, setSubmitting] = useState(false);
 
     useEffect(() => {
-        api.get('/registration-data').then(res => {
-            setRegData(res.data);
-        });
+        const loadData = async () => {
+            try {
+                const res = await api.get('/registration-data');
+                setRegData(res.data);
+                setLoading(false);
+            } catch (err) {
+                console.error('Error loading registration data:', err);
+                setError('حدث خطأ في تحميل البيانات');
+                setLoading(false);
+            }
+        };
+        loadData();
     }, []);
 
     const handleChange = (e) => {
@@ -84,6 +96,7 @@ const Register = () => {
         
         if (!validateStep()) return;
 
+        setSubmitting(true);
         const data = new FormData();
         data.append('account_type', accountType);
         
@@ -114,6 +127,8 @@ const Register = () => {
             } else {
                 setError('خطأ في التسجيل. يرجى التحقق من المدخلات.');
             }
+        } finally {
+            setSubmitting(false);
         }
     };
 
@@ -333,7 +348,9 @@ const Register = () => {
             </div>
             <div className="text-left mt-3">
                 <button className="btn-small xsmall-btn mr-2" onClick={() => setStep(3)}>السابق</button>
-                <button className="btn-small xsmall-btn" onClick={handleSubmit}>تأكيد التسجيل</button>
+                <button className="btn-small xsmall-btn" onClick={handleSubmit} disabled={submitting}>
+                    {submitting ? 'جاري التسجيل...' : 'تأكيد التسجيل'}
+                </button>
             </div>
         </div>
     );
@@ -383,10 +400,14 @@ const Register = () => {
             </div>
             <div className="text-left mt-3">
                 <button className="btn-small xsmall-btn mr-2" onClick={() => setStep(0)}>السابق</button>
-                <button className="btn-small xsmall-btn" onClick={handleSubmit}>تأكيد التسجيل</button>
+                <button className="btn-small xsmall-btn" onClick={handleSubmit} disabled={submitting}>
+                    {submitting ? 'جاري التسجيل...' : 'تأكيد التسجيل'}
+                </button>
             </div>
         </div>
     );
+
+    if (loading) return <Loading message="جاري تحميل البيانات..." />;
 
     return (
         <div className="content">

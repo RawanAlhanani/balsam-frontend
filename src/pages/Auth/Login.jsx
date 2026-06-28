@@ -7,6 +7,7 @@ const Login = () => {
     const [username, setUsername] = useState('');
     const [mdp, setMdp] = useState('');
     const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -17,16 +18,18 @@ const Login = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
+        setLoading(true);
         try {
             const response = await login({ login: username, mdp });
             localStorage.setItem('token', response.data.access_token);
             localStorage.setItem('refresh_token', response.data.refresh_token);
             localStorage.setItem('user', JSON.stringify(response.data.user));
             navigate('/');
-            window.location.reload();
         } catch (err) {
             console.error('Login error:', err);
             setError(err.response?.data?.message || 'اسم المستخدم أوكلمة المرور غير صحيحة.');
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -43,7 +46,8 @@ const Login = () => {
                     
                     <div className="eco_featured_causes">
                         <div className="row">
-                            <div className="sendMail" style={{ display: 'table', margin: 'auto', width: '40%' }}>
+                            {/* Removed inline width and used Bootstrap grid classes for responsiveness */}
+                            <div className="sendMail col-lg-4 col-md-6 mx-auto">
                                 {error && <div className="alert alert-danger" style={{ textAlign: 'center' }}>{error}</div>}
                                 <form onSubmit={handleSubmit}>
                                     <div className="col-md-12">
@@ -75,8 +79,13 @@ const Login = () => {
                                     </div>
                                     <br /><br />
                                     <div className="col-md-12" style={{ textAlign: 'center' }}>
-                                        <button type="submit" className="btn-small xsmall-btn" style={{ width: '70%', display: 'table', margin: 'auto' }}>
-                                            تسجيل الدخول
+                                        {/* Removed inline width and used Bootstrap utility classes for responsiveness */}
+                                        <button 
+                                            type="submit" 
+                                            className="btn-small xsmall-btn w-75 mx-auto d-block"
+                                            disabled={loading}
+                                        >
+                                            {loading ? 'جاري تسجيل الدخول...' : 'تسجيل الدخول'}
                                         </button>
                                     </div>
                                     <br />

@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../../../api/"; // Explicitly import index.js
 
 export default function Stats() {
   const [stats, setStats] = useState(null);
 
   useEffect(() => {
-    axios.get("http://localhost:8000/api/stats")
+    api.get("/stats") // Use the api instance with the relative path
       .then(res => setStats(res.data))
       .catch(err => console.error(err));
   }, []);

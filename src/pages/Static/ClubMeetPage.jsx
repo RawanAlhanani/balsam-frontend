@@ -4,7 +4,7 @@ import PageBanner from '../../components/PageBanner';
 const ClubMeetPage = () => {
     return (
         <div className="content">
-            <PageBanner title="لقاءات النادي" />
+            <PageBanner />
 
             <section>
                 <div className="eco_blog_detail">

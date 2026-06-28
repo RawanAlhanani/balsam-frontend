@@ -39,7 +39,7 @@ const Participation = () => {
 
     return (
         <div className="content">
-            <PageBanner title="تأكيد المشاركة" />
+            <PageBanner />
 
             <section className="eco_services_environment">
                 <div className="container">

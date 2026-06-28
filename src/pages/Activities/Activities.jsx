@@ -27,7 +27,7 @@ const Activities = () => {
 
     return (
         <div className="content">
-            <PageBanner title="أنشطتنا" />
+            <PageBanner title="" />
 
             <section>
                 <div className="container">

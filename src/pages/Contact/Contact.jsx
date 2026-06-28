@@ -4,7 +4,7 @@ import PageBanner from '../../components/PageBanner';
 const Contact = () => {
     return (
         <div className="content">
-            <PageBanner title="تواصل معنا" />
+            <PageBanner/>
 
             <section>
                 <div className="container">

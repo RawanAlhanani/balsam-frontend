@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import api from '../../api';
 import {
     AdminPage, AdminPageHeader, AdminCard, AdminLoading, AdminEmptyState,
@@ -34,19 +35,14 @@ const DeleteConfirmModal = ({ show, onClose, onConfirm, itemName, isDeleting }) 
 
 
 const AdminNews = () => {
+    const navigate = useNavigate(); // Initialize useNavigate
     const [news, setNews] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [showForm, setShowForm] = useState(false);
-    const [formData, setFormData] = useState({ titre: '', description: '' });
-    const [image, setImage] = useState(null);
+    // Removed showForm, isEditing, editingNewsId, formData, image, currentImage states
+    // as editing/adding will be handled on separate pages.
     const [alert, setAlert] = useState({ message: '', type: '' });
-    const [submitting, setSubmitting] = useState(false);
+    // Removed submitting state
     const [deleting, setDeleting] = useState(false);
-
-    // State for editing
-    const [isEditing, setIsEditing] = useState(false);
-    const [editingNewsId, setEditingNewsId] = useState(null);
-    const [currentImage, setCurrentImage] = useState(null); // To display existing image
 
     // State for delete confirmation modal
     const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState(false);
@@ -82,57 +78,8 @@ const AdminNews = () => {
         }
     };
 
-    const resetForm = () => {
-        setFormData({ titre: '', description: '' });
-        setImage(null);
-        setIsEditing(false);
-        setEditingNewsId(null);
-        setCurrentImage(null);
-    };
-
-    const handleOpenAddForm = () => {
-        resetForm();
-        setShowForm(true);
-    };
-
-    const handleOpenEditForm = (newsItem) => {
-        setFormData({
-            titre: newsItem.titre,
-            description: newsItem.description
-        });
-        setCurrentImage(newsItem.image_info ? `http://localhost:8000/storage/MesImages/${newsItem.image_info}` : null);
-        setIsEditing(true);
-        setEditingNewsId(newsItem.id);
-        setShowForm(true);
-    };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setSubmitting(true);
-        const data = new FormData();
-        data.append('titre', formData.titre);
-        data.append('description', formData.description);
-        if (image) data.append('image_info', image);
-
-        try {
-            if (isEditing) {
-                await api.post(`/admin/news/${editingNewsId}`, data); // Use POST for FormData with PUT/PATCH method override
-                setAlert({ message: 'تم تحديث الخبر بنجاح', type: 'success' });
-            } else {
-                await api.post('/admin/news', data);
-                setAlert({ message: 'تم إضافة الخبر بنجاح', type: 'success' });
-            }
-            setShowForm(false);
-            resetForm();
-            fetchNews();
-        } catch (err) {
-            setAlert({ message: `خطأ في ${isEditing ? 'التحديث' : 'الإضافة'}`, type: 'danger' });
-            console.error(err);
-        } finally {
-            setSubmitting(false);
-            setTimeout(() => setAlert({ message: '', type: '' }), 3500);
-        }
-    };
+    // Removed resetForm, handleOpenAddForm, handleOpenEditForm, handleSubmit functions
+    // as they are related to the inline form which is being removed.
 
     const promptDelete = (id, title) => {
         setDeleteTargetId(id);
@@ -168,43 +115,16 @@ const AdminNews = () => {
                 badge="المحتوى"
                 actions={
                     <AdminBtn
-                        variant={showForm ? 'secondary' : 'primary'}
-                        icon={showForm ? 'la-times' : 'la-plus'}
-                        onClick={showForm ? () => { setShowForm(false); resetForm(); } : handleOpenAddForm}
+                        variant="primary" // Changed variant to primary for consistency
+                        icon="la-plus"
+                        onClick={() => navigate('/admin/news/add')} // Navigate to add page
                     >
-                        {showForm ? 'إلغاء' : 'إضافة خبر'}
+                        إضافة خبر
                     </AdminBtn>
                 }
             />
             <div className="content-body">
-                <AdminFormPanel
-                    title={isEditing ? "تعديل خبر" : "إضافة خبر جديد"}
-                    open={showForm}
-                    onClose={() => { setShowForm(false); resetForm(); }}
-                    onSubmit={handleSubmit}
-                >
-                    <AdminFormGroup label="العنوان">
-                        <input type="text" className="form-control" value={formData.titre} onChange={(e) => setFormData({ ...formData, titre: e.target.value })} required />
-                    </AdminFormGroup>
-                    <AdminFormGroup label="الوصف">
-                        <textarea className="form-control" rows="5" value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} required />
-                    </AdminFormGroup>
-                    <AdminFormGroup label="الصورة">
-                        <input type="file" className="form-control-file" onChange={(e) => setImage(e.target.files[0])} />
-                        {currentImage && !image && ( // Show current image if editing and no new image selected
-                            <div className="mt-2">
-                                <img src={currentImage} alt="Current News" style={{ maxWidth: '100px', maxHeight: '100px', objectFit: 'cover' }} />
-                                <small className="d-block text-muted">الصورة الحالية</small>
-                            </div>
-                        )}
-                    </AdminFormGroup>
-                    <AdminFormActions>
-                        <AdminBtn variant="success" type="submit" icon="la-check" disabled={submitting}>
-                            {submitting ? <span className="spinner-border spinner-border-sm"/> : (isEditing ? 'تحديث الخبر' : 'حفظ الخبر')}
-                        </AdminBtn>
-                        <AdminBtn variant="secondary" icon="la-times" onClick={() => { setShowForm(false); resetForm(); }}>إلغاء</AdminBtn>
-                    </AdminFormActions>
-                </AdminFormPanel>
+                {/* Removed AdminFormPanel and its content */}
 
                 <AdminCard title="قائمة الأخبار" icon="la-newspaper-o" flush>
                     {loading ? (
@@ -217,8 +137,8 @@ const AdminNews = () => {
                                 <thead>
                                     <tr>
                                         <th>العنوان</th>
-                                        <th>الوصف</th> {/* New column */}
-                                        <th>الصورة</th> {/* New column */}
+                                        <th>الوصف</th>
+                                        <th>الصورة</th>
                                         <th>تاريخ الإضافة</th>
                                         <th>العمليات</th>
                                     </tr>
@@ -238,7 +158,7 @@ const AdminNews = () => {
                                             <td>{new Date(item.created_at).toLocaleDateString('ar-MA')}</td>
                                             <td>
                                                 <div className="admin-action-group">
-                                                    <AdminBtn variant="primary" icon="la-edit" onClick={() => handleOpenEditForm(item)}>تعديل</AdminBtn>
+                                                    <AdminBtn variant="primary" icon="la-edit" onClick={() => navigate(`/admin/news/edit/${item.id}`)}>تعديل</AdminBtn> {/* Navigate to edit page */}
                                                     <AdminBtn variant="danger" icon="la-trash" onClick={() => promptDelete(item.id, item.titre)}>حذف</AdminBtn>
                                                 </div>
                                             </td>

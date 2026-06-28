@@ -41,6 +41,8 @@ const TeamPage = () => {
     };
 
     return (
+        <>
+            <PageBanner/>
         <div
             className="main-content"
             style={{
@@ -182,6 +184,7 @@ const TeamPage = () => {
                 .badge-info { background-color: #ecfeff; color: #0891b2; }
             `}</style>
         </div>
+            </>
     );
 };
 

@@ -18,21 +18,21 @@ header{
 	overflow: hidden;
 }
 .kode_eco-top_bar{
-	padding: 25px 0px;
+	padding: 25px 0;
 }
 .kode_eco_social_icons,
 .kode_eco_search{
 	padding: 10px 0 0;
 }
 section{
-	padding: 70px 0px 40px;
+	padding: 70px 0 40px;
 	float: left;
 	width:100%;
 }
 .padding-70by40{
-	padding: 70px 0px 40px;
+	padding: 70px 0 40px;
 }
-.margin-buttom_50{
+.margin-bottom_50{
 	float: left;
 	width:100%;
 	padding: 0px;
@@ -912,7 +912,7 @@ section{
 	background-color: #999999;
 }
 .white-login-form input[type="checkbox"]:checked ~ small{
-	color:#999999;636363
+	color:#999999;
 }
 .white-login-form small{
 	color:#999999;
@@ -2404,7 +2404,7 @@ section{
 .eco_viewers_meta li:last-child a{
 	border-right:none;
 	margin-right:0px;
-	padding-right:none;
+	padding-right:0;
 }
 .eco_viewers_meta li:last-child a:before{
 	display:none;
@@ -2714,7 +2714,7 @@ section{
 }
 .eco_blog_detail_post > figure{
 	margin-bottom: 25px;
-	overflow: :hidden;
+	overflow:hidden;
 }
 .eco_blog_detail_content h4{
 	font-size: 22px;
@@ -3131,7 +3131,7 @@ blockquote p:after{
 	margin-bottom: 0px;
 }
 .event_orgnizer_points li p{
-	color:575757;
+	color:#575757;
 	font-weight: 500;
 	margin-bottom: 0px;
 }
@@ -3176,7 +3176,7 @@ blockquote p:after{
 }
 .eco_event_blog_posts{
 	float: left;
-	width:100%:;
+	width:100%;
 }
 .eco_event_blog_posts li small{
 	margin-right: 3px;
@@ -3822,7 +3822,7 @@ blockquote p:after{
 }
 .eco_listing_caption a{
 	font-size: 14px;
-	font-weight: 'medium';
+	font-weight: 500;
 	text-transform: capitalize;
 	color:#575757;
 }
@@ -5258,7 +5258,7 @@ blockquote p:after{
     width: 114px;
 }
 .kode_eco_hdg  span{
-	font-weight:20px;
+	font-weight:bold;
 	background-color:#fff;
 	color:#ddd;
 	font-size:25px;
@@ -6731,7 +6731,3 @@ header {
 .eco_offices_info .langue a{
     color:white;
 }
-
-
-
-

@@ -6,63 +6,20 @@ const AdminLogin = () => {
     const [login, setLogin] = useState('');
     const [mdp, setMdp] = useState('');
     const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
+    // Removed dynamic CSS injection and body class manipulation from here.
+    // These styles and body attributes should be handled globally in index.html
+    // or through a dedicated AdminLayout component if they are specific to admin routes.
     useEffect(() => {
-        // Initialize CSRF token on component mount
         initializeCsrfToken();
-        
-        // Apply body classes and attributes exactly like the original Blade
-        document.body.className = "vertical-layout vertical-menu 1-column menu-expanded blank-page blank-page";
-        document.body.setAttribute("data-open", "click");
-        document.body.setAttribute("data-menu", "vertical-menu");
-        document.body.setAttribute("data-col", "1-column");
-        
-        // Ensure reset of any frontend theme properties
-        document.documentElement.style.height = '100%';
-        document.body.style.height = '100%';
-        document.body.style.overflow = 'auto';
-
-        const styles = [
-            "/backend/app-assets/fonts/line-awesome/css/line-awesome.min.css",
-            "/backend/app-assets/fonts/simple-line-icons/style.css",
-            "/backend/app-assets/css-rtl/vendors.css",
-            "/backend/app-assets/vendors/css/forms/icheck/icheck.css",
-            "/backend/app-assets/vendors/css/forms/icheck/custom.css",
-            "/backend/app-assets/css-rtl/app.css",
-            "/backend/app-assets/css-rtl/custom-rtl.css",
-            "/backend/app-assets/css-rtl/core/menu/menu-types/vertical-menu.css",
-            "/backend/app-assets/css-rtl/core/colors/palette-gradient.css",
-            "/backend/app-assets/css-rtl/pages/login-register.css",
-            "/backend/assets/css/style-rtl.css"
-        ];
-
-        const linkElements = styles.map(href => {
-            const link = document.createElement('link');
-            link.rel = 'stylesheet';
-            link.type = 'text/css';
-            link.href = href;
-            link.className = 'admin-style';
-            document.head.appendChild(link);
-            return link;
-        });
-
-        return () => {
-            document.body.className = "";
-            document.body.removeAttribute("data-open");
-            document.body.removeAttribute("data-menu");
-            document.body.removeAttribute("data-col");
-            document.documentElement.style.height = '';
-            document.body.style.height = '';
-            linkElements.forEach(link => {
-                if (link.parentNode) link.parentNode.removeChild(link);
-            });
-        };
     }, []);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
+        setLoading(true);
         try {
             const response = await adminLogin({ login, mdp });
             localStorage.setItem('admin_token', response.data.token);
@@ -72,6 +29,8 @@ const AdminLogin = () => {
             navigate('/admin/dashboard');
         } catch (err) {
             setError(err.response?.data?.message || 'Email ou mot de passe non valides !!!!');
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -86,7 +45,8 @@ const AdminLogin = () => {
                                     <div className="card-header border-0">
                                         <div className="card-title text-center">
                                             <div className="p-1">
-                                                <img src="/backend/app-assets/images/logo/logo.png" alt="branding logo" style={{ width: '120px' }} />
+                                                {/* Removed inline width style */}
+                                                <img src="/backend/app-assets/images/logo/logo.png" alt="branding logo" />
                                             </div>
                                         </div>
                                         <h6 className="card-subtitle line-on-side text-muted text-center font-small-3 pt-2">
@@ -98,7 +58,8 @@ const AdminLogin = () => {
                                             <form className="form-horizontal form-simple" onSubmit={handleSubmit}>
                                                 {error && (
                                                     <div className="alert alert-danger">
-                                                        <h4 dir="ltr" style={{ textAlign: 'center', fontSize: '14px', margin: 0 }}>{error}</h4>
+                                                        {/* Removed inline font size and margin */}
+                                                        <h4 dir="ltr" style={{ textAlign: 'center' }}>{error}</h4>
                                                     </div>
                                                 )}
                                                 
@@ -112,7 +73,8 @@ const AdminLogin = () => {
                                                         onChange={(e) => setLogin(e.target.value)}
                                                         required 
                                                     />
-                                                    <div className="form-control-position" style={{ top: '6px' }}>
+                                                    {/* Removed inline top style */}
+                                                    <div className="form-control-position">
                                                         <i className="ft-user"></i>
                                                     </div>
                                                 </fieldset>
@@ -126,13 +88,19 @@ const AdminLogin = () => {
                                                         onChange={(e) => setMdp(e.target.value)}
                                                         required 
                                                     />
-                                                    <div className="form-control-position" style={{ top: '6px' }}>
+                                                    {/* Removed inline top style */}
+                                                    <div className="form-control-position">
                                                         <i className="la la-key"></i>
                                                     </div>
                                                 </fieldset>
                                             
-                                                <button type="submit" className="btn btn-info btn-lg btn-block" style={{ padding: '10px', fontSize: '18px' }}>
-                                                    <i className="ft-unlock"></i> Login
+                                                {/* Removed inline padding and font size */}
+                                                <button 
+                                                    type="submit" 
+                                                    className="btn btn-info btn-lg btn-block"
+                                                    disabled={loading}
+                                                >
+                                                    <i className="ft-unlock"></i> {loading ? 'Connexion...' : 'Login'}
                                                 </button>
                                             </form>
                                         </div>

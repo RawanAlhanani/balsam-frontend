@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import api from '../../api';
+import BlockEditor from '../../components/Admin/BlockEditor';
 import {
     AdminPage, AdminPageHeader, AdminCard, AdminLoading, AdminAlert, AdminBtn
 } from '../../components/Admin/ui/AdminUI';
@@ -9,7 +10,7 @@ const EditStaticPage = () => {
     const { type, id } = useParams(); // Get both type and id from URL params
     const navigate = useNavigate();
     const [formData, setFormData] = useState({ type: type, titre: '', description: '' }); // Initialize type with URL param
-    const [sections, setSections] = useState([{ subtitle: '', text: '' }]);
+    const [blockContent, setBlockContent] = useState({ sections: [] }); // New state for BlockEditor
     const [image, setImage] = useState(null);
     const [alert, setAlert] = useState({ message: '', type: '' });
     const [loading, setLoading] = useState(true);
@@ -23,12 +24,13 @@ const EditStaticPage = () => {
                 setFormData({
                     type: type, // Ensure type is set from URL param
                     titre: page.titre,
-                    description: page.description || ''
+                    description: page.description || '' // Keep description for non-structured types
                 });
-                if (type === 'autism' && page.structured_description && page.structured_description.sections) {
-                    setSections(page.structured_description.sections.map(sec => ({ subtitle: sec.subtitle || '', text: sec.text || '' })));
+                // Load structured_description for 'autism', 'about', and 'projects' types
+                if ((type === 'autism' || type === 'about' || type === 'projects') && page.structured_description) {
+                    setBlockContent(page.structured_description);
                 } else {
-                    setSections([{ subtitle: '', text: '' }]);
+                    setBlockContent({ sections: [] }); // Reset for other types or if no structured data
                 }
             } catch (err) {
                 setAlert({ message: 'خطأ في تحميل الصفحة', type: 'danger' });
@@ -48,8 +50,11 @@ const EditStaticPage = () => {
         if (image) data.append('image', image);
         data.append('id', id); // Ensure ID is sent for update
 
-        if (formData.type === 'autism') {
-            data.append('description_json', JSON.stringify({ main: formData.titre, sections }));
+        // Use BlockEditor content for 'autism', 'about', and 'projects' types
+        if (formData.type === 'autism' || formData.type === 'about' || formData.type === 'projects') {
+            data.append('description_json', JSON.stringify(blockContent));
+            // For structured types, ensure the regular description field is empty or not sent
+            data.delete('description'); 
         }
 
         setSubmitting(true);
@@ -104,17 +109,15 @@ const EditStaticPage = () => {
                             </div>
                         </div>
                         <div className="form-group">
-                            {formData.type === 'autism' ? (
+                            {/* Use BlockEditor for 'autism', 'about', and 'projects' types */}
+                            {formData.type === 'autism' || formData.type === 'about' || formData.type === 'projects' ? (
                                 <div>
-                                    <small>أضف التفرعات التفصيلية (subtitle + text)</small>
-                                    {sections.map((s, idx) => (
-                                        <div key={idx} className="d-flex mb-2">
-                                            <input className="form-control mr-2" placeholder="عنوان فرعي" value={s.subtitle} onChange={e => { const copy = [...sections]; copy[idx].subtitle = e.target.value; setSections(copy); }} />
-                                            <input className="form-control" placeholder="النص" value={s.text} onChange={e => { const copy = [...sections]; copy[idx].text = e.target.value; setSections(copy); }} />
-                                            <button type="button" className="btn btn-sm btn-danger ml-2" onClick={() => { const copy = sections.filter((_, i) => i !== idx); setSections(copy.length?copy:[{ subtitle: '', text: '' }]); }}>حذف</button>
-                                        </div>
-                                    ))}
-                                    <button type="button" className="btn btn-sm btn-secondary" onClick={() => setSections([...sections, { subtitle: '', text: '' }])}>أضف تفرع</button>
+                                    <label>المحتوى التفصيلي</label>
+                                    <BlockEditor 
+                                        value={blockContent}
+                                        onChange={setBlockContent}
+                                        placeholder="أضف عناوين وفقرات وقوائم لإنشاء محتوى منظم"
+                                    />
                                 </div>
                             ) : (
                                 <textarea className="form-control" placeholder="الوصف" value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} required />

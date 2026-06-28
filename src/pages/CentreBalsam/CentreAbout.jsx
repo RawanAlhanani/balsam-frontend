@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { getStorageUrl } from '../../utils/formatters';
+import PageBanner from "../../components/PageBanner.jsx";
 const VISION = `رؤية جمعية بلسم: أن تصبح منظمة عالمية لمساعدة الناس على تحسين حياتهم في مجالات التوحد، مجتمعياً، والانتقال نحو مجتمع قوي.`;
 
 const MISSION = `مهمة جمعية بلسم هي المساهمة في تحسين حياة ذوي التوحد، عن طريق خدماتنا وبرامجنا التي تساعد الناس اليوم — من أسرة طفل توحدي تم تشخيصه حديثًا ولا يعرف إلى أين يتجه، إلى أحد أفراد عائلة شخص بالغ شُخص باضطراب طيف التوحد يجد نفسه في وضع مقدم الرعاية الأساسي.`;
@@ -42,6 +43,7 @@ export default function CentreAbout() {
   const [images] = useState(DB_IMAGES);
 
   return (
+
     <div style={{ direction: 'rtl', fontFamily: 'Segoe UI, Arial, sans-serif', textAlign: 'right' }}>
       <style>{`
         /* ── Variables ── */
@@ -267,7 +269,7 @@ export default function CentreAbout() {
           .about-hero h1 { font-size: 28px; }
         }
       `}</style>
-
+      <PageBanner/>
       <section className="about-hero">
         <div className="about-container">
           <div className="hero-badge">مركز بلسم — التعريف والهوية</div>

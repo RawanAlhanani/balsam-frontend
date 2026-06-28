@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types'; // Import PropTypes
 import { AdminCard, AdminFormGroup, AdminBtn } from '../../../components/Admin/ui/AdminUI';
 
 const AdminRegions = ({
@@ -72,6 +73,30 @@ const AdminRegions = ({
             </AdminCard>
         </div>
     );
+};
+
+AdminRegions.propTypes = {
+    openCategory: PropTypes.string,
+    toggleCategory: PropTypes.func.isRequired,
+    regions: PropTypes.arrayOf(PropTypes.shape({
+        id: PropTypes.number.isRequired,
+        nom_region: PropTypes.string.isRequired,
+    })).isRequired,
+    newRegion: PropTypes.shape({
+        nom_region: PropTypes.string.isRequired,
+    }).isRequired,
+    setNewRegion: PropTypes.func.isRequired,
+    editingRegionId: PropTypes.number,
+    editingRegionData: PropTypes.shape({
+        nom_region: PropTypes.string.isRequired,
+    }).isRequired,
+    setEditingRegionData: PropTypes.func.isRequired,
+    handleAddRegion: PropTypes.func.isRequired,
+    promptDeleteRegion: PropTypes.func.isRequired,
+    handleEditRegion: PropTypes.func.isRequired,
+    handleCancelEditRegion: PropTypes.func.isRequired,
+    handleSaveEditRegion: PropTypes.func.isRequired,
+    regionsSubmitting: PropTypes.bool.isRequired,
 };
 
 export default AdminRegions;

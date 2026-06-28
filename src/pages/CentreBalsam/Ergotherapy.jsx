@@ -1,10 +1,16 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import Header from '../../components/Header/Header';
+import PageBanner from "../../components/PageBanner.jsx";
 
 export default function Activities() {
     return (
+        <>
+
+            <PageBanner/>
+
         <div style={{ direction: 'rtl', fontFamily: 'Segoe UI, Arial, sans-serif', textAlign: 'right', background: '#fdfeff', color: '#1a202c', overflowX: 'hidden', position: 'relative' }}>
+
             <style>{`
                 :root {
                     --pink-gradient: linear-gradient(135deg, #f05074 0%, #ff7e5f 100%);
@@ -159,5 +165,6 @@ export default function Activities() {
             </div>
 
         </div>
+        </>
     );
 }

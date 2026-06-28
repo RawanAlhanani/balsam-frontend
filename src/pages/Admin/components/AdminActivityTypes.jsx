@@ -1,26 +1,23 @@
 import React from 'react';
+import PropTypes from 'prop-types'; // Import PropTypes
 import { AdminCard, AdminFormGroup, AdminBtn } from '../../../components/Admin/ui/AdminUI';
-import useAdminCrud from '../../../hooks/useAdminCrud';
 
-const AdminActivityTypes = ({ openCategory, toggleCategory }) => {
-    const {
-        items: types,
-        submitting: typesSubmitting,
-        newItem: newType,
-        setNewItem: setNewType,
-        editingItemId: editingTypeId,
-        editingItemData: editingTypeData,
-        setEditingItemData: setEditingTypeData,
-        handleAddItem: handleAddType,
-        promptDeleteItem: promptDeleteType,
-        handleEditItem: handleEditType,
-        handleCancelEdit: handleCancelEditType,
-        handleSaveEditItem: handleSaveEditType,
-    } = useAdminCrud('/admin/types', 'نوع النشاط', { nomActivite: '' },
-        (item) => ({ nomActivite: item.nomActivite }), // transformNewItem
-        (item) => ({ nomActivite: item.nomActivite })  // transformEditItem
-    );
-
+const AdminActivityTypes = ({
+    openCategory,
+    toggleCategory,
+    types,
+    newType,
+    setNewType,
+    editingTypeId,
+    editingTypeData,
+    setEditingTypeData,
+    handleAddType,
+    promptDeleteType,
+    handleEditType,
+    handleCancelEditType,
+    handleSaveEditType,
+    typesSubmitting,
+}) => {
     return (
         <div className="col-md-4">
             <AdminCard
@@ -76,6 +73,30 @@ const AdminActivityTypes = ({ openCategory, toggleCategory }) => {
             </AdminCard>
         </div>
     );
+};
+
+AdminActivityTypes.propTypes = {
+    openCategory: PropTypes.string,
+    toggleCategory: PropTypes.func.isRequired,
+    types: PropTypes.arrayOf(PropTypes.shape({
+        id: PropTypes.number.isRequired,
+        nomActivite: PropTypes.string.isRequired,
+    })).isRequired,
+    newType: PropTypes.shape({
+        nomActivite: PropTypes.string.isRequired,
+    }).isRequired,
+    setNewType: PropTypes.func.isRequired,
+    editingTypeId: PropTypes.number,
+    editingTypeData: PropTypes.shape({
+        nomActivite: PropTypes.string.isRequired,
+    }).isRequired,
+    setEditingTypeData: PropTypes.func.isRequired,
+    handleAddType: PropTypes.func.isRequired,
+    promptDeleteType: PropTypes.func.isRequired,
+    handleEditType: PropTypes.func.isRequired,
+    handleCancelEditType: PropTypes.func.isRequired,
+    handleSaveEditType: PropTypes.func.isRequired,
+    typesSubmitting: PropTypes.bool.isRequired,
 };
 
 export default AdminActivityTypes;

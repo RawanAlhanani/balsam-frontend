@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import PageBanner from "../../components/PageBanner.jsx";
 
 const DevenirStagiaire = () => {
   const [formData, setFormData] = useState({
@@ -103,8 +104,12 @@ const DevenirStagiaire = () => {
   };
 
   return (
+      <>
+        <PageBanner/>
+
     <div className="stage-page-wrapper" style={{ direction: 'rtl', backgroundColor: '#fafafa', minHeight: '100vh' }}>
-      
+
+
       <style>{`
         .stage-classic-header { background-color: #ffffff; border-bottom: 1px solid #eaeaea; padding: 60px 0 40px 0; margin-top: 20px; margin-bottom: 50px; text-align: center; }
         .classic-title { color: #1a1a1a; font-size: 32px; font-weight: 700; margin-bottom: 15px; position: relative; display: inline-block; }
@@ -260,6 +265,7 @@ const DevenirStagiaire = () => {
         </div>
       </div>
     </div>
+      </>
   );
 };
 

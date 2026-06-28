@@ -19,7 +19,7 @@ const ObjectPage = () => {
 
     return (
         <div className="content">
-            <PageBanner title="أهدافنا" />
+            <PageBanner />
 
             <section>
                 <div className="eco_blog_detail">

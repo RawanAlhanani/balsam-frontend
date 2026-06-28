@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import api from '../../api';
 import {
     AdminPage, AdminPageHeader, AdminCard, AdminLoading, AdminEmptyState,
@@ -25,7 +26,7 @@ const DeleteConfirmModal = ({ show, onClose, onConfirm, itemName, isDeleting }) 
                             {isDeleting ? <span className="spinner-border spinner-border-sm"/> : 'حذف'}
                         </button>
                     </div>
-                </div>
+            </div>
             </div>
             <div className="modal-backdrop show" onClick={onClose} style={{ zIndex: 1050 }}></div>
         </div>
@@ -34,20 +35,14 @@ const DeleteConfirmModal = ({ show, onClose, onConfirm, itemName, isDeleting }) 
 
 
 const AdminActivities = () => {
+    const navigate = useNavigate(); // Initialize useNavigate
     const [activities, setActivities] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [showForm, setShowForm] = useState(false);
-    const [types, setTypes] = useState([]);
-    const [formData, setFormData] = useState({ titre: '', type_activite_id: '', date_activite: '', description: '' });
-    const [image, setImage] = useState(null);
+    // Removed showForm, isEditing, editingActivityId, formData, image, currentImage states
+    // as editing/adding will be handled on separate pages.
     const [alert, setAlert] = useState({ message: '', type: '' });
-    const [submitting, setSubmitting] = useState(false);
+    // Removed submitting state
     const [deleting, setDeleting] = useState(false);
-
-    // State for editing
-    const [isEditing, setIsEditing] = useState(false);
-    const [editingActivityId, setEditingActivityId] = useState(null);
-    const [currentImage, setCurrentImage] = useState(null); // To display existing image
 
     // State for delete confirmation modal
     const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState(false);
@@ -57,7 +52,7 @@ const AdminActivities = () => {
 
     useEffect(() => {
         fetchActivities();
-        fetchTypes();
+        // Removed fetchTypes as it's not needed on this list page anymore
     }, []);
 
     // Lock background scroll when modal is open
@@ -84,69 +79,8 @@ const AdminActivities = () => {
         }
     };
 
-    const fetchTypes = async () => {
-        try {
-            const res = await api.get('/admin/types');
-            setTypes(res.data);
-        } catch (err) {
-            setAlert({ message: 'خطأ في تحميل أنواع الأنشطة', type: 'danger' });
-            console.error(err);
-        }
-    };
-
-    const resetForm = () => {
-        setFormData({ titre: '', type_activite_id: '', date_activite: '', description: '' });
-        setImage(null);
-        setIsEditing(false);
-        setEditingActivityId(null);
-        setCurrentImage(null);
-    };
-
-    const handleOpenAddForm = () => {
-        resetForm();
-        setShowForm(true);
-    };
-
-    const handleOpenEditForm = (activity) => {
-        setFormData({
-            titre: activity.titre,
-            type_activite_id: activity.type_activite_id,
-            date_activite: activity.date_activite,
-            description: activity.description
-        });
-        setCurrentImage(activity.image_activite ? `http://localhost:8000/storage/MesImages/${activity.image_activite}` : null);
-        setIsEditing(true);
-        setEditingActivityId(activity.id);
-        setShowForm(true);
-    };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setSubmitting(true);
-        const data = new FormData();
-        Object.keys(formData).forEach(key => data.append(key, formData[key]));
-        if (image) data.append('image_activite', image);
-
-        try {
-            if (isEditing) {
-                data.append('_method', 'PUT'); // Add this line for Laravel to interpret as PUT
-                await api.post(`/admin/activities/${editingActivityId}`, data); 
-                setAlert({ message: 'تم تحديث النشاط بنجاح', type: 'success' });
-            } else {
-                await api.post('/admin/activities', data);
-                setAlert({ message: 'تم إضافة النشاط بنجاح', type: 'success' });
-            }
-            setShowForm(false);
-            resetForm();
-            fetchActivities();
-        } catch (err) {
-            setAlert({ message: `خطأ في ${isEditing ? 'التحديث' : 'الإضافة'}`, type: 'danger' });
-            console.error(err);
-        } finally {
-            setSubmitting(false);
-            setTimeout(() => setAlert({ message: '', type: '' }), 3500);
-        }
-    };
+    // Removed resetForm, handleOpenAddForm, handleOpenEditForm, handleSubmit functions
+    // as they are related to the inline form which is being removed.
 
     const promptDelete = (id, title) => {
         setDeleteTargetId(id);
@@ -182,54 +116,16 @@ const AdminActivities = () => {
                 badge="المحتوى"
                 actions={
                     <AdminBtn
-                        variant={showForm ? 'secondary' : 'primary'}
-                        icon={showForm ? 'la-times' : 'la-plus'}
-                        onClick={showForm ? () => { setShowForm(false); resetForm(); } : handleOpenAddForm}
+                        variant="primary" // Changed variant to primary for consistency
+                        icon="la-plus"
+                        onClick={() => navigate('/admin/activities/add')} // Navigate to add page
                     >
-                        {showForm ? 'إلغاء' : 'إضافة نشاط'}
+                        إضافة نشاط
                     </AdminBtn>
                 }
             />
             <div className="content-body">
-                <AdminFormPanel
-                    title={isEditing ? "تعديل نشاط" : "إضافة نشاط جديد"}
-                    open={showForm}
-                    onClose={() => { setShowForm(false); resetForm(); }}
-                    onSubmit={handleSubmit}
-                >
-                    <div className="row">
-                        <AdminFormGroup label="العنوان" className="col-md-4">
-                            <input type="text" className="form-control" value={formData.titre} onChange={(e) => setFormData({ ...formData, titre: e.target.value })} required />
-                        </AdminFormGroup>
-                        <AdminFormGroup label="النوع" className="col-md-4">
-                            <select className="form-control" value={formData.type_activite_id} onChange={(e) => setFormData({ ...formData, type_activite_id: e.target.value })} required>
-                                <option value="">اختر النوع</option>
-                                {types.map(t => <option key={t.id} value={t.id}>{t.nomActivite}</option>)}
-                            </select>
-                        </AdminFormGroup>
-                        <AdminFormGroup label="التاريخ" className="col-md-4">
-                            <input type="date" className="form-control" value={formData.date_activite} onChange={(e) => setFormData({ ...formData, date_activite: e.target.value })} required />
-                        </AdminFormGroup>
-                        <AdminFormGroup label="الوصف" className="col-md-12">
-                            <textarea className="form-control" rows="3" value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} required />
-                        </AdminFormGroup>
-                        <AdminFormGroup label="الصورة" className="col-md-4">
-                            <input type="file" className="form-control-file" onChange={(e) => setImage(e.target.files[0])} />
-                            {currentImage && !image && ( // Show current image if editing and no new image selected
-                                <div className="mt-2">
-                                    <img src={currentImage} alt="Current Activity" style={{ maxWidth: '100px', maxHeight: '100px', objectFit: 'cover' }} />
-                                    <small className="d-block text-muted">الصورة الحالية</small>
-                                </div>
-                            )}
-                        </AdminFormGroup>
-                    </div>
-                    <AdminFormActions>
-                        <AdminBtn variant="success" type="submit" icon="la-check" disabled={submitting}>
-                            {submitting ? <span className="spinner-border spinner-border-sm"/> : (isEditing ? 'تحديث النشاط' : 'حفظ النشاط')}
-                        </AdminBtn>
-                        <AdminBtn variant="secondary" icon="la-times" onClick={() => { setShowForm(false); resetForm(); }}>إلغاء</AdminBtn>
-                    </AdminFormActions>
-                </AdminFormPanel>
+                {/* Removed AdminFormPanel and its content */}
 
                 <AdminCard title="قائمة الأنشطة" icon="la-calendar" flush>
                     {loading ? (
@@ -244,8 +140,8 @@ const AdminActivities = () => {
                                         <th>العنوان</th>
                                         <th>النوع</th>
                                         <th>التاريخ</th>
-                                        <th>الصورة</th> {/* New column */}
-                                        <th>الوصف</th> {/* New column */}
+                                        <th>الصورة</th>
+                                        <th>الوصف</th>
                                         <th>العمليات</th>
                                     </tr>
                                 </thead>
@@ -265,7 +161,7 @@ const AdminActivities = () => {
                                             <td>{act.description.substring(0, 50)}...</td> {/* Truncated description */}
                                             <td>
                                                 <div className="admin-action-group">
-                                                    <AdminBtn variant="primary" icon="la-edit" onClick={() => handleOpenEditForm(act)}>تعديل</AdminBtn>
+                                                    <AdminBtn variant="primary" icon="la-edit" onClick={() => navigate(`/admin/activities/edit/${act.id}`)}>تعديل</AdminBtn> {/* Navigate to edit page */}
                                                     <AdminBtn variant="danger" icon="la-trash" onClick={() => promptDelete(act.id, act.titre)}>حذف</AdminBtn>
                                                 </div>
                                             </td>

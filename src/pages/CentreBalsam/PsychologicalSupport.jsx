@@ -5,6 +5,8 @@ import Footer from '../../components/Footer/Footer';
 
 export default function PsychologicalSupport() {
     return (
+        <>
+            <PageBanner/>
         <div style={{ direction: 'rtl', fontFamily: 'Segoe UI, Arial, sans-serif', textAlign: 'right', background: '#fafafa' }}>
             <style>{`
                 :root {
@@ -83,5 +85,6 @@ export default function PsychologicalSupport() {
 
             <Footer />
         </div>
+            </>
     );
 }

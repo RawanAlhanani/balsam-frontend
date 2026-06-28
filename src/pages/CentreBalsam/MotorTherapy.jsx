@@ -1,9 +1,13 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import Header from '../../components/Header/Header';
+import PageBanner from '../../components/PageBanner/PageBanner';
+
 
 export default function MotorTherapy() {
     return (
+        <>
+            <PageBanner/>
         <div style={{ direction: 'rtl', fontFamily: 'Segoe UI, Arial, sans-serif', textAlign: 'right', background: '#fcfdfe', overflowX: 'hidden', position: 'relative' }}>
             <style>{`
                 :root {
@@ -148,5 +152,6 @@ export default function MotorTherapy() {
             </div>
 
         </div>
+        </>
     );
 }

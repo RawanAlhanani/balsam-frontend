@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 const ClubPage = () => {
     return (
         <div className="content">
-            <PageBanner title="نادي للأسر" />
+            <PageBanner />
 
             <section>
                 <div className="container">
