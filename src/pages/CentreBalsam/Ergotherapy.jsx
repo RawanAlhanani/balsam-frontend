@@ -7,7 +7,7 @@ export default function Activities() {
     return (
         <>
 
-            <PageBanner/>
+            
 
         <div style={{ direction: 'rtl', fontFamily: 'Segoe UI, Arial, sans-serif', textAlign: 'right', background: '#fdfeff', color: '#1a202c', overflowX: 'hidden', position: 'relative' }}>
 
@@ -83,7 +83,7 @@ export default function Activities() {
                 }
             `}</style>
 
-            <Header />
+            <PageBanner/>
 
             <div className="creative-blob-1"></div>
             <div className="creative-blob-2"></div>

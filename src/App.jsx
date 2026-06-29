@@ -114,6 +114,7 @@ function App() {
                 <Route path="/centre/ergotherapie" element={<Ergotherapy />} />
                 <Route path="/centre/devenir-benevole" element={<DevenirBenevole />} />
                 <Route path="/centre/team" element={<TeamPage />} />
+                <Route path="/centre/contact" element={<Contact />} />
               </Routes>
             </Suspense>
           </MainLayout>

@@ -1,12 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import Header from '../../components/Header/Header';
-import PageBanner from "../../components/PageBanner.jsx";
+import PageBanner from '../../components/PageBanner';
 
 export default function SpeechTherapy() {
     return (
         <>
-            <PageBanner/>
+              
+       
         <div style={{ direction: 'rtl', fontFamily: 'Segoe UI, Arial, sans-serif', textAlign: 'right', background: '#fdfeff', overflowX: 'hidden', position: 'relative' }}>
             <style>{`
                 :root {
@@ -70,8 +70,7 @@ export default function SpeechTherapy() {
                     .premium-cta { padding: 40px 24px; }
                 }
             `}</style>
-
-            <Header />
+             <PageBanner/>
 
             {/* عناصر فنية بالخلفية */}
             <div className="bg-blob-1"></div>

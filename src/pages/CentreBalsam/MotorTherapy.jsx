@@ -7,7 +7,7 @@ import PageBanner from '../../components/PageBanner';
 export default function MotorTherapy() {
     return (
         <>
-            <PageBanner/>
+        
         <div style={{ direction: 'rtl', fontFamily: 'Segoe UI, Arial, sans-serif', textAlign: 'right', background: '#fcfdfe', overflowX: 'hidden', position: 'relative' }}>
             <style>{`
                 :root {
@@ -76,7 +76,7 @@ export default function MotorTherapy() {
                 }
             `}</style>
 
-            <Header />
+             <PageBanner/>
 
             <div className="bg-blob-1"></div>
             <div className="bg-blob-2"></div>
