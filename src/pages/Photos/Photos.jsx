@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { getPhotos } from '../../api';
 import { getStorageUrl } from '../../utils/formatters';
 import PageBanner from '../../components/PageBanner';
+import OptimizedImage from '../../components/OptimizedImage';
 
 const Photos = () => {
     const [photos, setPhotos] = useState([]);
@@ -37,9 +38,12 @@ const Photos = () => {
                     <div className="row">
                         {photos.map(img => (
                             <div key={img.id} className="col-md-3 col-sm-6 mb20" style={{ marginBottom: '20px' }}>
-                                <a className="example-image-link" href={getStorageUrl(img.nomImage)} data-lightbox="example-set">
-                                    <img className="example-image" src={getStorageUrl(img.nomImage)} alt="" style={{ width: '100%', height: '200px', objectFit: 'cover', borderRadius: '4px' }} />
-                                </a>
+                                <img 
+                                    src={getStorageUrl(img.nomImage)} 
+                                    alt="" 
+                                    className="example-image"
+                                    style={{ width: '100%', height: '200px', objectFit: 'cover', borderRadius: '4px' }}
+                                />
                             </div>
                         ))}
                     </div>

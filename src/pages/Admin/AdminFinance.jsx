@@ -137,7 +137,7 @@ const AdminFinance = () => {
     // State for delete confirmation modal
     const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState(false);
     const [deleteTargetId, setDeleteTargetId] = useState(null);
-    const [deleteTargetName, setDeleteTargetName] = useState('');
+    const [deleteTargetName, setDeleteTargetName] = '';
 
 
     useEffect(() => {
@@ -225,7 +225,6 @@ const AdminFinance = () => {
     };
 
     const handlePrint = () => {
-        const printWindow = window.open('', '_blank');
         const logoUrl = window.location.origin + '/backend/app-assets/images/logo/meeting.jpg';
 
         const incomes = financeData.transactions.filter(t => t.type === 'income');
@@ -268,6 +267,10 @@ const AdminFinance = () => {
 
                     .total-line { font-weight: bold; background: #f5f5f5 !important; }
                     .final-balance-box { margin-top: 20px; padding: 15px; border: 2px solid #1a5a96; text-align: center; font-size: 20px; background: #e3f2fd; }
+
+                    @media print {
+                        body { -webkit-print-color-adjust: exact; }
+                    }
                 </style>
             </head>
             <body>
@@ -333,12 +336,46 @@ const AdminFinance = () => {
                     </tbody>
                     <tfoot><tr><td><div class="footer-space"></div></td></tr></tfoot>
                 </table>
-                <script>window.onload = () => { setTimeout(() => { window.print(); window.close(); }, 500); }</script>
             </body>
             </html>
         `;
-        printWindow.document.write(content);
-        printWindow.document.close();
+
+        // Remove any leftover print iframe from a previous click
+        const oldFrame = document.getElementById('print-frame');
+        if (oldFrame) oldFrame.remove();
+
+        // Create a hidden iframe instead of window.open — avoids the popup blocker
+        const iframe = document.createElement('iframe');
+        iframe.id = 'print-frame';
+        iframe.style.position = 'fixed';
+        iframe.style.right = '0';
+        iframe.style.bottom = '0';
+        iframe.style.width = '0';
+        iframe.style.height = '0';
+        iframe.style.border = '0';
+        document.body.appendChild(iframe);
+
+        const doc = iframe.contentWindow.document;
+        doc.open();
+        doc.write(content);
+        doc.close();
+
+        const triggerPrint = () => {
+            iframe.contentWindow.focus();
+            iframe.contentWindow.print();
+        };
+
+        // Clean up the iframe once printing is done (or cancelled)
+        iframe.contentWindow.onafterprint = () => {
+            iframe.remove();
+        };
+
+        // Give the browser a moment to load the @import font + image before printing
+        if (iframe.contentDocument.readyState === 'complete') {
+            setTimeout(triggerPrint, 300);
+        } else {
+            iframe.onload = () => setTimeout(triggerPrint, 300);
+        }
     };
 
     const handleSubmit = async (e) => {

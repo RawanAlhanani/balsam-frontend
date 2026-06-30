@@ -180,144 +180,169 @@ const AdminActivityReports = () => {
     };
 
     const handlePrint = (activity) => {
-        const printWindow = window.open('', '_blank');
         const logoUrl = window.location.origin + '/backend/app-assets/images/logo/meeting.jpg';
 
         const content = `
-            <html dir="rtl">
-            <head>
-                <title>تقرير عن نشاط</title>
-                <style>
-                    @import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap');
+        <html dir="rtl">
+        <head>
+            <title>تقرير عن نشاط</title>
+            <style>
+                @import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap');
 
-                    @page {
-                        size: A4;
-                        margin: 0;
-                    }
+                @page {
+                    size: A4;
+                    margin: 0;
+                }
 
-                    body {
-                        font-family: 'Amiri', serif;
-                        margin: 0;
-                        padding: 0;
-                        -webkit-print-color-adjust: exact;
-                        print-color-adjust: exact;
-                    }
+                body {
+                    font-family: 'Amiri', serif;
+                    margin: 0;
+                    padding: 0;
+                    -webkit-print-color-adjust: exact;
+                    print-color-adjust: exact;
+                }
 
-                    .background-frame {
-                        position: fixed;
-                        top: 0;
-                        left: 0;
-                        width: 210mm;
-                        height: 297mm;
-                        z-index: -1;
-                    }
+                .background-frame {
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 210mm;
+                    height: 297mm;
+                    z-index: -1;
+                }
 
-                    .background-frame img {
-                        width: 100%;
-                        height: 100%;
-                        display: block;
-                    }
+                .background-frame img {
+                    width: 100%;
+                    height: 100%;
+                    display: block;
+                }
 
-                    .print-table {
-                        width: 100%;
-                        border-collapse: collapse;
-                        position: relative;
-                        z-index: 1;
-                    }
+                .print-table {
+                    width: 100%;
+                    border-collapse: collapse;
+                    position: relative;
+                    z-index: 1;
+                }
 
-                    .page-header-space {
-                        height: 55mm;
-                    }
+                .page-header-space {
+                    height: 55mm;
+                }
 
-                    .page-footer-space {
-                        height: 45mm;
-                    }
+                .page-footer-space {
+                    height: 45mm;
+                }
 
-                    .content-cell {
-                        padding: 0 25mm;
-                        vertical-align: top;
-                    }
+                .content-cell {
+                    padding: 0 25mm;
+                    vertical-align: top;
+                }
 
-                    .header-title { text-align: center; margin-bottom: 30px; }
-                    .title { font-size: 26px; font-weight: bold; color: #1a5a96; text-decoration: underline; }
+                .header-title { text-align: center; margin-bottom: 30px; }
+                .title { font-size: 26px; font-weight: bold; color: #1a5a96; text-decoration: underline; }
 
-                    .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px; }
-                    .info-item { border-bottom: 1px dashed #bbb; padding: 5px; font-size: 18px; }
-                    .info-label { font-weight: bold; color: #333; margin-left: 10px; }
+                .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px; }
+                .info-item { border-bottom: 1px dashed #bbb; padding: 5px; font-size: 18px; }
+                .info-label { font-weight: bold; color: #333; margin-left: 10px; }
 
-                    .section { margin-bottom: 20px; page-break-inside: avoid; }
-                    .section-title { font-size: 19px; font-weight: bold; color: #1a5a96; border-right: 5px solid #1a5a96; padding-right: 12px; margin-bottom: 8px; background: rgba(26, 90, 150, 0.05); }
-                    .section-content { padding: 5px 15px; white-space: pre-wrap; font-size: 17px; min-height: 100px; border: 1px solid #eee; }
+                .section { margin-bottom: 20px; page-break-inside: avoid; }
+                .section-title { font-size: 19px; font-weight: bold; color: #1a5a96; border-right: 5px solid #1a5a96; padding-right: 12px; margin-bottom: 8px; background: rgba(26, 90, 150, 0.05); }
+                .section-content { padding: 5px 15px; white-space: pre-wrap; font-size: 17px; min-height: 100px; border: 1px solid #eee; }
 
-                    .footer-signatures { display: flex; justify-content: space-between; margin-top: 60px; padding: 0 20px; page-break-inside: avoid; }
-                    .signature-box { text-align: center; width: 220px; }
+                .footer-signatures { display: flex; justify-content: space-between; margin-top: 60px; padding: 0 20px; page-break-inside: avoid; }
+                .signature-box { text-align: center; width: 220px; }
 
-                    @media print {
-                        body { -webkit-print-color-adjust: exact; }
-                    }
-                </style>
-            </head>
-            <body>
-                <div class="background-frame">
-                    <img src="${logoUrl}" alt="background" />
-                </div>
+                @media print {
+                    body { -webkit-print-color-adjust: exact; }
+                }
+            </style>
+        </head>
+        <body>
+            <div class="background-frame">
+                <img src="${logoUrl}" alt="background" />
+            </div>
 
-                <table class="print-table">
-                    <thead>
-                        <tr><td><div class="page-header-space"></div></td></tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td class="content-cell">
-                                <div class="header-title">
-                                    <div class="title">تقرير عن نشاط</div>
+            <table class="print-table">
+                <thead>
+                    <tr><td><div class="page-header-space"></div></td></tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="content-cell">
+                            <div class="header-title">
+                                <div class="title">تقرير عن نشاط</div>
+                            </div>
+
+                            <div class="info-grid">
+                                <div class="info-item"><span class="info-label">اليوم والتاريخ:</span> ${activity.date}</div>
+                                <div class="info-item"><span class="info-label">المكان:</span> ${activity.location}</div>
+                                <div class="info-item"><span class="info-label">نوع النشاط:</span> ${activity.activity_type}</div>
+                                <div class="info-item"><span class="info-label">المستفيدون:</span> ${activity.beneficiaries}</div>
+                                <div class="info-item"><span class="info-label">المؤطر:</span> ${activity.moderator}</div>
+                                <div class="info-item"><span class="info-label">عنوان العرض:</span> ${activity.presentation_title}</div>
+                                <div class="info-item"><span class="info-label">ساعة البداية:</span> ${activity.start_time}</div>
+                                <div class="info-item"><span class="info-label">ساعة النهاية:</span> ${activity.end_time}</div>
+                            </div>
+
+                            <div class="section">
+                                <div class="section-title">ملخص عن النشاط</div>
+                                <div class="section-content">${activity.summary || '................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................'}</div>
+                            </div>
+
+                            <div class="footer-signatures">
+                                <div class="signature-box">
+                                    <strong>إمضاء: الكاتب العام</strong>
                                 </div>
-
-                                <div class="info-grid">
-                                    <div class="info-item"><span class="info-label">اليوم والتاريخ:</span> ${activity.date}</div>
-                                    <div class="info-item"><span class="info-label">المكان:</span> ${activity.location}</div>
-                                    <div class="info-item"><span class="info-label">نوع النشاط:</span> ${activity.activity_type}</div>
-                                    <div class="info-item"><span class="info-label">المستفيدون:</span> ${activity.beneficiaries}</div>
-                                    <div class="info-item"><span class="info-label">المؤطر:</span> ${activity.moderator}</div>
-                                    <div class="info-item"><span class="info-label">عنوان العرض:</span> ${activity.presentation_title}</div>
-                                    <div class="info-item"><span class="info-label">ساعة البداية:</span> ${activity.start_time}</div>
-                                    <div class="info-item"><span class="info-label">ساعة النهاية:</span> ${activity.end_time}</div>
+                                <div class="signature-box">
+                                    <strong>إمضاء: الرئيس</strong>
                                 </div>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr><td><div class="page-footer-space"></div></td></tr>
+                </tfoot>
+            </table>
+        </body>
+        </html>
+    `;
 
-                                <div class="section">
-                                    <div class="section-title">ملخص عن النشاط</div>
-                                    <div class="section-content">${activity.summary || '................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................'}</div>
-                                </div>
+        // Remove any leftover print iframe from a previous click
+        const oldFrame = document.getElementById('print-frame');
+        if (oldFrame) oldFrame.remove();
 
-                                <div class="footer-signatures">
-                                    <div class="signature-box">
-                                        <strong>إمضاء: الكاتب العام</strong>
-                                    </div>
-                                    <div class="signature-box">
-                                        <strong>إمضاء: الرئيس</strong>
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                    <tfoot>
-                        <tr><td><div class="page-footer-space"></div></td></tr>
-                    </tfoot>
-                </table>
+        // Create a hidden iframe instead of window.open — avoids the popup blocker
+        const iframe = document.createElement('iframe');
+        iframe.id = 'print-frame';
+        iframe.style.position = 'fixed';
+        iframe.style.right = '0';
+        iframe.style.bottom = '0';
+        iframe.style.width = '0';
+        iframe.style.height = '0';
+        iframe.style.border = '0';
+        document.body.appendChild(iframe);
 
-                <script>
-                    window.onload = function() {
-                        setTimeout(() => {
-                            window.print();
-                            window.close();
-                        }, 500);
-                    }
-                </script>
-            </body>
-            </html>
-        `;
-        printWindow.document.write(content);
-        printWindow.document.close();
+        const doc = iframe.contentWindow.document;
+        doc.open();
+        doc.write(content);
+        doc.close();
+
+        const triggerPrint = () => {
+            iframe.contentWindow.focus();
+            iframe.contentWindow.print();
+        };
+
+        // Clean up the iframe once printing is done (or cancelled)
+        iframe.contentWindow.onafterprint = () => {
+            iframe.remove();
+        };
+
+        // Give the browser a moment to load the @import font + image before printing
+        if (iframe.contentDocument.readyState === 'complete') {
+            setTimeout(triggerPrint, 300);
+        } else {
+            iframe.onload = () => setTimeout(triggerPrint, 300);
+        }
     };
 
     return (

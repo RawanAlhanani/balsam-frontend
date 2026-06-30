@@ -170,13 +170,13 @@ const AdminMeetings = () => {
     };
 
     const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setFormData({ ...formData, [name]: value });
-        // Clear error for this field when user starts typing
-        if (formErrors[name]) {
-            setFormErrors(prev => ({ ...prev, [name]: null }));
-        }
-    };
+            const { name, value } = e.target;
+            setFormData({ ...formData, [name]: value });
+            // Clear error for this field when user starts typing
+            if (formErrors[name]) {
+                setFormErrors(prev => ({ ...prev, [name]: null }));
+            }
+        };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -235,7 +235,6 @@ const AdminMeetings = () => {
     };
 
     const handlePrint = (meeting) => {
-        const printWindow = window.open('', '_blank');
         const logoUrl = window.location.origin + '/backend/app-assets/images/logo/meeting.jpg';
 
         const content = `
@@ -379,20 +378,46 @@ const AdminMeetings = () => {
                         <tr><td><div class="page-footer-space"></div></td></tr>
                     </tfoot>
                 </table>
-
-                <script>
-                    window.onload = function() {
-                        setTimeout(() => {
-                            window.print();
-                            window.close();
-                        }, 500);
-                    }
-                </script>
             </body>
             </html>
         `;
-        printWindow.document.write(content);
-        printWindow.document.close();
+
+        // Remove any leftover print iframe from a previous click
+        const oldFrame = document.getElementById('print-frame');
+        if (oldFrame) oldFrame.remove();
+
+        // Create a hidden iframe instead of window.open — avoids the popup blocker
+        const iframe = document.createElement('iframe');
+        iframe.id = 'print-frame';
+        iframe.style.position = 'fixed';
+        iframe.style.right = '0';
+        iframe.style.bottom = '0';
+        iframe.style.width = '0';
+        iframe.style.height = '0';
+        iframe.style.border = '0';
+        document.body.appendChild(iframe);
+
+        const doc = iframe.contentWindow.document;
+        doc.open();
+        doc.write(content);
+        doc.close();
+
+        const triggerPrint = () => {
+            iframe.contentWindow.focus();
+            iframe.contentWindow.print();
+        };
+
+        // Clean up the iframe once printing is done (or cancelled)
+        iframe.contentWindow.onafterprint = () => {
+            iframe.remove();
+        };
+
+        // Give the browser a moment to load the @import font + image before printing
+        if (iframe.contentDocument.readyState === 'complete') {
+            setTimeout(triggerPrint, 300);
+        } else {
+            iframe.onload = () => setTimeout(triggerPrint, 300);
+        }
     };
 
     return (
