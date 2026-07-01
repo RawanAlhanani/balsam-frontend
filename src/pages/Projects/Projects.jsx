@@ -1,8 +1,29 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { getProjects } from '../../api';
 import { Link } from 'react-router-dom';
 import { getStorageUrl } from '../../utils/formatters';
 import PageBanner from '../../components/PageBanner';
+
+// Helper function to extract paragraph content from structured_description
+const getParagraphContent = (structuredDescriptionString) => {
+    if (!structuredDescriptionString) {
+        return '';
+    }
+    try {
+        const parsedDescription = JSON.parse(structuredDescriptionString);
+        if (!parsedDescription || !parsedDescription.sections) {
+            return '';
+        }
+        const paragraphs = parsedDescription.sections
+            .filter(section => section.type === 'paragraph')
+            .map(section => section.content)
+            .join(' '); // Join paragraphs with a space
+        return paragraphs;
+    } catch (e) {
+        console.error("Error parsing structured_description:", e);
+        return ''; // Return empty string if parsing fails
+    }
+};
 
 const Projects = () => {
     const [projects, setProjects] = useState([]);
@@ -50,7 +71,12 @@ const Projects = () => {
                                                 </figure>
                                                 <div className="feature_blog_caption">
                                                     <h5><Link to={`/projet/${v.id}`}>{v.titre}</Link></h5>
-                                                    <p>{v.description.substring(0, 150)}...</p>
+                                                    <p>
+                                                        {v.structured_description
+                                                            ? getParagraphContent(v.structured_description).substring(0, 150)
+                                                            : ''}
+                                                        ...
+                                                    </p>
                                                     <Link to={`/projet/${v.id}`} className="ProjectsRead">قراءة المزيد</Link>
                                                 </div>
                                             </div>
