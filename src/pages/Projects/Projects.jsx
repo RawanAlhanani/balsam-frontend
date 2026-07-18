@@ -5,24 +5,15 @@ import { getStorageUrl } from '../../utils/formatters';
 import PageBanner from '../../components/PageBanner';
 
 // Helper function to extract paragraph content from structured_description
-const getParagraphContent = (structuredDescriptionString) => {
-    if (!structuredDescriptionString) {
+const getParagraphContent = (structuredDescription) => {
+    if (!structuredDescription || !structuredDescription.sections) {
         return '';
     }
-    try {
-        const parsedDescription = JSON.parse(structuredDescriptionString);
-        if (!parsedDescription || !parsedDescription.sections) {
-            return '';
-        }
-        const paragraphs = parsedDescription.sections
-            .filter(section => section.type === 'paragraph')
-            .map(section => section.content)
-            .join(' '); // Join paragraphs with a space
-        return paragraphs;
-    } catch (e) {
-        console.error("Error parsing structured_description:", e);
-        return ''; // Return empty string if parsing fails
-    }
+    const paragraphs = structuredDescription.sections
+        .filter(section => section.type === 'paragraph')
+        .map(section => section.content)
+        .join(' '); // Join paragraphs with a space
+    return paragraphs;
 };
 
 const Projects = () => {

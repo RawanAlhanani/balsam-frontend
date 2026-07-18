@@ -43,9 +43,6 @@ const About = () => {
                         return null;
                 }
             });
-        } else if (page.description) {
-            // Fallback to old description if structured_description is not available
-            return <div dangerouslySetInnerHTML={{ __html: formatDescription(page.description) }} />;
         }
         return null;
     };
