@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { getAbout } from '../../api';
 import { formatDescription, getStorageUrl } from '../../utils/formatters';
 import PageBanner from '../../components/PageBanner';
+import Loading from '../../components/Loading';
 
 const About = () => {
     const [abouts, setAbouts] = useState([]);
@@ -47,7 +48,7 @@ const About = () => {
         return null;
     };
 
-    if (loading) return <div style={{ textAlign: 'center', padding: '100px' }} className="eco_headings"><h3>جاري التحميل...</h3></div>;
+    if (loading) return <Loading />;
     if (error) return <div style={{ textAlign: 'center', padding: '100px' }} className="alert alert-danger">{error}</div>;
 
     return (

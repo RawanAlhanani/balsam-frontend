@@ -22,10 +22,10 @@ const GallerySection = ({ images }) => {
                                     href={getStorageUrl(img.nomImage)} 
                                     data-lightbox="example-set"
                                 >
-                                    <img 
-                                        className="example-image" 
-                                        src={getStorageUrl(img.nomImage)} 
-                                        alt="" 
+                                    <img
+                                        className="example-image"
+                                        src={getStorageUrl(img.nomImage)}
+                                        alt={`صورة من معرض جمعية بلسم رقم ${img.id}`}
                                         style={{ width: '100%', height: '200px', objectFit: 'cover' }}
                                     />
                                 </a>

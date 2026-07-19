@@ -114,6 +114,22 @@ export const AdminBtn = ({ variant = 'primary', size = 'sm', icon, children, cla
     );
 };
 
+export const AdminPagination = ({ currentPage, lastPage, onPageChange }) => {
+    if (lastPage <= 1) return null;
+
+    return (
+        <div className="d-flex justify-content-center align-items-center admin-pagination" style={{ gap: '12px', marginTop: '16px' }}>
+            <AdminBtn variant="outline-secondary" icon="la-angle-right" onClick={() => onPageChange(currentPage - 1)} disabled={currentPage <= 1}>
+                السابق
+            </AdminBtn>
+            <span>صفحة {currentPage} من {lastPage}</span>
+            <AdminBtn variant="outline-secondary" icon="la-angle-left" onClick={() => onPageChange(currentPage + 1)} disabled={currentPage >= lastPage}>
+                التالي
+            </AdminBtn>
+        </div>
+    );
+};
+
 export const AdminStatCard = ({ label, value, icon, color = 'primary', suffix }) => (
     <div className={`admin-stat-card admin-stat-card--${color}`}>
         <div className="admin-stat-card-body">

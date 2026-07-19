@@ -3,6 +3,8 @@ import { getActivities } from '../../api';
 import { Link } from 'react-router-dom';
 import { getStorageUrl } from '../../utils/formatters';
 import PageBanner from '../../components/PageBanner';
+import Loading from '../../components/Loading';
+import OptimizedImage from '../../components/OptimizedImage';
 
 const Activities = () => {
     const [activities, setActivities] = useState([]);
@@ -22,7 +24,7 @@ const Activities = () => {
             });
     }, []);
 
-    if (loading) return <div style={{ textAlign: 'center', padding: '100px' }} className="eco_headings"><h3>جاري التحميل...</h3></div>;
+    if (loading) return <Loading />;
     if (error) return <div style={{ textAlign: 'center', padding: '100px' }} className="alert alert-danger">{error}</div>;
 
     return (
@@ -45,7 +47,7 @@ const Activities = () => {
                                             <div className="front">
                                                 <figure>
                                                     <div className="eco-thumb">
-                                                        <img src={getStorageUrl(v.image_activite)} alt="" />
+                                                        <OptimizedImage src={getStorageUrl(v.image_activite)} alt={v.titre} />
                                                     </div>
                                                 </figure>
                                                 <div className="feature_blog_caption">

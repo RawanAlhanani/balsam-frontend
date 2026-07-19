@@ -1370,6 +1370,15 @@ section{
   -webkit-transform-style: preserve-3d;
   position: relative;
 }
+/* .front is float:left with no sibling .back on cards that skip the flip
+   effect (News, Projects, Activities, etc.) — without this, .flipper and
+   its .eco_flip-container parent collapse to 0 height and the card becomes
+   invisible. */
+.flipper::after {
+  content: "";
+  display: table;
+  clear: both;
+}
 .front, .back {
   backface-visibility: hidden;
   transition: 0.6s;

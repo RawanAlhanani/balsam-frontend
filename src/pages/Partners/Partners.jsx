@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { getPartenaires } from '../../api';
 import PageBanner from '../../components/PageBanner';
+import Loading from '../../components/Loading';
+import OptimizedImage from '../../components/OptimizedImage';
 import { getStorageUrl } from '../../utils/formatters';
 
 const Partners = () => {
@@ -19,7 +21,7 @@ const Partners = () => {
             });
     }, []);
 
-    if (loading) return <div style={{ textAlign: 'center', padding: '100px' }} className="eco_headings"><h3>جاري التحميل...</h3></div>;
+    if (loading) return <Loading />;
 
     return (
         <div className="content">
@@ -35,7 +37,7 @@ const Partners = () => {
                         {partners.map(p => (
                             <div key={p.id} className="col-md-3 col-sm-6" style={{ marginBottom: '30px', textAlign: 'center' }}>
                                 <div className="partner-item" style={{ padding: '20px', border: '1px solid #eee', borderRadius: '8px', minHeight: '200px', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
-                                    <img src={getStorageUrl(p.imagePartenaire)} alt={p.nomPartenaire} style={{ maxWidth: '100%', maxHeight: '120px', objectFit: 'contain' }} />
+                                    <OptimizedImage src={getStorageUrl(p.imagePartenaire)} alt={p.nomPartenaire} style={{ maxWidth: '100%', maxHeight: '120px', objectFit: 'contain' }} />
                                     <h5 style={{ marginTop: '15px' }}>{p.nomPartenaire}</h5>
                                 </div>
                             </div>

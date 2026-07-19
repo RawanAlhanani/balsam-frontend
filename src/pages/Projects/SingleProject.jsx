@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { getProject } from '../../api';
 import PageBanner from '../../components/PageBanner';
+import Loading from '../../components/Loading';
 import { getStorageUrl, formatDescription } from '../../utils/formatters';
 
 const SingleProject = () => {
@@ -50,7 +51,7 @@ const SingleProject = () => {
         return null;
     };
 
-    if (loading) return <div style={{ textAlign: 'center', padding: '100px' }}>جاري التحميل...</div>;
+    if (loading) return <Loading />;
     if (!project) return <div style={{ textAlign: 'center', padding: '100px' }}>المشروع غير موجود.</div>;
 
     return (

@@ -8,6 +8,7 @@ import VideoSection from './components/VideoSection';
 import GallerySection from './components/GallerySection';
 import DonationSection from './components/DonationSection';
 import Stats from './components/Stats';
+import Loading from '../../components/Loading';
 const Home = () => {
     const [data, setData] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -30,12 +31,7 @@ const Home = () => {
     }, []);
 
     if (loading) {
-        return (
-            <div className="content" style={{ minHeight: '600px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <div id="status"></div> {/* Using theme's status/preloader style if available */}
-                <div className="eco_headings"><h3>جاري التحميل...</h3></div>
-            </div>
-        );
+        return <Loading />;
     }
 
     if (error) {

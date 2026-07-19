@@ -50,7 +50,7 @@ const AdminLogin = () => {
                                             </div>
                                         </div>
                                         <h6 className="card-subtitle line-on-side text-muted text-center font-small-3 pt-2">
-                                            <span>Se connecter (Administration)</span>
+                                            <span dir="ltr">Se connecter (Administration)</span>
                                         </h6>
                                     </div>
                                     <div className="card-content">

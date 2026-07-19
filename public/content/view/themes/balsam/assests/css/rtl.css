@@ -230,3 +230,12 @@ h4.eco_sm_titles {
 .eco_detail_address {
     text-align: right;
 }
+
+/* responsive.css hides .front by default and relies on legacy jQuery (custom.js)
+   to reveal it after load. That init never reaches cards rendered later by React
+   (news/projects/activities load asynchronously), so they stayed invisible. None
+   of these cards actually have a .back face/flip effect, so .front should just
+   always be shown. This file loads last, so it reliably wins the cascade. */
+.eco_flip-container .front {
+    display: block !important;
+}

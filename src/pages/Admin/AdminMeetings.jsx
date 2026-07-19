@@ -4,6 +4,7 @@ import {
     AdminPage, AdminPageHeader, AdminCard, AdminFormPanel, AdminFormGroup,
     AdminFormActions, AdminTableWrap, AdminBtn, AdminAlert, AdminLoading, AdminEmptyState
 } from '../../components/Admin/ui/AdminUI';
+import DeleteConfirmModal from '../../components/Admin/modals/DeleteConfirmModal';
 
 // Helper function to personalize error messages
 const getPersonalizedErrorMessage = (error) => {
@@ -33,86 +34,6 @@ const getPersonalizedErrorMessage = (error) => {
 
     // Fallback for any other unhandled errors
     return 'حدث خطأ ما. الرجاء المحاولة مرة أخرى.'; // Something went wrong. Please try again.
-};
-
-// DeleteConfirmModal component (copied for consistency)
-const DeleteConfirmModal = ({ show, onClose, onConfirm, itemName, isDeleting }) => {
-    if (!show) return null;
-
-    return (
-        <>
-            {/* Backdrop */}
-            <div
-                className="modal-backdrop fade show"
-                onClick={onClose}
-                style={{
-                    zIndex: 1040
-                }}
-            ></div>
-
-            {/* Modal */}
-            <div
-                className="modal fade show d-block"
-                tabIndex="-1"
-                role="dialog"
-                style={{
-                    position: "fixed",
-                    top: 0,
-                    left: 0,
-                    width: "100%",
-                    height: "100%",
-                    zIndex: 1055,
-                    overflowY: "auto"
-                }}
-            >
-                <div
-                    className="modal-dialog modal-dialog-centered"
-                    role="document"
-                >
-                    <div className="modal-content">
-                        <div className="modal-header">
-                            <h5 className="modal-title">تأكيد الحذف</h5>
-
-                            <button
-                                type="button"
-                                className="close"
-                                onClick={onClose}
-                            >
-                                &times;
-                            </button>
-                        </div>
-
-                        <div className="modal-body">
-                            هل أنت متأكد أنك تريد حذف "{itemName}"؟
-                        </div>
-
-                        <div className="modal-footer">
-                            <button
-                                type="button"
-                                className="btn btn-secondary"
-                                onClick={onClose}
-                            >
-                                إلغاء
-                            </button>
-
-                            <button
-                                type="button"
-                                className="btn btn-danger"
-                                onClick={onConfirm}
-                                disabled={isDeleting}
-                            >
-                                {isDeleting ? (
-                                    <span className="spinner-border spinner-border-sm"></span>
-                                ) : (
-                                    "حذف"
-                                )}
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </>
-    );
 };
 
 const AdminMeetings = () => {

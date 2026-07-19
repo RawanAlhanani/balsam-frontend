@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import api from '../../api';
 import { getStorageUrl } from '../../utils/formatters';
 import {
-    AdminPage, AdminPageHeader, AdminCard, AdminFormGroup, AdminBtn, AdminAlert, AdminLoading, AdminEmptyState
+    AdminPage, AdminPageHeader, AdminCard, AdminFormGroup, AdminBtn, AdminAlert, AdminLoading, AdminEmptyState, AdminPagination
 } from '../../components/Admin/ui/AdminUI';
+import DeleteConfirmModal from '../../components/Admin/modals/DeleteConfirmModal';
 
 // Helper function to personalize error messages
 const getPersonalizedErrorMessage = (error) => {
@@ -35,85 +36,6 @@ const getPersonalizedErrorMessage = (error) => {
     return 'حدث خطأ ما. الرجاء المحاولة مرة أخرى.'; // Something went wrong. Please try again.
 };
 
-// Re-using the DeleteConfirmModal for consistency
-const DeleteConfirmModal = ({ show, onClose, onConfirm, itemName, isDeleting }) => {
-    if (!show) return null;
-    return (
-        <>
-            {/* Backdrop */}
-            <div
-                className="modal-backdrop fade show"
-                onClick={onClose}
-                style={{
-                    zIndex: 1040
-                }}
-            ></div>
-
-            {/* Modal */}
-            <div
-                className="modal fade show d-block"
-                tabIndex="-1"
-                role="dialog"
-                style={{
-                    position: "fixed",
-                    top: 0,
-                    left: 0,
-                    width: "100%",
-                    height: "100%",
-                    zIndex: 1055,
-                    overflowY: "auto"
-                }}
-            >
-                <div
-                    className="modal-dialog modal-dialog-centered"
-                    role="document"
-                >
-                    <div className="modal-content">
-                        <div className="modal-header">
-                            <h5 className="modal-title">تأكيد الحذف</h5>
-
-                            <button
-                                type="button"
-                                className="close"
-                                onClick={onClose}
-                            >
-                                &times;
-                            </button>
-                        </div>
-
-                        <div className="modal-body">
-                            هل أنت متأكد أنك تريد حذف "{itemName}"؟
-                        </div>
-
-                        <div className="modal-footer">
-                            <button
-                                type="button"
-                                className="btn btn-secondary"
-                                onClick={onClose}
-                            >
-                                إلغاء
-                            </button>
-
-                            <button
-                                type="button"
-                                className="btn btn-danger"
-                                onClick={onConfirm}
-                                disabled={isDeleting}
-                            >
-                                {isDeleting ? (
-                                    <span className="spinner-border spinner-border-sm"></span>
-                                ) : (
-                                    "حذف"
-                                )}
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </>
-    );
-};
-
 const AdminImages = () => {
     const [sliders, setSliders] = useState([]);
     const [gallery, setGallery] = useState([]);
@@ -130,7 +52,10 @@ const AdminImages = () => {
     const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState(false);
     const [deleteTarget, setDeleteTarget] = useState(null); // { type, id, name }
 
-    useEffect(() => { fetchImages(); }, []);
+    const [galleryPage, setGalleryPage] = useState(1);
+    const [galleryLastPage, setGalleryLastPage] = useState(1);
+
+    useEffect(() => { fetchImages(); }, [galleryPage]);
 
     // Lock background scroll and interactions when delete modal is open
     useEffect(() => {
@@ -147,10 +72,11 @@ const AdminImages = () => {
         try {
             const [s, g] = await Promise.all([
                 api.get('/admin/sliders'),
-                api.get('/admin/gallery')
+                api.get('/admin/gallery', { params: { page: galleryPage } })
             ]);
             setSliders(s.data);
-            setGallery(g.data);
+            setGallery(g.data.data);
+            setGalleryLastPage(g.data.last_page);
         } catch (err) {
             const errorMessage = getPersonalizedErrorMessage(err);
             setAlert({ message: errorMessage, type: 'danger' });
@@ -283,6 +209,7 @@ const AdminImages = () => {
                                         ))}
                                     </div>
                                 )}
+                                <AdminPagination currentPage={galleryPage} lastPage={galleryLastPage} onPageChange={setGalleryPage} />
                             </AdminCard>
                         </div>
                     </div>

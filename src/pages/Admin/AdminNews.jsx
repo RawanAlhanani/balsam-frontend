@@ -3,8 +3,10 @@ import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import api from '../../api';
 import {
     AdminPage, AdminPageHeader, AdminCard, AdminLoading, AdminEmptyState,
-    AdminFormPanel, AdminFormGroup, AdminFormActions, AdminTableWrap, AdminBtn, AdminAlert
+    AdminFormPanel, AdminFormGroup, AdminFormActions, AdminTableWrap, AdminBtn, AdminAlert, AdminPagination
 } from '../../components/Admin/ui/AdminUI';
+import { getStorageUrl } from '../../utils/formatters';
+import DeleteConfirmModal from '../../components/Admin/modals/DeleteConfirmModal';
 
 // Helper function to personalize error messages
 const getPersonalizedErrorMessage = (error) => {
@@ -36,38 +38,12 @@ const getPersonalizedErrorMessage = (error) => {
     return 'حدث خطأ ما. الرجاء المحاولة مرة أخرى.'; // Something went wrong. Please try again.
 };
 
-// Re-using the DeleteConfirmModal for consistency
-const DeleteConfirmModal = ({ show, onClose, onConfirm, itemName, isDeleting }) => {
-    if (!show) return null;
-    return (
-        <div className="modal show d-block" tabIndex="-1" role="dialog">
-            <div className="modal-dialog" role="document" style={{ zIndex: 1060 }}>
-                <div className="modal-content">
-                    <div className="modal-header">
-                        <h5 className="modal-title">تأكيد الحذف</h5>
-                        <button type="button" className="close" onClick={onClose}>&times;</button>
-                    </div>
-                    <div className="modal-body">
-                        هل أنت متأكد أنك تريد حذف "{itemName}"؟
-                    </div>
-                    <div className="modal-footer">
-                        <button type="button" className="btn btn-secondary" onClick={onClose}>إلغاء</button>
-                        <button type="button" className="btn btn-danger" disabled={isDeleting} onClick={onConfirm}>
-                            {isDeleting ? <span className="spinner-border spinner-border-sm"/> : 'حذف'}
-                        </button>
-                    </div>
-                </div>
-            </div>
-            <div className="modal-backdrop show" onClick={onClose} style={{ zIndex: 1050 }}></div>
-        </div>
-    );
-};
-
-
 const AdminNews = () => {
     const navigate = useNavigate(); // Initialize useNavigate
     const [news, setNews] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [page, setPage] = useState(1);
+    const [lastPage, setLastPage] = useState(1);
     // Removed showForm, isEditing, editingNewsId, formData, image, currentImage states
     // as editing/adding will be handled on separate pages.
     const [alert, setAlert] = useState({ message: '', type: '' });
@@ -82,7 +58,7 @@ const AdminNews = () => {
 
     useEffect(() => {
         fetchNews();
-    }, []);
+    }, [page]);
 
     // Lock background scroll when modal is open
     useEffect(() => {
@@ -98,8 +74,9 @@ const AdminNews = () => {
     const fetchNews = async () => {
         setLoading(true);
         try {
-            const res = await api.get('/admin/news');
-            setNews(res.data);
+            const res = await api.get('/admin/news', { params: { page } });
+            setNews(res.data.data);
+            setLastPage(res.data.last_page);
         } catch (err) {
             const errorMessage = getPersonalizedErrorMessage(err);
             setAlert({ message: errorMessage, type: 'danger' });
@@ -182,7 +159,7 @@ const AdminNews = () => {
                                             <td>{item.description.substring(0, 50)}...</td> {/* Truncated description */}
                                             <td>
                                                 {item.image_info ? (
-                                                    <img src={`http://localhost:8000/storage/MesImages/${item.image_info}`} alt={item.titre} style={{ maxWidth: '50px', maxHeight: '50px', objectFit: 'cover' }} />
+                                                    <img src={getStorageUrl(item.image_info)} alt={item.titre} style={{ maxWidth: '50px', maxHeight: '50px', objectFit: 'cover' }} />
                                                 ) : (
                                                     'لا توجد'
                                                 )}
@@ -200,6 +177,7 @@ const AdminNews = () => {
                             </table>
                         </AdminTableWrap>
                     )}
+                    <AdminPagination currentPage={page} lastPage={lastPage} onPageChange={setPage} />
                 </AdminCard>
             </div>
         </AdminPage>

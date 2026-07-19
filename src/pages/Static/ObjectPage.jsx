@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { getNews } from '../../api';
 import { getStorageUrl } from '../../utils/formatters';
 import PageBanner from '../../components/PageBanner';
+import Loading from '../../components/Loading';
 import { Link } from 'react-router-dom';
 
 const ObjectPage = () => {
@@ -10,12 +11,15 @@ const ObjectPage = () => {
 
     useEffect(() => {
         getNews().then(res => {
-            setNews(res.data.slice(0, 4));
+            setNews(res.data.data.slice(0, 4));
+            setLoading(false);
+        }).catch(err => {
+            console.error("Error fetching news:", err);
             setLoading(false);
         });
     }, []);
 
-    if (loading) return <div style={{ textAlign: 'center', padding: '100px' }}>جاري التحميل...</div>;
+    if (loading) return <Loading />;
 
     return (
         <div className="content">

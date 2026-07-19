@@ -4,6 +4,7 @@ import api from '../../api';
 import {
     AdminPage, AdminPageHeader, AdminFormPanel, AdminFormGroup, AdminFormActions, AdminBtn, AdminAlert, AdminLoading
 } from '../../components/Admin/ui/AdminUI';
+import { getStorageUrl } from '../../utils/formatters';
 
 // Helper function to personalize error messages
 const getPersonalizedErrorMessage = (error) => {
@@ -64,7 +65,7 @@ const EditActivity = () => {
                 date_activite: activity.date_activite,
                 description: activity.description
             });
-            setCurrentImage(activity.image_activite ? `http://localhost:8000/storage/MesImages/${activity.image_activite}` : null);
+            setCurrentImage(activity.image_activite ? getStorageUrl(activity.image_activite) : null);
         } catch (err) {
             const errorMessage = getPersonalizedErrorMessage(err);
             setAlert({ message: errorMessage, type: 'danger' });

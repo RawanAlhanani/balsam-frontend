@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../../api';
 import PageBanner from '../../components/PageBanner';
+import Loading from '../../components/Loading';
 
 const Participation = () => {
     const { activite_id } = useParams();
@@ -32,7 +33,7 @@ const Participation = () => {
         window.open(`${import.meta.env.VITE_API_BASE_URL}/generer/${activite_id}/${user.id}`, '_blank');
     };
 
-    if (loading) return <div style={{ textAlign: 'center', padding: '100px' }}>جاري التحميل...</div>;
+    if (loading) return <Loading />;
     if (!data) return <div style={{ textAlign: 'center', padding: '100px' }}>النشاط غير موجود.</div>;
 
     const { activity } = data;

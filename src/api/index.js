@@ -114,6 +114,9 @@ api.interceptors.response.use(
                     return api(originalRequest);
                 }
             } catch (refreshError) {
+                // Read this before clearing storage below, otherwise it's always false
+                const wasAdmin = localStorage.getItem('is_admin') === 'true';
+
                 // Refresh failed, clear tokens and redirect to login
                 localStorage.removeItem('token');
                 localStorage.removeItem('admin_token');
@@ -121,12 +124,13 @@ api.interceptors.response.use(
                 localStorage.removeItem('user');
                 localStorage.removeItem('is_admin');
                 localStorage.removeItem('admin_role');
-                
-                // Redirect to login if not already there
-                if (window.location.pathname !== '/login' && window.location.pathname !== '/admin/login') {
-                    window.location.href = localStorage.getItem('is_admin') === 'true' ? '/admin/login' : '/login';
+
+                // Redirect to the real login routes (see App.jsx) if not already there
+                const loginPath = wasAdmin ? '/connecte' : '/se_connecter';
+                if (window.location.pathname !== loginPath) {
+                    window.location.href = loginPath;
                 }
-                
+
                 isRefreshing = false;
                 return Promise.reject(refreshError);
             }
@@ -147,12 +151,12 @@ export const getHomeData = () => api.get('/home-data');
 export const getAbout = () => api.get('/about');
 export const getProjects = () => api.get('/projects');
 export const getProject = (id) => api.get(`/projects/${id}`);
-export const getNews = () => api.get('/news');
+export const getNews = (page = 1) => api.get('/news', { params: { page } });
 export const getSingleNews = (id) => api.get(`/news/${id}`);
 export const getActivities = () => api.get('/activities');
 export const getActivity = (id) => api.get(`/activities/${id}`);
 export const getPartenaires = () => api.get('/partenaires');
-export const getPhotos = () => api.get('/photos');
+export const getPhotos = (page = 1) => api.get('/photos', { params: { page } });
 export const getAutismePages = () => api.get('/autisme-pages');
 export const getAutismePage = (id) => api.get(`/autisme-pages/${id}`);
 export const submitVolunteerForm = (data) => api.post('/volunteers', data);

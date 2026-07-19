@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { getAutismePages } from '../../api';
 import { Link } from 'react-router-dom';
 import PageBanner from '../../components/PageBanner';
+import Loading from '../../components/Loading';
 import { getStorageUrl } from '../../utils/formatters'; // Assuming getStorageUrl is available
 
 const Autisme = () => {
@@ -22,7 +23,7 @@ const Autisme = () => {
             });
     }, []);
 
-    if (loading) return <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '80vh' }}><div className="spinner-border text-primary" role="status"><span className="sr-only">Loading...</span></div></div>;
+    if (loading) return <Loading />;
     if (error) return <div className="alert alert-danger text-center m-5">{error}</div>;
     if (pages.length === 0 && !loading) return <div className="text-center m-5 eco_headings"><h3>لا توجد صفحات توحد لعرضها حاليًا.</h3></div>;
 

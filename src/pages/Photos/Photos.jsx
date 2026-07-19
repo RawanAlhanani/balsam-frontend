@@ -3,26 +3,34 @@ import { getPhotos } from '../../api';
 import { getStorageUrl } from '../../utils/formatters';
 import PageBanner from '../../components/PageBanner';
 import OptimizedImage from '../../components/OptimizedImage';
+import Pagination from '../../components/Pagination';
+import Loading from '../../components/Loading';
 
 const Photos = () => {
     const [photos, setPhotos] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [page, setPage] = useState(1);
+    const [lastPage, setLastPage] = useState(1);
 
     useEffect(() => {
-        getPhotos()
-            .then(response => {
-                setPhotos(response.data);
-                setLoading(false);
-            })
-            .catch(error => {
+        const fetchPhotos = async () => {
+            setLoading(true);
+            try {
+                const response = await getPhotos(page);
+                setPhotos(response.data.data);
+                setLastPage(response.data.last_page);
+            } catch (error) {
                 console.error("Error fetching photos:", error);
                 setError("حدث خطأ أثناء تحميل الصور.");
+            } finally {
                 setLoading(false);
-            });
-    }, []);
+            }
+        };
+        fetchPhotos();
+    }, [page]);
 
-    if (loading) return <div style={{ textAlign: 'center', padding: '100px' }} className="eco_headings"><h3>جاري التحميل...</h3></div>;
+    if (loading) return <Loading />;
     if (error) return <div style={{ textAlign: 'center', padding: '100px' }} className="alert alert-danger">{error}</div>;
 
     return (
@@ -38,15 +46,16 @@ const Photos = () => {
                     <div className="row">
                         {photos.map(img => (
                             <div key={img.id} className="col-md-3 col-sm-6 mb20" style={{ marginBottom: '20px' }}>
-                                <img 
-                                    src={getStorageUrl(img.nomImage)} 
-                                    alt="" 
+                                <OptimizedImage
+                                    src={getStorageUrl(img.nomImage)}
+                                    alt={`صورة من معرض جمعية بلسم رقم ${img.id}`}
                                     className="example-image"
                                     style={{ width: '100%', height: '200px', objectFit: 'cover', borderRadius: '4px' }}
                                 />
                             </div>
                         ))}
                     </div>
+                    <Pagination currentPage={page} lastPage={lastPage} onPageChange={setPage} />
                 </div>
             </section>
         </div>

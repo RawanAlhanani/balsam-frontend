@@ -3,6 +3,8 @@ import { getProjects } from '../../api';
 import { Link } from 'react-router-dom';
 import { getStorageUrl } from '../../utils/formatters';
 import PageBanner from '../../components/PageBanner';
+import Loading from '../../components/Loading';
+import OptimizedImage from '../../components/OptimizedImage';
 
 // Helper function to extract paragraph content from structured_description
 const getParagraphContent = (structuredDescription) => {
@@ -34,7 +36,7 @@ const Projects = () => {
             });
     }, []);
 
-    if (loading) return <div style={{ textAlign: 'center', padding: '100px' }} className="eco_headings"><h3>جاري التحميل...</h3></div>;
+    if (loading) return <Loading />;
     if (error) return <div style={{ textAlign: 'center', padding: '100px' }} className="alert alert-danger">{error}</div>;
 
     return (
@@ -57,7 +59,7 @@ const Projects = () => {
                                             <div className="front">
                                                 <figure>
                                                     <div className="eco-thumb">
-                                                        <img src={getStorageUrl(v.projet_image)} alt="" />
+                                                        <OptimizedImage src={getStorageUrl(v.projet_image)} alt={v.titre} />
                                                     </div>
                                                 </figure>
                                                 <div className="feature_blog_caption">

@@ -1,118 +1,91 @@
-.loading-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(255, 255, 255, 0.95);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 9999;
-    min-height: 100vh;
-}
+.balsam-loading {
+    --balsam-blue: #5FC4E0;
+    --balsam-yellow: #F2D336;
+    --balsam-pink: #EF5C74;
+    --balsam-green: #6BC24B;
+    --balsam-teal: #0D5377;
 
-.loading-container {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     text-align: center;
+    gap: 22px;
 }
 
-.loading-small {
-    padding: 20px;
+.balsam-loading--overlay {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(255, 255, 255, 0.97);
+    z-index: 9999;
+    min-height: 100vh;
 }
 
-.loading-small .loading-logo-image {
-    width: 40px;
-    height: 40px;
+.balsam-loading--inline {
+    padding: 70px 20px;
+    width: 100%;
 }
 
-.loading-small .spinner {
-    width: 30px;
-    height: 30px;
-}
-
-.loading-medium {
-    padding: 40px;
-}
-
-.loading-medium .loading-logo-image {
-    width: 80px;
-    height: 80px;
-}
-
-.loading-medium .spinner {
-    width: 50px;
-    height: 50px;
-}
-
-.loading-large {
-    padding: 60px;
-}
-
-.loading-large .loading-logo-image {
-    width: 120px;
-    height: 120px;
-}
-
-.loading-large .spinner {
-    width: 70px;
-    height: 70px;
-}
-
-.loading-logo {
-    margin-bottom: 20px;
-    animation: logoPulse 2s ease-in-out infinite;
-}
-
-.loading-logo-image {
+/* Logo */
+.balsam-loading__logo img {
+    display: block;
     object-fit: contain;
+    animation: balsam-breathe 2.4s ease-in-out infinite;
 }
 
-@keyframes logoPulse {
-    0%, 100% {
-        transform: scale(1);
-        opacity: 1;
-    }
-    50% {
-        transform: scale(1.1);
-        opacity: 0.8;
-    }
+.balsam-loading--small .balsam-loading__logo img { width: 90px; }
+.balsam-loading--medium .balsam-loading__logo img { width: 140px; }
+.balsam-loading--large .balsam-loading__logo img { width: 190px; }
+
+@keyframes balsam-breathe {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.05); opacity: 0.85; }
 }
 
-.loading-spinner {
-    margin-bottom: 20px;
+/* Dot wave, colored after the puzzle-piece palette */
+.balsam-loading__dots {
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
-.spinner {
-    border: 4px solid #f3f3f3;
-    border-top: 4px solid #f05477;
+.balsam-loading__dot {
+    width: 12px;
+    height: 12px;
     border-radius: 50%;
-    animation: spin 1s linear infinite;
+    display: inline-block;
+    animation: balsam-bounce 1.2s ease-in-out infinite;
 }
 
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+.balsam-loading--small .balsam-loading__dot { width: 8px; height: 8px; }
+.balsam-loading--large .balsam-loading__dot { width: 15px; height: 15px; }
+
+.balsam-loading__dot--1 { background-color: var(--balsam-blue); animation-delay: 0s; }
+.balsam-loading__dot--2 { background-color: var(--balsam-yellow); animation-delay: 0.15s; }
+.balsam-loading__dot--3 { background-color: var(--balsam-pink); animation-delay: 0.3s; }
+.balsam-loading__dot--4 { background-color: var(--balsam-green); animation-delay: 0.45s; }
+
+@keyframes balsam-bounce {
+    0%, 60%, 100% { transform: translateY(0); opacity: 0.6; }
+    30% { transform: translateY(-10px); opacity: 1; }
 }
 
-.loading-message {
-    color: #333;
-    font-size: 18px;
-    font-weight: 500;
+.balsam-loading__message {
+    color: var(--balsam-teal);
+    font-size: 17px;
+    font-weight: 600;
     margin: 0;
-    animation: fadeIn 0.5s ease-in;
 }
 
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
+.balsam-loading--small .balsam-loading__message { font-size: 14px; }
+.balsam-loading--large .balsam-loading__message { font-size: 19px; }
+
+@media (prefers-reduced-motion: reduce) {
+    .balsam-loading__logo img,
+    .balsam-loading__dot {
+        animation: none;
     }
-    to {
-        opacity: 1;
-        transform: translateY(0);
+    .balsam-loading__dot {
+        opacity: 0.85;
     }
 }

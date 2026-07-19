@@ -3,6 +3,9 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import MainLayout from './layouts/MainLayout';
 import AdminLayout from './layouts/AdminLayout';
 import AdminAuthLayout from './layouts/AdminAuthLayout';
+import RequireAdmin from './components/Admin/RequireAdmin';
+import Loading from './components/Loading';
+import { AdminLoading } from './components/Admin/ui/AdminUI';
 
 // Lazy-loaded Frontend Components
 const Home = lazy(() => import('./pages/Home/Home'));
@@ -71,7 +74,7 @@ function App() {
         {/* Admin Login - AdminAuthLayout with Suspense */}
         <Route path="/connecte" element={
           <AdminAuthLayout>
-            <Suspense fallback={<div>Loading Admin Login...</div>}>
+            <Suspense fallback={<Loading message="جاري تحميل صفحة الدخول..." />}>
               <AdminLogin />
             </Suspense>
           </AdminAuthLayout>
@@ -80,7 +83,7 @@ function App() {
         {/* Public Routes - Main Layout with Suspense */}
         <Route path="*" element={
           <MainLayout>
-            <Suspense fallback={<div>Loading...</div>}> {/* Fallback for frontend pages */}
+            <Suspense fallback={<Loading />}>
               <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/about" element={<About />} />
@@ -122,37 +125,39 @@ function App() {
 
         {/* Admin Routes - Admin Layout with Suspense */}
         <Route path="/admin/*" element={
-          <AdminLayout>
-            <Suspense fallback={<div>Loading Admin Panel...</div>}>
-              <Routes>
-                <Route path="/dashboard" element={<AdminDashboard />} />
-                <Route path="/parents" element={<AdminTuteurs />} />
-                
-                {/* Activity Routes */}
-                <Route path="/activities" element={<AdminActivities />} />
-                <Route path="/activities/add" element={<AddActivity />} /> {/* New route */}
-                <Route path="/activities/edit/:id" element={<EditActivity />} /> {/* New route */}
+          <RequireAdmin>
+            <AdminLayout>
+              <Suspense fallback={<AdminLoading message="جاري تحميل لوحة التحكم..." />}>
+                <Routes>
+                  <Route path="/dashboard" element={<AdminDashboard />} />
+                  <Route path="/parents" element={<AdminTuteurs />} />
 
-                {/* News Routes */}
-                <Route path="/news" element={<AdminNews />} />
-                <Route path="/news/add" element={<AddNews />} /> {/* New route */}
-                <Route path="/news/edit/:id" element={<EditNews />} /> {/* New route */}
+                  {/* Activity Routes */}
+                  <Route path="/activities" element={<AdminActivities />} />
+                  <Route path="/activities/add" element={<AddActivity />} /> {/* New route */}
+                  <Route path="/activities/edit/:id" element={<EditActivity />} /> {/* New route */}
 
-                <Route path="/partners" element={<AdminPartners />} />
-                <Route path="/settings" element={<AdminSettings />} />
-                <Route path="/admins" element={<AdminAdmins />} />
-                <Route path="/media" element={<AdminImages />} />
-                <Route path="/static-pages/add" element={<AddStaticPage />} />
-                <Route path="/static-pages/edit/:type/:id" element={<EditStaticPage />} />
-                <Route path="/static-pages" element={<AdminStaticPages />} />
-                <Route path="/meetings" element={<AdminMeetings />} />
-                <Route path="/activity-reports" element={<AdminActivityReports />} />
-                <Route path="/finance" element={<AdminFinance />} />
-                <Route path="/interns" element={<AdminStagiaires />} />
-                <Route path="/volunteers" element={<AdminVolunteers />} />
-              </Routes>
-            </Suspense>
-          </AdminLayout>
+                  {/* News Routes */}
+                  <Route path="/news" element={<AdminNews />} />
+                  <Route path="/news/add" element={<AddNews />} /> {/* New route */}
+                  <Route path="/news/edit/:id" element={<EditNews />} /> {/* New route */}
+
+                  <Route path="/partners" element={<AdminPartners />} />
+                  <Route path="/settings" element={<AdminSettings />} />
+                  <Route path="/admins" element={<RequireAdmin roles={['president']}><AdminAdmins /></RequireAdmin>} />
+                  <Route path="/media" element={<AdminImages />} />
+                  <Route path="/static-pages/add" element={<AddStaticPage />} />
+                  <Route path="/static-pages/edit/:type/:id" element={<EditStaticPage />} />
+                  <Route path="/static-pages" element={<AdminStaticPages />} />
+                  <Route path="/meetings" element={<RequireAdmin roles={['president', 'secretary']}><AdminMeetings /></RequireAdmin>} />
+                  <Route path="/activity-reports" element={<RequireAdmin roles={['president', 'secretary']}><AdminActivityReports /></RequireAdmin>} />
+                  <Route path="/finance" element={<RequireAdmin roles={['president', 'treasurer']}><AdminFinance /></RequireAdmin>} />
+                  <Route path="/interns" element={<AdminStagiaires />} />
+                  <Route path="/volunteers" element={<AdminVolunteers />} />
+                </Routes>
+              </Suspense>
+            </AdminLayout>
+          </RequireAdmin>
         } />
       </Routes>
     </Router>

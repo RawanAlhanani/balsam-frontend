@@ -12,19 +12,6 @@ const MainLayout = ({ children }) => {
         // Scroll to top on route change
         window.scrollTo(0, 0);
 
-        // Handle preloader
-        const preloader = document.getElementById('preloader');
-        const status = document.getElementById('status');
-        if (preloader && status) {
-            status.style.display = 'block';
-            preloader.style.display = 'block';
-            
-            setTimeout(() => {
-                status.style.display = 'none';
-                preloader.style.display = 'none';
-            }, 500);
-        }
-
         // Re-initialize theme elements if necessary
         if (window.jQuery) {
             window.jQuery(window).trigger('resize');
@@ -36,9 +23,6 @@ const MainLayout = ({ children }) => {
             <Header />
             {children}
             <Footer />
-            <div id="preloader">
-                <div id="status"></div>
-            </div>
         </div>
     );
 };

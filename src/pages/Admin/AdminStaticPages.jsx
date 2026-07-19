@@ -4,86 +4,8 @@ import api from '../../api';
 import {
     AdminPage, AdminPageHeader, AdminCard, AdminLoading, AdminAlert, AdminBtn
 } from '../../components/Admin/ui/AdminUI';
-
-// DeleteConfirmModal component (copied from AdminActivities.jsx)
-const DeleteConfirmModal = ({ show, onClose, onConfirm, itemName, isDeleting }) => {
-    if (!show) return null;
-
-    return (
-        <>
-            {/* Backdrop */}
-            <div
-                className="modal-backdrop fade show"
-                onClick={onClose}
-                style={{
-                    zIndex: 1040
-                }}
-            ></div>
-
-            {/* Modal */}
-            <div
-                className="modal fade show d-block"
-                tabIndex="-1"
-                role="dialog"
-                style={{
-                    position: "fixed",
-                    top: 0,
-                    left: 0,
-                    width: "100%",
-                    height: "100%",
-                    zIndex: 1055,
-                    overflowY: "auto"
-                }}
-            >
-                <div
-                    className="modal-dialog modal-dialog-centered"
-                    role="document"
-                >
-                    <div className="modal-content">
-                        <div className="modal-header">
-                            <h5 className="modal-title">تأكيد الحذف</h5>
-
-                            <button
-                                type="button"
-                                className="close"
-                                onClick={onClose}
-                            >
-                                &times;
-                            </button>
-                        </div>
-
-                        <div className="modal-body">
-                            هل أنت متأكد أنك تريد حذف "{itemName}"؟
-                        </div>
-
-                        <div className="modal-footer">
-                            <button
-                                type="button"
-                                className="btn btn-secondary"
-                                onClick={onClose}
-                            >
-                                إلغاء
-                            </button>
-
-                            <button
-                                type="button"
-                                className="btn btn-danger"
-                                onClick={onConfirm}
-                                disabled={isDeleting}
-                            >
-                                {isDeleting ? (
-                                    <span className="spinner-border spinner-border-sm"></span>
-                                ) : (
-                                    "حذف"
-                                )}
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </>
-    );
-};
+import { getStorageUrl } from '../../utils/formatters';
+import DeleteConfirmModal from '../../components/Admin/modals/DeleteConfirmModal';
 
 // Helper function to personalize error messages
 const getPersonalizedErrorMessage = (error) => {
@@ -331,7 +253,7 @@ const AdminStaticPages = () => {
                                                             <td>
                                                                 {selectedPage.page_image || selectedPage.projet_image || selectedPage.about_image ? (
                                                                     <img
-                                                                        src={`http://localhost:8000/storage/MesImages/${selectedPage.page_image || selectedPage.projet_image || selectedPage.about_image}`}
+                                                                        src={getStorageUrl(selectedPage.page_image || selectedPage.projet_image || selectedPage.about_image)}
                                                                         alt="Page Image"
                                                                         style={{ maxWidth: '100px', maxHeight: '100px', objectFit: 'contain' }}
                                                                     />
