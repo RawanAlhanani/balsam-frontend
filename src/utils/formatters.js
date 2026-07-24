@@ -59,3 +59,18 @@ export const getStorageUrl = (imageName, type = '') => {
     
     return `${storageBase}/${imageName}`;
 };
+
+/**
+ * Builds a URL for a file stored under Laravel's public storage disk
+ * (e.g. "cvs/xxx.pdf"), unlike getStorageUrl() which assumes the MesImages
+ * subfolder specifically.
+ * @param {string} path - The relative storage path (e.g. from $file->store('cvs', 'public')).
+ * @returns {string|null}
+ */
+export const getFileUrl = (path) => {
+    if (!path) return null;
+    if (path.startsWith('http')) return path;
+
+    const backendUrl = import.meta.env.VITE_API_BASE_URL?.replace('/api', '') || 'http://localhost:8000';
+    return `${backendUrl}/storage/${path}`;
+};

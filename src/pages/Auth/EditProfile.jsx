@@ -86,7 +86,7 @@ const EditProfile = () => {
 
     return (
         <div className="content">
-            <PageBanner />
+            <PageBanner title="تعديل الملف الشخصي" />
 
             <section className="eco_services_environment">
                 <div className="container">

@@ -1,14 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import Header from '../../components/Header/Header';
-import Footer from '../../components/Footer/Footer';
 import PageBanner from "../../components/PageBanner.jsx";
 
 
 export default function PsychologicalSupport() {
     return (
         <>
-            <PageBanner/>
+            <PageBanner title="الدعم النفسي" />
         <div style={{ direction: 'rtl', fontFamily: 'Segoe UI, Arial, sans-serif', textAlign: 'right', background: '#fafafa' }}>
             <style>{`
                 :root {
@@ -39,8 +37,6 @@ export default function PsychologicalSupport() {
                 .cta-button-link:hover { transform: translateY(-1px); opacity: 0.95; }
                 @media (max-width: 768px) { .service-hero h1 { font-size: 28px; } .register-box-cta { padding: 30px 20px; } }
             `}</style>
-
-            <Header />
 
             <section className="service-hero">
                 <div className="service-badge">الرعاية النفسية والسلوكية</div>
@@ -84,8 +80,6 @@ export default function PsychologicalSupport() {
                     <Link to="/inscription" className="cta-button-link">سجل طفلك الآن بالمركز 📝</Link>
                 </div>
             </div>
-
-            <Footer />
         </div>
             </>
     );

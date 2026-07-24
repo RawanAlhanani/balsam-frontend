@@ -1,10 +1,17 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 const DeleteConfirmModal = ({ show, onClose, onConfirm, itemName, isDeleting }) => {
+    useEffect(() => {
+        if (!show) return;
+        const handleKeyDown = (e) => { if (e.key === 'Escape') onClose(); };
+        document.addEventListener('keydown', handleKeyDown);
+        return () => document.removeEventListener('keydown', handleKeyDown);
+    }, [show, onClose]);
+
     if (!show) return null;
     return (
         <div className="modal show d-block" tabIndex="-1" role="dialog">
-            <div className="modal-dialog" role="document" style={{ zIndex: 1060 }}>
+            <div className="modal-dialog modal-dialog-centered" role="document" style={{ zIndex: 1060 }}>
                 <div className="modal-content">
                     <div className="modal-header">
                         <h5 className="modal-title">تأكيد الحذف</h5>

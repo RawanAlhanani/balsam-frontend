@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import PageBanner from "../../components/PageBanner.jsx";
+import { registerStagiaire } from '../../api';
 
 const DevenirStagiaire = () => {
   const [formData, setFormData] = useState({
@@ -15,8 +16,6 @@ const DevenirStagiaire = () => {
     niveau_etude: '',
     region_id: '3', // البداية من بئر رامي (ID: 3)
     cv: null,
-    nom_utilisateur: '', // 👈 Ajouté
-    mot_de_pass: '',     // 👈 Ajouté
   });
 
   const [status, setStatus] = useState({ success: null, message: '' });
@@ -62,42 +61,29 @@ const DevenirStagiaire = () => {
     data.append('prenom_stagiaire', formData.prenom);
     data.append('cin', formData.cin);
     data.append('niveau_etude', formData.niveau_etude);
-    data.append('region_id', validatedRegionId); 
+    data.append('region_id', validatedRegionId);
     data.append('duree_stage', duree);
-    
-    // 3. Envoi des vraies valeurs saisies par l'utilisateur au lieu des valeurs statiques/aléatoires
-    data.append('nom_utilisateur', formData.nom_utilisateur);
-    data.append('mot_de_pass', formData.mot_de_pass);
 
     try {
-      const response = await fetch('http://127.0.0.1:8000/api/register-stagiaire', {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-        },
-        body: data,
+      const response = await registerStagiaire(data);
+
+      setStatus({
+        success: true,
+        message: response.data.message || 'تم إرسال طلبكم بنجاح. سيقوم القسم الإداري بالمركز بمراجعة ملفكم والتواصل معكم في أقرب وقت.'
       });
-
-      const result = await response.json();
-
-      if (response.ok) {
-        setStatus({ 
-          success: true, 
-          message: result.message || 'تم إرسال طلبكم بنجاح. سيقوم القسم الإداري بالمركز بمراجعة ملفكم والتواصل معكم في أقرب وقت.' 
-        });
-        setFormData({
-          nom: '', prenom: '', email: '', telephone: '', specialite: '', etablissement: '', date_debut: '', date_fin: '', cin: '', niveau_etude: '', region_id: '3', cv: null, nom_utilisateur: '', mot_de_pass: ''
-        });
-      } else {
-        if (result.errors) {
-          const firstError = Object.values(result.errors)[0][0];
-          setStatus({ success: false, message: `خطأ في البيانات: ${firstError}` });
-        } else {
-          setStatus({ success: false, message: result.message || 'حدث خطأ أثناء إرسال الطلب.' });
-        }
-      }
+      setFormData({
+        nom: '', prenom: '', email: '', telephone: '', specialite: '', etablissement: '', date_debut: '', date_fin: '', cin: '', niveau_etude: '', region_id: '3', cv: null
+      });
     } catch (error) {
-      setStatus({ success: false, message: 'تعذر الاتصال بالخادم حالياً. يرجى المحاولة لاحقاً.' });
+      const errors = error.response?.data?.errors;
+      if (errors) {
+        const firstError = Object.values(errors)[0][0];
+        setStatus({ success: false, message: `خطأ في البيانات: ${firstError}` });
+      } else if (error.response?.data?.message) {
+        setStatus({ success: false, message: error.response.data.message });
+      } else {
+        setStatus({ success: false, message: 'تعذر الاتصال بالخادم حالياً. يرجى المحاولة لاحقاً.' });
+      }
     } finally {
       setLoading(false);
     }
@@ -105,7 +91,7 @@ const DevenirStagiaire = () => {
 
   return (
       <>
-        <PageBanner/>
+        <PageBanner title="طلب تدريب" />
 
     <div className="stage-page-wrapper" style={{ direction: 'rtl', backgroundColor: '#fafafa', minHeight: '100vh' }}>
 

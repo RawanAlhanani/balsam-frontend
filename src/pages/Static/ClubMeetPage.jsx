@@ -4,7 +4,7 @@ import PageBanner from '../../components/PageBanner';
 const ClubMeetPage = () => {
     return (
         <div className="content">
-            <PageBanner />
+            <PageBanner title="لقاءات النادي" />
 
             <section>
                 <div className="eco_blog_detail">
@@ -13,7 +13,7 @@ const ClubMeetPage = () => {
                             <div className="col-md-9 col-sm-12 col-xs-12 responsive-991-width">
                                 <div className="eco_blog_detail_post">
                                     <figure>
-                                        <img className="img-responsive cimage" src="/content/upload/reports/icon1.png" alt="Photo" />
+                                        <img className="img-responsive cimage" src="/content/upload/reports/icon1.png" alt="صورة توضيحية للقاءات النادي" />
                                     </figure>
                                     <div className="eco_blog_detail_content">
                                         <div className="eco_share-tag">

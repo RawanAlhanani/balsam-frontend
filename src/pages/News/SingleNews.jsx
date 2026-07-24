@@ -28,8 +28,7 @@ const SingleNews = () => {
             });
     }, [id]);
 
-    // Placeholder image URL (you can replace this with a local asset if preferred)
-    const PLACEHOLDER_IMAGE = "https://via.placeholder.com/600x400?text=No+Image";
+    const PLACEHOLDER_IMAGE = "/content/cache/system/images/noimage-650x380.jpg";
 
     // Consistent loading state
     if (loading) return <Loading />;
@@ -48,7 +47,7 @@ const SingleNews = () => {
 
     return (
         <div className="content" key={id}>
-            <PageBanner />
+            <PageBanner title={news.titre} />
 
             <section className="eco_services_environment py-5"> {/* Added padding */}
                 <div className="container">
@@ -90,7 +89,7 @@ const SingleNews = () => {
                                                     <Link to={`/Information/${item.id}`}>
                                                         <img
                                                             src={item.image_info ? getStorageUrl(item.image_info) : PLACEHOLDER_IMAGE}
-                                                            alt={item.titre || "News Image"}
+                                                            alt={item.titre || "صورة الخبر"}
                                                             className="rounded"
                                                             style={{ width: '90px', height: '60px', objectFit: 'cover' }}
                                                         />

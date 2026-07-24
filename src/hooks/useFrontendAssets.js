@@ -14,11 +14,11 @@ const useFrontendAssets = () => {
         "/content/view/themes/balsam/assests/css/jquery.auto-complete.css",
         "/content/view/themes/balsam/assests/css/shortcodes.css",
         "/content/view/themes/balsam/assests/css/colors.css",
-        "/content/view/themes/balsam/assests/sliderpro/css/slider-pro.min.css",
         "/content/view/themes/balsam/assests/style.css",
         "/content/view/themes/balsam/assests/css/lightbox.min.css",
         "/content/view/themes/balsam/assests/css/responsive.css",
-        "/content/view/themes/balsam/assests/css/rtl.css"
+        "/content/view/themes/balsam/assests/css/rtl.css",
+        "/styles/modern-theme.css"
     ];
 
     const scripts = [
@@ -37,7 +37,6 @@ const useFrontendAssets = () => {
         "/content/view/themes/balsam/assests/js/slick-slider.js",
         "/content/view/themes/balsam/assests/js/jquery.bxslider.js",
         "/content/view/themes/balsam/assests/js/owl.carousel.js",
-        "/content/view/themes/balsam/assests/sliderpro/js/jquery.sliderPro.min.js",
         "/content/view/themes/balsam/assests/js/lightbox.js",
         "/content/view/themes/balsam/assests/youtube/YouTubePopUp.jquery.js",
         "/content/view/themes/balsam/assests/js/custom.js",

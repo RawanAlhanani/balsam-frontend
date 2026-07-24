@@ -39,8 +39,10 @@ const AdminDashboard = () => {
 
                 setStats(statsRes.data);
                 // Sort and take latest 3 for display
+                // /admin/news is paginated ({ data: [...], current_page, ... }),
+                // unlike /admin/activities and /admin/tuteurs which return plain arrays.
                 setRecentActivities(activitiesRes.data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at)).slice(0, 3));
-                setRecentNews(newsRes.data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at)).slice(0, 3));
+                setRecentNews(newsRes.data.data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at)).slice(0, 3));
                 setRecentTuteurs(tuteursRes.data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at)).slice(0, 3));
 
             } catch (err) {

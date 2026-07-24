@@ -23,7 +23,7 @@ const ObjectPage = () => {
 
     return (
         <div className="content">
-            <PageBanner />
+            <PageBanner title="أهداف الجمعية" />
 
             <section>
                 <div className="eco_blog_detail">
@@ -32,7 +32,7 @@ const ObjectPage = () => {
                             <div className="col-md-9 col-sm-12 col-xs-12 responsive-991-width">
                                 <div className="eco_blog_detail_post">
                                     <figure>
-                                        <img className="img-responsive cimage" src="/content/upload/who-are-we/adobestock_92183997.jpg" alt="Photo" />
+                                        <img className="img-responsive cimage" src="/content/upload/who-are-we/adobestock_92183997.jpg" alt="صورة توضيحية لأهداف الجمعية" />
                                     </figure>
                                     <div className="eco_blog_detail_content">
                                         <p><strong>تهدف الجمعية حسب قانونها الأساسي في المادة الخامسة إلى تقديم خدمات للأشخاص التوحديين وذويهم، وذلك ب:</strong></p>

@@ -4,6 +4,7 @@ import {
     AdminPage, AdminPageHeader, AdminCard, AdminFormPanel, AdminFormGroup,
     AdminFormActions, AdminTableWrap, AdminBtn, AdminAlert, AdminLoading, AdminEmptyState
 } from '../../components/Admin/ui/AdminUI';
+import DeleteConfirmModal from '../../components/Admin/modals/DeleteConfirmModal';
 
 // Helper function to personalize error messages
 const getPersonalizedErrorMessage = (error) => {
@@ -43,8 +44,24 @@ const AdminAdmins = () => {
     const [submitting, setSubmitting] = useState(false);
     const [alert, setAlert] = useState({ message: '', type: '' });
     const [formErrors, setFormErrors] = useState({}); // New state for form errors
+    const [deleting, setDeleting] = useState(false);
+
+    // State for delete confirmation modal
+    const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState(false);
+    const [deleteTargetId, setDeleteTargetId] = useState(null);
+    const [deleteTargetName, setDeleteTargetName] = useState('');
 
     useEffect(() => { fetchAdmins(); }, []);
+
+    // Lock background scroll and interactions when delete modal is open
+    useEffect(() => {
+        if (showDeleteConfirmModal) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = '';
+        }
+        return () => { document.body.style.overflow = ''; };
+    }, [showDeleteConfirmModal]);
 
     const fetchAdmins = async () => {
         setLoading(true);
@@ -103,19 +120,31 @@ const AdminAdmins = () => {
         }
     };
 
-    const handleDelete = async (id) => {
-        if (!window.confirm('هل أنت متأكد أنك تريد حذف هذا الحساب؟')) {
-            return;
-        }
+    const promptDelete = (id, name) => {
+        setDeleteTargetId(id);
+        setDeleteTargetName(name);
+        setShowDeleteConfirmModal(true);
+    };
+
+    const confirmDelete = async () => {
+        if (!deleteTargetId || deleting) return;
+        setDeleting(true);
         try {
-            await api.delete(`/admin/accounts/${id}`);
+            await api.delete(`/admin/accounts/${deleteTargetId}`);
             setAlert({ message: 'تم حذف الحساب بنجاح', type: 'success' });
+            setShowDeleteConfirmModal(false);
+            setDeleteTargetId(null);
+            setDeleteTargetName('');
             fetchAdmins();
         } catch (err) {
             const errorMessage = getPersonalizedErrorMessage(err);
             setAlert({ message: errorMessage, type: 'danger' });
+            setShowDeleteConfirmModal(false);
+            setDeleteTargetId(null);
+            setDeleteTargetName('');
             console.error(err);
         } finally {
+            setDeleting(false);
             setTimeout(() => setAlert({ message: '', type: '' }), 3500);
         }
     };
@@ -196,7 +225,7 @@ const AdminAdmins = () => {
                                                 <td>{a.email}</td>
                                                 <td><span className="admin-tag">{roleLabels[a.role] || a.role}</span></td>
                                                 <td>
-                                                    <AdminBtn variant="danger" icon="la-trash" onClick={() => handleDelete(a.id)}>حذف</AdminBtn>
+                                                    <AdminBtn variant="danger" icon="la-trash" onClick={() => promptDelete(a.id, a.name)}>حذف</AdminBtn>
                                                 </td>
                                             </tr>
                                         ))}
@@ -207,6 +236,14 @@ const AdminAdmins = () => {
                     </AdminCard>
                 </div>
             </AdminPage>
+
+            <DeleteConfirmModal
+                show={showDeleteConfirmModal}
+                onClose={() => setShowDeleteConfirmModal(false)}
+                onConfirm={confirmDelete}
+                itemName={deleteTargetName}
+                isDeleting={deleting}
+            />
 
             {alert.message && (
                 <AdminAlert message={alert.message} type={alert.type} onClose={() => setAlert({ message: '', type: '' })} />

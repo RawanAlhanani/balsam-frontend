@@ -62,7 +62,7 @@ const filteredItems = [
 
 return (
     <>
-        <PageBanner  />
+        <PageBanner title="البرامج والأنشطة" />
 
     <div style={{ direction: 'rtl', fontFamily: 'Segoe UI, Arial, sans-serif', textAlign: 'right', background: '#f9fbfe', minHeight: '100vh', paddingBottom: '80px' }}>
         
@@ -151,7 +151,7 @@ return (
                             <div>
                                 <div className="meta-flex">
                                     <span className="category-label">
-                                        {isProj ? "تنمية وتطوير" : (item.typeactivite?.nom_type || "نشاط حي")}
+                                        {isProj ? "تنمية وتطوير" : (item.typeactivite?.nomActivite || "نشاط حي")}
                                     </span>
                                     {!isProj && item.date_activite && (
                                         <span>📅 {item.date_activite}</span>

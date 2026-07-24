@@ -189,7 +189,7 @@ const EditActivity = () => {
                             <input type="file" className="form-control-file" name="image_activite" onChange={handleImageChange} />
                             {currentImage && !image && ( // Show current image if editing and no new image selected
                                 <div className="mt-2">
-                                    <img src={currentImage} alt="Current Activity" style={{ maxWidth: '100px', maxHeight: '100px', objectFit: 'cover' }} />
+                                    <img src={currentImage} alt="صورة النشاط الحالية" style={{ maxWidth: '100px', maxHeight: '100px', objectFit: 'cover' }} />
                                     <small className="d-block text-muted">الصورة الحالية</small>
                                 </div>
                             )}

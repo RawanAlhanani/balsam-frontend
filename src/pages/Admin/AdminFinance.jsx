@@ -58,7 +58,7 @@ const AdminFinance = () => {
     // State for delete confirmation modal
     const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState(false);
     const [deleteTargetId, setDeleteTargetId] = useState(null);
-    const [deleteTargetName, setDeleteTargetName] = '';
+    const [deleteTargetName, setDeleteTargetName] = useState('');
 
 
     useEffect(() => {
@@ -196,7 +196,7 @@ const AdminFinance = () => {
             </head>
             <body>
                 <div class="background-frame">
-                    <img src="${logoUrl}" alt="background" />
+                    <img src="${logoUrl}" alt="خلفية" />
                 </div>
                 <table class="print-table">
                     <thead><tr><td><div class="header-space"></div></td></tr></thead>

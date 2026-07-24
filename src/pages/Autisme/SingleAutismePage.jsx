@@ -60,7 +60,7 @@ const SingleAutismePage = () => {
 
     return (
         <div className="content">
-            <PageBanner />
+            <PageBanner title={page.titre} />
 
             <section className="eco_services_environment py-5"> {/* Added padding */}
                 <div className="container">

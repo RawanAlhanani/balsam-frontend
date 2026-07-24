@@ -1,6 +1,5 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import Header from '../../components/Header/Header';
 import PageBanner from "../../components/PageBanner.jsx";
 
 export default function Activities() {
@@ -83,7 +82,7 @@ export default function Activities() {
                 }
             `}</style>
 
-            <PageBanner/>
+            <PageBanner title="العلاج الوظيفي" />
 
             <div className="creative-blob-1"></div>
             <div className="creative-blob-2"></div>

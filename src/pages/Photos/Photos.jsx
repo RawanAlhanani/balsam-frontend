@@ -35,7 +35,7 @@ const Photos = () => {
 
     return (
         <div className="content">
-            <PageBanner />
+            <PageBanner title="معرض الصور" />
 
             <section className="eco_services_environment">
                 <div className="container">

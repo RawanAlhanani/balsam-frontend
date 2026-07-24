@@ -163,6 +163,9 @@ export const submitVolunteerForm = (data) => api.post('/volunteers', data);
 export const getAdminVolunteers = () => api.get('/admin/volunteers');
 export const updateVolunteerStatus = (id, status) => api.put(`/admin/volunteers/${id}/status`, { status });
 export const registerStagiaire = (data) => api.post('/register-stagiaire', data);
+export const submitContact = (data) => api.post('/contact', data);
+export const getContactMessages = (page = 1) => api.get('/admin/contact-messages', { params: { page } });
+export const deleteContactMessage = (id) => api.delete(`/admin/contact-messages/${id}`);
 
 // Auth functions
 export const login = (credentials) => api.post('/login', credentials);

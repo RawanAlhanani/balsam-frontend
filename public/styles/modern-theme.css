@@ -1,0 +1,482 @@
+/* ==========================================================================
+   Basam — modern design layer
+   Loaded last (see useFrontendAssets.js) so it wins the cascade over the
+   legacy jQuery-theme CSS without needing !important everywhere. Where the
+   legacy theme uses compound/high-specificity selectors, !important is used
+   deliberately to guarantee the override.
+   ========================================================================== */
+
+:root {
+  /* Brand */
+  --bs-teal: #0d5377;
+  --bs-teal-dark: #073c58;
+  --bs-teal-light: #1a7ba3;
+  --bs-coral: #f05074;
+  --bs-coral-dark: #d63860;
+
+  /* Puzzle-piece accent palette */
+  --bs-blue: #5fc4e0;
+  --bs-yellow: #f2d336;
+  --bs-green: #6bc24b;
+
+  /* Neutrals */
+  --bs-ink: #17262c;
+  --bs-muted: #64767d;
+  --bs-border: #e6ecee;
+  --bs-paper: #fbfcfc;
+  --bs-card: #ffffff;
+
+  /* Radii */
+  --bs-radius-sm: 10px;
+  --bs-radius-md: 18px;
+  --bs-radius-lg: 28px;
+  --bs-radius-pill: 999px;
+
+  /* Shadows */
+  --bs-shadow-sm: 0 2px 10px rgba(13, 83, 119, 0.07);
+  --bs-shadow-md: 0 14px 32px rgba(13, 83, 119, 0.12);
+  --bs-shadow-lg: 0 26px 60px rgba(13, 83, 119, 0.18);
+
+  /* Fonts */
+  --bs-font-body: 'Tajawal', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --bs-font-display: 'El Messiri', 'Tajawal', -apple-system, sans-serif;
+}
+
+/* ---------- Base ---------- */
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--bs-font-body) !important;
+  color: var(--bs-ink) !important;
+}
+
+::selection { background: var(--bs-coral); color: #fff; }
+
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: var(--bs-paper); }
+::-webkit-scrollbar-thumb { background: #c7d4d8; border-radius: 999px; }
+::-webkit-scrollbar-thumb:hover { background: var(--bs-teal-light); }
+
+h1, h2, h3, h4, h5, h6,
+.eco_headings h3,
+.kode_eco_captions h1,
+.eco_sm_titles {
+  font-family: var(--bs-font-display) !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.01em;
+}
+
+p, li, a, span, input, textarea, button, label {
+  font-family: var(--bs-font-body);
+}
+
+a { transition: color .25s ease, background-color .25s ease, transform .25s ease; }
+
+/* ---------- Section headings (eco_headings) ---------- */
+.eco_headings h3 {
+  text-transform: none !important;
+  font-size: 32px !important;
+  color: var(--bs-ink);
+}
+
+.eco_headings h6 {
+  color: var(--bs-coral) !important;
+  font-family: var(--bs-font-body) !important;
+  font-weight: 700 !important;
+  font-size: 13px !important;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+.eco_headings span {
+  color: var(--bs-coral) !important;
+}
+
+.eco_headings span:before,
+.eco_headings span:after {
+  border-top-color: var(--bs-border) !important;
+}
+
+/* ---------- Buttons ---------- */
+.spacial-btn,
+.btn-small,
+.xsmall-btn,
+.simple-btn-style,
+a.aread,
+a.ProjectsRead,
+.form-submit-eco-btn button,
+.eco_donate_button .mediem_btn_02 {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  /* style.css:4060 hard-codes .xsmall-btn to width:95px; height:40px — sized
+     for short French labels like "Next". That box is too small for Arabic
+     labels ("تأكيد التسجيل", "جاري التسجيل..."), squeezing the padded text.
+     Forcing auto sizing + a min-width lets the pill grow to fit its content. */
+  width: auto !important;
+  height: auto !important;
+  min-width: 110px;
+  white-space: nowrap;
+  padding: 13px 32px !important;
+  border-radius: var(--bs-radius-pill) !important;
+  background: linear-gradient(135deg, var(--bs-coral), #ff7e5f) !important;
+  color: #fff !important;
+  font-weight: 700 !important;
+  border: none !important;
+  box-shadow: var(--bs-shadow-sm);
+  transition: transform .25s ease, box-shadow .25s ease, background .25s ease !important;
+  text-decoration: none !important;
+  cursor: pointer;
+}
+
+.spacial-btn:hover,
+.btn-small:hover,
+.xsmall-btn:hover,
+.simple-btn-style:hover,
+a.aread:hover,
+a.ProjectsRead:hover,
+.form-submit-eco-btn button:hover,
+.eco_donate_button .mediem_btn_02:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--bs-shadow-md);
+  color: #fff !important;
+}
+
+.spacial-btn:disabled,
+.btn-small:disabled,
+.xsmall-btn:disabled {
+  opacity: .65;
+  transform: none;
+  cursor: not-allowed;
+}
+
+/* ---------- Registration: account-type selection cards ---------- */
+.account-type-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  width: 100%;
+  min-height: 170px;
+  padding: 30px 16px;
+  background: var(--bs-card);
+  border: 2px solid var(--bs-border);
+  border-radius: var(--bs-radius-md);
+  box-shadow: var(--bs-shadow-sm);
+  white-space: normal;
+  word-break: break-word;
+  cursor: pointer;
+  transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+}
+
+.account-type-card:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--bs-shadow-md);
+}
+
+.account-type-card__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  font-size: 22px;
+  color: #fff;
+}
+
+.account-type-card__label {
+  font-family: var(--bs-font-body);
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--bs-ink);
+  line-height: 1.7;
+  text-align: center;
+}
+
+.account-type-card--info .account-type-card__icon {
+  background: linear-gradient(135deg, var(--bs-teal), var(--bs-teal-light));
+}
+.account-type-card--info:hover { border-color: var(--bs-teal-light); }
+
+.account-type-card--success .account-type-card__icon {
+  background: linear-gradient(135deg, var(--bs-green), #4fa832);
+}
+.account-type-card--success:hover { border-color: var(--bs-green); }
+
+.account-type-card--warning .account-type-card__icon {
+  background: linear-gradient(135deg, var(--bs-coral), #ff7e5f);
+}
+.account-type-card--warning:hover { border-color: var(--bs-coral); }
+
+/* ---------- Cards (activity / news / project flip cards) ---------- */
+.eco_flip-container { transition: transform .35s ease; }
+
+.front {
+  border-radius: var(--bs-radius-md) !important;
+  overflow: hidden;
+  background: var(--bs-card);
+  box-shadow: var(--bs-shadow-sm) !important;
+  transition: box-shadow .35s ease, transform .35s ease;
+}
+
+.eco_flip-container:hover .front {
+  transform: translateY(-6px);
+  box-shadow: var(--bs-shadow-lg) !important;
+}
+
+.front figure {
+  overflow: hidden;
+  margin: 0;
+  border-radius: var(--bs-radius-md) var(--bs-radius-md) 0 0;
+}
+
+.front figure img,
+.eco-thumb img {
+  display: block;
+  transition: transform .5s ease;
+}
+
+.eco_flip-container:hover .front figure img,
+.eco_flip-container:hover .eco-thumb img {
+  transform: scale(1.08);
+}
+
+.feature_blog_caption {
+  padding: 22px !important;
+}
+
+.feature_blog_caption h5 a {
+  font-family: var(--bs-font-display);
+  font-weight: 700 !important;
+  color: var(--bs-ink) !important;
+  transition: color .2s ease;
+}
+
+.feature_blog_caption h5 a:hover { color: var(--bs-coral) !important; }
+
+/* ---------- Gallery / photo grid ---------- */
+.example-image {
+  overflow: hidden;
+  border-radius: var(--bs-radius-md) !important;
+  box-shadow: var(--bs-shadow-sm);
+  transition: box-shadow .35s ease;
+}
+
+.example-image:hover { box-shadow: var(--bs-shadow-md); }
+
+.example-image img { transition: transform .5s ease; }
+
+.example-image:hover img { transform: scale(1.08); }
+
+/* ---------- Forms ---------- */
+.form-control,
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="tel"],
+input[type="number"],
+input[type="date"],
+textarea,
+select {
+  border-radius: var(--bs-radius-sm) !important;
+  border: 1.5px solid var(--bs-border) !important;
+  padding: 12px 16px !important;
+  font-family: var(--bs-font-body);
+  transition: border-color .2s ease, box-shadow .2s ease;
+}
+
+.form-control:focus,
+input:focus,
+textarea:focus,
+select:focus {
+  border-color: var(--bs-teal-light) !important;
+  box-shadow: 0 0 0 4px rgba(26, 123, 163, 0.14) !important;
+  outline: none !important;
+}
+
+/* ---------- Service/feature icon circles on the homepage ---------- */
+.eco_service_cols .icon-style,
+.icon-style {
+  transition: transform .3s ease, background-color .3s ease;
+}
+
+.eco_service_cols:hover .icon-style {
+  transform: translateY(-4px) scale(1.05);
+}
+
+/* ---------- Page banner: slim gradient breadcrumb strip ---------- */
+.eco_inner_page_banner--slim {
+  clear: both;
+  background-image: none !important;
+  background: linear-gradient(120deg, var(--bs-teal-dark), var(--bs-teal) 55%, var(--bs-teal-light)) !important;
+  padding: 40px 0 18px !important;
+  position: relative;
+  overflow: hidden;
+  z-index: 5;
+}
+
+.eco_inner_page_banner--slim:before {
+  background: radial-gradient(circle at 12% 30%, rgba(95, 196, 224, 0.28), transparent 45%),
+              radial-gradient(circle at 88% 70%, rgba(240, 80, 116, 0.24), transparent 45%) !important;
+}
+
+.modern-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--bs-font-body);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.modern-breadcrumb a {
+  color: rgba(255, 255, 255, 0.75);
+  text-decoration: none;
+}
+
+.modern-breadcrumb a:hover { color: #fff; }
+
+.modern-breadcrumb__sep { color: rgba(255, 255, 255, 0.4); }
+
+.modern-breadcrumb__current { color: #fff; }
+
+/* ---------- Header / navigation ---------- */
+/* style.css:6645 makes <header> `position: absolute; height: 200px` — the
+   classic "transparent nav floats over the hero image" pattern. That's why
+   PageBanner used to need ~120-130px of top padding to visually clear it:
+   the header was never in normal flow to begin with. Making it a normal
+   sticky block (position:sticky, auto height) means it now actually
+   occupies flow space, so content correctly stacks below it instead of
+   needing a padding hack — and it stays visible on scroll as a bonus.
+   header is float:left in the legacy CSS too; float auto-computes to none
+   for position:absolute but not for sticky, so it needs an explicit
+   override here, plus a clearfix so its own floated children (.kode_eco-top_bar)
+   don't collapse it to 0 height. */
+header {
+  position: sticky !important;
+  top: 0;
+  right: auto !important;
+  left: auto !important;
+  height: auto !important;
+  float: none !important;
+  z-index: 999;
+}
+
+header::after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+/* position:sticky is inert if any ancestor clips overflow. .eco_wrapper had
+   overflow:hidden purely as an old float-containment trick; the clearfixes
+   above already do that job now, so it's safe to open back up. */
+.eco_wrapper {
+  overflow: visible !important;
+}
+
+.kode_eco_navigations {
+  float: none !important;
+  position: sticky;
+  top: 0;
+  z-index: 999;
+  background: rgba(255, 255, 255, 0.92) !important;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 1px 0 rgba(23, 38, 44, 0.06);
+  transition: box-shadow .3s ease;
+}
+
+/* .kode_eco-top_bar inside is float:left in the legacy CSS; now that this
+   parent no longer floats itself, it needs its own clearfix or it collapses
+   to 0 height. overflow:hidden would also clip the dropdown submenus, so a
+   clearfix pseudo-element is used instead. */
+.kode_eco_navigations::after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+.kode_eco_navigations.is-scrolled {
+  box-shadow: var(--bs-shadow-md);
+}
+
+.navigation > ul > li > a,
+.navigation > ul > li > span {
+  color: var(--bs-ink) !important;
+  font-weight: 700 !important;
+  border-radius: var(--bs-radius-pill);
+  transition: color .2s ease, background-color .2s ease;
+}
+
+.navigation > ul > li > a:hover,
+.navigation > ul > li > span:hover {
+  color: var(--bs-coral) !important;
+  background: rgba(240, 80, 116, 0.08);
+}
+
+.navigation > ul > li > a.active-link {
+  color: var(--bs-coral) !important;
+}
+
+/* ---------- Footer ---------- */
+footer {
+  background: linear-gradient(180deg, var(--bs-teal-dark), #05202f) !important;
+}
+
+.eco_sm_titles {
+  color: #fff !important;
+  font-size: 19px !important;
+}
+
+.eco_admin_info li,
+.eco_recent_blog_post,
+.eco_offices_info p {
+  color: rgba(255, 255, 255, 0.75) !important;
+}
+
+.social-icons li a {
+  border-radius: 50% !important;
+  transition: transform .25s ease, background .25s ease !important;
+}
+
+.social-icons li a:hover {
+  transform: translateY(-4px);
+  background: var(--bs-coral) !important;
+}
+
+.eco_footer_content iframe {
+  border-radius: var(--bs-radius-md);
+  filter: grayscale(0.15) contrast(1.05);
+}
+
+.eco_recent_posts .eco_thumb img {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: var(--bs-radius-sm) !important;
+}
+
+.eco_post-content p a {
+  color: rgba(255, 255, 255, 0.85) !important;
+  transition: color .2s ease;
+}
+
+.eco_post-content p a:hover {
+  color: var(--bs-coral) !important;
+}
+
+.eco_template_information {
+  border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: rgba(255, 255, 255, 0.55) !important;
+}
+
+/* ---------- Motion polish ---------- */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  * { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+}

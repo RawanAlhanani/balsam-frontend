@@ -28,7 +28,7 @@ const AdminLogin = () => {
             localStorage.setItem('admin_role', response.data.user.role);
             navigate('/admin/dashboard');
         } catch (err) {
-            setError(err.response?.data?.message || 'Email ou mot de passe non valides !!!!');
+            setError(err.response?.data?.message || 'البريد الإلكتروني أو كلمة المرور غير صحيحة.');
         } finally {
             setLoading(false);
         }
@@ -46,11 +46,11 @@ const AdminLogin = () => {
                                         <div className="card-title text-center">
                                             <div className="p-1">
                                                 {/* Removed inline width style */}
-                                                <img src="/backend/app-assets/images/logo/logo.png" alt="branding logo" />
+                                                <img src="/backend/app-assets/images/logo/logo.png" alt="شعار الجمعية" />
                                             </div>
                                         </div>
                                         <h6 className="card-subtitle line-on-side text-muted text-center font-small-3 pt-2">
-                                            <span dir="ltr">Se connecter (Administration)</span>
+                                            <span>تسجيل الدخول (الإدارة)</span>
                                         </h6>
                                     </div>
                                     <div className="card-content">
@@ -59,7 +59,7 @@ const AdminLogin = () => {
                                                 {error && (
                                                     <div className="alert alert-danger">
                                                         {/* Removed inline font size and margin */}
-                                                        <h4 dir="ltr" style={{ textAlign: 'center' }}>{error}</h4>
+                                                        <h4 style={{ textAlign: 'center' }}>{error}</h4>
                                                     </div>
                                                 )}
                                                 
@@ -68,7 +68,7 @@ const AdminLogin = () => {
                                                         dir="ltr" 
                                                         type="email" 
                                                         className="form-control form-control-lg" 
-                                                        placeholder="Votre Email"
+                                                        placeholder="البريد الإلكتروني"
                                                         value={login}
                                                         onChange={(e) => setLogin(e.target.value)}
                                                         required 
@@ -83,7 +83,7 @@ const AdminLogin = () => {
                                                         dir="ltr" 
                                                         type="password" 
                                                         className="form-control form-control-lg" 
-                                                        placeholder="Votre mot de passe"
+                                                        placeholder="كلمة المرور"
                                                         value={mdp}
                                                         onChange={(e) => setMdp(e.target.value)}
                                                         required 
@@ -100,7 +100,7 @@ const AdminLogin = () => {
                                                     className="btn btn-info btn-lg btn-block"
                                                     disabled={loading}
                                                 >
-                                                    <i className="ft-unlock"></i> {loading ? 'Connexion...' : 'Login'}
+                                                    <i className="ft-unlock"></i> {loading ? 'جاري تسجيل الدخول...' : 'تسجيل الدخول'}
                                                 </button>
                                             </form>
                                         </div>

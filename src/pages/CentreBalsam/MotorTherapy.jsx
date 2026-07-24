@@ -1,6 +1,5 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import Header from '../../components/Header/Header';
 import PageBanner from '../../components/PageBanner';
 
 
@@ -76,7 +75,7 @@ export default function MotorTherapy() {
                 }
             `}</style>
 
-             <PageBanner/>
+             <PageBanner title="الترويض الحركي" />
 
             <div className="bg-blob-1"></div>
             <div className="bg-blob-2"></div>

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './BlockEditor.css';
 
-const BlockEditor = ({ value, onChange, placeholder = 'Start writing your content...' }) => {
+const BlockEditor = ({ value, onChange, placeholder = 'ابدأ بكتابة المحتوى...' }) => {
     const [blocks, setBlocks] = useState([]);
 
     useEffect(() => {
@@ -103,7 +103,7 @@ const BlockEditor = ({ value, onChange, placeholder = 'Start writing your conten
                                 onClick={() => moveBlock(index, -1)}
                                 disabled={index === 0}
                                 className="btn btn-sm btn-outline-secondary"
-                                title="Move up"
+                                title="نقل للأعلى"
                             >
                                 ↑
                             </button>
@@ -112,7 +112,7 @@ const BlockEditor = ({ value, onChange, placeholder = 'Start writing your conten
                                 onClick={() => moveBlock(index, 1)}
                                 disabled={index === blocks.length - 1}
                                 className="btn btn-sm btn-outline-secondary"
-                                title="Move down"
+                                title="نقل للأسفل"
                             >
                                 ↓
                             </button>
@@ -120,7 +120,7 @@ const BlockEditor = ({ value, onChange, placeholder = 'Start writing your conten
                                 type="button" // Added type="button"
                                 onClick={() => deleteBlock(index)}
                                 className="btn btn-sm btn-outline-danger"
-                                title="Delete"
+                                title="حذف"
                             >
                                 ×
                             </button>
@@ -129,7 +129,7 @@ const BlockEditor = ({ value, onChange, placeholder = 'Start writing your conten
                             type="text"
                             value={block.content || ''}
                             onChange={(e) => updateBlock(index, { content: e.target.value })}
-                            placeholder="Heading text..."
+                            placeholder="نص العنوان..."
                             className="form-control"
                             style={{ 
                                 fontSize: `${2.2 - (block.level - 1) * 0.2}rem`,
@@ -143,21 +143,21 @@ const BlockEditor = ({ value, onChange, placeholder = 'Start writing your conten
                                 onClick={() => addBlock('paragraph', index)}
                                 className="btn btn-sm btn-outline-primary"
                             >
-                                + Paragraph
+                                + فقرة
                             </button>
                             <button 
                                 type="button" // Added type="button"
                                 onClick={() => addBlock('heading', index)}
                                 className="btn btn-sm btn-outline-primary"
                             >
-                                + Heading
+                                + عنوان
                             </button>
                             <button 
                                 type="button" // Added type="button"
                                 onClick={() => addBlock('list', index)}
                                 className="btn btn-sm btn-outline-primary"
                             >
-                                + List
+                                + قائمة
                             </button>
                         </div>
                     </div>
@@ -172,7 +172,7 @@ const BlockEditor = ({ value, onChange, placeholder = 'Start writing your conten
                                 onClick={() => moveBlock(index, -1)}
                                 disabled={index === 0}
                                 className="btn btn-sm btn-outline-secondary"
-                                title="Move up"
+                                title="نقل للأعلى"
                             >
                                 ↑
                             </button>
@@ -181,7 +181,7 @@ const BlockEditor = ({ value, onChange, placeholder = 'Start writing your conten
                                 onClick={() => moveBlock(index, 1)}
                                 disabled={index === blocks.length - 1}
                                 className="btn btn-sm btn-outline-secondary"
-                                title="Move down"
+                                title="نقل للأسفل"
                             >
                                 ↓
                             </button>
@@ -189,7 +189,7 @@ const BlockEditor = ({ value, onChange, placeholder = 'Start writing your conten
                                 type="button" // Added type="button"
                                 onClick={() => deleteBlock(index)}
                                 className="btn btn-sm btn-outline-danger"
-                                title="Delete"
+                                title="حذف"
                             >
                                 ×
                             </button>
@@ -197,7 +197,7 @@ const BlockEditor = ({ value, onChange, placeholder = 'Start writing your conten
                         <textarea
                             value={block.content || ''}
                             onChange={(e) => updateBlock(index, { content: e.target.value })}
-                            placeholder="Write your paragraph here..."
+                            placeholder="اكتب فقرتك هنا..."
                             className="form-control"
                             rows={4}
                             style={{ marginTop: '10px' }}
@@ -208,21 +208,21 @@ const BlockEditor = ({ value, onChange, placeholder = 'Start writing your conten
                                 onClick={() => addBlock('paragraph', index)}
                                 className="btn btn-sm btn-outline-primary"
                             >
-                                + Paragraph
+                                + فقرة
                             </button>
                             <button 
                                 type="button" // Added type="button"
                                 onClick={() => addBlock('heading', index)}
                                 className="btn btn-sm btn-outline-primary"
                             >
-                                + Heading
+                                + عنوان
                             </button>
                             <button 
                                 type="button" // Added type="button"
                                 onClick={() => addBlock('list', index)}
                                 className="btn btn-sm btn-outline-primary"
                             >
-                                + List
+                                + قائمة
                             </button>
                         </div>
                     </div>
@@ -238,15 +238,15 @@ const BlockEditor = ({ value, onChange, placeholder = 'Start writing your conten
                                 className="form-control form-control-sm"
                                 style={{ width: '120px' }}
                             >
-                                <option value="bullet">Bullet List</option>
-                                <option value="number">Numbered List</option>
+                                <option value="bullet">قائمة نقطية</option>
+                                <option value="number">قائمة مرقمة</option>
                             </select>
                             <button 
                                 type="button" // Added type="button"
                                 onClick={() => moveBlock(index, -1)}
                                 disabled={index === 0}
                                 className="btn btn-sm btn-outline-secondary"
-                                title="Move up"
+                                title="نقل للأعلى"
                             >
                                 ↑
                             </button>
@@ -255,7 +255,7 @@ const BlockEditor = ({ value, onChange, placeholder = 'Start writing your conten
                                 onClick={() => moveBlock(index, 1)}
                                 disabled={index === blocks.length - 1}
                                 className="btn btn-sm btn-outline-secondary"
-                                title="Move down"
+                                title="نقل للأسفل"
                             >
                                 ↓
                             </button>
@@ -263,7 +263,7 @@ const BlockEditor = ({ value, onChange, placeholder = 'Start writing your conten
                                 type="button" // Added type="button"
                                 onClick={() => deleteBlock(index)}
                                 className="btn btn-sm btn-outline-danger"
-                                title="Delete"
+                                title="حذف"
                             >
                                 ×
                             </button>
@@ -275,7 +275,7 @@ const BlockEditor = ({ value, onChange, placeholder = 'Start writing your conten
                                         type="text"
                                         value={item}
                                         onChange={(e) => updateListItem(index, itemIndex, e.target.value)}
-                                        placeholder={`List item ${itemIndex + 1}`}
+                                        placeholder={`العنصر ${itemIndex + 1}`}
                                         className="form-control"
                                     />
                                     <button 
@@ -294,7 +294,7 @@ const BlockEditor = ({ value, onChange, placeholder = 'Start writing your conten
                                 className="btn btn-sm btn-outline-success"
                                 style={{ marginTop: '5px' }}
                             >
-                                + Add Item
+                                + إضافة عنصر
                             </button>
                         </div>
                         <div className="block-add-buttons">
@@ -303,21 +303,21 @@ const BlockEditor = ({ value, onChange, placeholder = 'Start writing your conten
                                 onClick={() => addBlock('paragraph', index)}
                                 className="btn btn-sm btn-outline-primary"
                             >
-                                + Paragraph
+                                + فقرة
                             </button>
                             <button 
                                 type="button" // Added type="button"
                                 onClick={() => addBlock('heading', index)}
                                 className="btn btn-sm btn-outline-primary"
                             >
-                                + Heading
+                                + عنوان
                             </button>
                             <button 
                                 type="button" // Added type="button"
                                 onClick={() => addBlock('list', index)}
                                 className="btn btn-sm btn-outline-primary"
                             >
-                                + List
+                                + قائمة
                             </button>
                         </div>
                     </div>
@@ -331,49 +331,49 @@ const BlockEditor = ({ value, onChange, placeholder = 'Start writing your conten
     return (
         <div className="block-editor">
             <div className="block-editor-header">
-                <h5>Content Editor</h5>
+                <h5>محرر المحتوى</h5>
                 <div className="block-add-buttons">
-                    <button 
+                    <button
                         type="button" // Added type="button"
                         onClick={() => addBlock('heading')}
                         className="btn btn-sm btn-primary"
                     >
-                        + Add Heading
+                        + إضافة عنوان
                     </button>
-                    <button 
+                    <button
                         type="button" // Added type="button"
                         onClick={() => addBlock('paragraph')}
                         className="btn btn-sm btn-primary"
                     >
-                        + Add Paragraph
+                        + إضافة فقرة
                     </button>
-                    <button 
+                    <button
                         type="button" // Added type="button"
                         onClick={() => addBlock('list')}
                         className="btn btn-sm btn-primary"
                     >
-                        + Add List
+                        + إضافة قائمة
                     </button>
                 </div>
             </div>
-            
+
             {blocks.length === 0 ? (
                 <div className="block-editor-empty">
                     <p>{placeholder}</p>
                     <div className="block-add-buttons">
-                        <button 
+                        <button
                             type="button" // Added type="button"
                             onClick={() => addBlock('heading')}
                             className="btn btn-sm btn-outline-primary"
                         >
-                            + Start with Heading
+                            + ابدأ بعنوان
                         </button>
-                        <button 
+                        <button
                             type="button" // Added type="button"
                             onClick={() => addBlock('paragraph')}
                             className="btn btn-sm btn-outline-primary"
                         >
-                            + Start with Paragraph
+                            + ابدأ بفقرة
                         </button>
                     </div>
                 </div>

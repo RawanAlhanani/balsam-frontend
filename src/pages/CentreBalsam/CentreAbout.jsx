@@ -269,7 +269,7 @@ export default function CentreAbout() {
           .about-hero h1 { font-size: 28px; }
         }
       `}</style>
-      <PageBanner/>
+      <PageBanner title="عن مركز بلسم" />
       <section className="about-hero">
         <div className="about-container">
           <div className="hero-badge">مركز بلسم — التعريف والهوية</div>

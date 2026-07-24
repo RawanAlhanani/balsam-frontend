@@ -196,7 +196,7 @@ export default function RegisterPath() {
 
     return (
         <>
-            <PageBanner/>
+            <PageBanner title="التسجيل والالتحاق بالمركز" />
         <div style={{ direction: 'rtl', fontFamily: 'Segoe UI, Arial, sans-serif', textAlign: 'right' }}>
             <style>{`
                 /* ── الـ Variables الأساسية للموقع ── */

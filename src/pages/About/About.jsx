@@ -53,7 +53,7 @@ const About = () => {
 
     return (
         <div className="content">
-            <PageBanner/>
+            <PageBanner title="من نحن" />
             
             <section className="eco_services_environment">
                 <div className="container">

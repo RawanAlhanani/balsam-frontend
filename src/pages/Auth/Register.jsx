@@ -137,21 +137,21 @@ const Register = () => {
             <h4 className="eco_sm_titles">اختر نوع الحساب المراد إنشاؤه</h4>
             <div className="row text-center mt-4">
                 <div className="col-md-4 mb-3">
-                    <button className="btn btn-outline-info w-100 p-4" onClick={() => { setAccountType('beneficiary'); setStep(1); }}>
-                        <i className="fa fa-users fa-2x mb-2"></i><br/>
-                        حساب أسرة مستفيدة
+                    <button type="button" className="account-type-card account-type-card--info" onClick={() => { setAccountType('beneficiary'); setStep(1); }}>
+                        <span className="account-type-card__icon"><i className="fa fa-users"></i></span>
+                        <span className="account-type-card__label">حساب أسرة مستفيدة</span>
                     </button>
                 </div>
                 <div className="col-md-4 mb-3">
-                    <button className="btn btn-outline-success w-100 p-4" onClick={() => { setAccountType('volunteer'); setStep(5); }}>
-                        <i className="fa fa-heart fa-2x mb-2"></i><br/>
-                        حساب مهتم/متطوع/داعم
+                    <button type="button" className="account-type-card account-type-card--success" onClick={() => { setAccountType('volunteer'); setStep(5); }}>
+                        <span className="account-type-card__icon"><i className="fa fa-heart"></i></span>
+                        <span className="account-type-card__label">حساب مهتم/متطوع/داعم</span>
                     </button>
                 </div>
                 <div className="col-md-4 mb-3">
-                    <button className="btn btn-outline-warning w-100 p-4" onClick={() => navigate('/centre/devenir-stagiaire')}>
-                        <i className="fa fa-graduation-cap fa-2x mb-2"></i><br/>
-                        طلب تدريب (Stagiaire)
+                    <button type="button" className="account-type-card account-type-card--warning" onClick={() => navigate('/centre/devenir-stagiaire')}>
+                        <span className="account-type-card__icon"><i className="fa fa-graduation-cap"></i></span>
+                        <span className="account-type-card__label">طلب تدريب (Stagiaire)</span>
                     </button>
                 </div>
             </div>
@@ -180,8 +180,8 @@ const Register = () => {
                 </div>
                 <div className="form-group col-md-12">
                     <label className="label-right d-block">الجنس <span className="text-danger-star">*</span></label>
-                    <label className="mr-3"><input type="radio" name="sexeEnfant" value="أنثى" checked={formData.sexeEnfant === 'أنثى'} onChange={handleChange} /> أنثى</label>
-                    <label className="mr-3"><input type="radio" name="sexeEnfant" value="ذكر" checked={formData.sexeEnfant === 'ذكر'} onChange={handleChange} /> ذكر</label>
+                    <label className="mr-3"><input type="radio" name="sexeEnfant" value="1" checked={formData.sexeEnfant === '1'} onChange={handleChange} /> أنثى</label>
+                    <label className="mr-3"><input type="radio" name="sexeEnfant" value="2" checked={formData.sexeEnfant === '2'} onChange={handleChange} /> ذكر</label>
                 </div>
             </div>
             <div className="text-left mt-3">
@@ -216,17 +216,20 @@ const Register = () => {
                 </div>
 
                 <div className="form-group col-md-4">
-                    <label className="label-right">المستوى الدراسي <span className="text-danger-star">*</span></label>
-                    <input className="form-control" name="etude" placeholder="المستوى الدراسي الحالي" value={formData.etude} onChange={handleChange} required />
+                    <label className="label-right">هل يدرس الطفل حاليا؟ <span className="text-danger-star">*</span></label>
+                    <select className="form-control" name="etude" value={formData.etude} onChange={handleChange} required>
+                        <option value="">- اختر الجواب -</option>
+                        <option value="1">نعم</option>
+                        <option value="2">لا</option>
+                    </select>
                 </div>
                 
-                {/* 🛠️ تم التعديل هنا ليرسل 1 لـ نعم و 0 لـ لا لحل مشكلة الـ Integer لعمود avs */}
                 <div className="form-group col-md-4">
                     <label className="label-right">هل يحتاج مرافقة (AVS)؟ <span className="text-danger-star">*</span></label>
                     <select className="form-control" name="avs" value={formData.avs} onChange={handleChange} required>
                         <option value="">- اختر الجواب -</option>
                         <option value="1">نعم</option>
-                        <option value="0">لا</option>
+                        <option value="2">لا</option>
                     </select>
                 </div>
                 
@@ -411,7 +414,7 @@ const Register = () => {
 
     return (
         <div className="content">
-            <PageBanner />
+            <PageBanner title="إنشاء حساب" />
 
             <section>
                 <div className="container">

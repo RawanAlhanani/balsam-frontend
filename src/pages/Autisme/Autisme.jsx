@@ -30,7 +30,7 @@ const Autisme = () => {
 
     return (
         <div className="content">
-            <PageBanner  />
+            <PageBanner title="فهم التوحد" />
 
             <section className="eco_services_environment py-5"> {/* Added padding */}
                 <div className="container">
@@ -54,7 +54,7 @@ const Autisme = () => {
                                         {/* <p className="card-text text-muted">A short snippet of the description...</p> */}
                                         <div className="mt-auto"> {/* Push button to bottom */}
                                             <Link className="btn btn-outline-primary mt-3" to={`/page_autisme/${page.id}`}>
-                                                قراءة المزيد <i className="la la-arrow-right"></i> {/* Added icon */}
+                                                قراءة المزيد <i className="la la-arrow-left"></i> {/* Added icon */}
                                             </Link>
                                         </div>
                                     </div>

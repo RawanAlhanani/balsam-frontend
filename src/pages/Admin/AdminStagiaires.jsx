@@ -5,6 +5,7 @@ import {
     AdminTableWrap, AdminBtn, AdminAlert
 } from '../../components/Admin/ui/AdminUI';
 import DeleteConfirmModal from '../../components/Admin/modals/DeleteConfirmModal';
+import { getFileUrl } from '../../utils/formatters';
 
 // Helper function to personalize error messages
 const getPersonalizedErrorMessage = (error) => {
@@ -153,7 +154,7 @@ const AdminStagiaires = () => {
                                                 <td>
                                                     {stg.cv_path ? (
                                                         <a
-                                                            href={`http://127.0.0.1:8000/storage/${stg.cv_path}`}
+                                                            href={getFileUrl(stg.cv_path)}
                                                             target="_blank"
                                                             rel="noopener noreferrer"
                                                             className="btn btn-sm btn-outline-info admin-action-btn"

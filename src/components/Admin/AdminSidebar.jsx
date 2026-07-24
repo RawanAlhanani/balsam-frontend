@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 
-const AdminSidebar = ({ isExpanded }) => {
+const AdminSidebar = ({ isExpanded, onNavigate }) => {
     const [openMenus, setOpenMenus] = useState({});
     const adminRole = localStorage.getItem('admin_role');
 
@@ -49,6 +49,11 @@ const AdminSidebar = ({ isExpanded }) => {
             title: "الصفحات الثابتة",
             icon: "la-file-text",
             to: "/admin/static-pages"
+        },
+        {
+            title: "رسائل التواصل",
+            icon: "la-envelope",
+            to: "/admin/contact-messages"
         }
     ];
 
@@ -98,15 +103,15 @@ const AdminSidebar = ({ isExpanded }) => {
             <div className="main-menu-content" style={{ overflowY: 'auto', maxHeight: 'calc(100vh - 60px)' }}> {/* Added scrolling styles */}
                 <ul className="navigation navigation-main" id="main-menu-navigation">
                     <li className="nav-item">
-                        <NavLink to="/admin/dashboard" className={({ isActive }) => isActive ? 'active-admin-link' : ''}>
+                        <NavLink to="/admin/dashboard" onClick={onNavigate} className={({ isActive }) => isActive ? 'active-admin-link' : ''}>
                             <i className="la la-dashboard"></i><span className="menu-title">لوحة التحكم</span>
                         </NavLink>
                     </li>
-                    
+
                     {/* Direct Links */}
                     {[...menuItems, ...roleItems].map((item, idx) => (
                         <li key={idx} className="nav-item">
-                            <NavLink to={item.to} className={({ isActive }) => isActive ? 'active-admin-link' : ''}>
+                            <NavLink to={item.to} onClick={onNavigate} className={({ isActive }) => isActive ? 'active-admin-link' : ''}>
                                 <i className={`la ${item.icon}`}></i>
                                 <span className="menu-title">{item.title}</span>
                             </NavLink>
@@ -123,7 +128,7 @@ const AdminSidebar = ({ isExpanded }) => {
                             <ul className="menu-content" style={{ display: openMenus[settingsMenu.title] ? 'block' : 'none' }}>
                                 {settingsMenu.subItems.map((sub, sIdx) => (
                                     <li key={sIdx}>
-                                        <NavLink className={({ isActive }) => isActive ? 'menu-item active-admin-link' : 'menu-item'} to={sub.to}>{sub.title}</NavLink>
+                                        <NavLink className={({ isActive }) => isActive ? 'menu-item active-admin-link' : 'menu-item'} to={sub.to} onClick={onNavigate}>{sub.title}</NavLink>
                                     </li>
                                 ))}
                             </ul>

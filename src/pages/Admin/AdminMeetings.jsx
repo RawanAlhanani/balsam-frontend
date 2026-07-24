@@ -236,7 +236,7 @@ const AdminMeetings = () => {
             </head>
             <body>
                 <div class="background-frame">
-                    <img src="${logoUrl}" alt="background" />
+                    <img src="${logoUrl}" alt="خلفية" />
                 </div>
 
                 <table class="print-table">

@@ -1,11 +1,52 @@
-import { useEffect, useState } from "react";
-import api from "../../../api/"; // Explicitly import index.js
+import { useEffect, useRef, useState } from "react";
+import api from "../../../api/";
+import "./Stats.css";
+
+const STAT_ITEMS = [
+  { key: "sessions", label: "جلسة تقييم", icon: "fa-heartbeat" },
+  { key: "activites", label: "فعاليات متنوعة", icon: "fa-calendar" },
+  { key: "enfants", label: "تلاميذ ملتحقين", icon: "fa-graduation-cap" },
+  { key: "formations", label: "دورات تكوينية", icon: "fa-certificate" },
+];
+
+const CountUp = ({ value }) => {
+  const [display, setDisplay] = useState(0);
+  const ref = useRef(null);
+  const started = useRef(false);
+
+  useEffect(() => {
+    const target = Number(value) || 0;
+    const el = ref.current;
+    if (!el) return;
+
+    const animate = () => {
+      if (started.current) return;
+      started.current = true;
+      const duration = 1200;
+      const start = performance.now();
+      const step = (now) => {
+        const progress = Math.min((now - start) / duration, 1);
+        setDisplay(Math.round(target * (1 - Math.pow(1 - progress, 3))));
+        if (progress < 1) requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting) animate();
+    }, { threshold: 0.4 });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [value]);
+
+  return <span ref={ref}>{display}</span>;
+};
 
 export default function Stats() {
   const [stats, setStats] = useState(null);
 
   useEffect(() => {
-    api.get("/stats") // Use the api instance with the relative path
+    api.get("/stats")
       .then(res => setStats(res.data))
       .catch(err => console.error(err));
   }, []);
@@ -13,52 +54,18 @@ export default function Stats() {
   if (!stats) return null;
 
   return (
-    <section style={styles.section}>
-      <div style={styles.container}>
-        
-        <div style={styles.card}>
-          <h2>{stats.sessions}</h2>
-          <p>جلسة تقييم</p>
-        </div>
-
-        <div style={styles.card}>
-          <h2>{stats.activites}</h2>
-          <p>فعاليات متنوعة</p>
-        </div>
-
-        <div style={styles.card}>
-          <h2>{stats.enfants}</h2>
-          <p>تلاميذ ملتحقين</p>
-        </div>
-
-        <div style={styles.card}>
-          <h2>{stats.formations}</h2>
-          <p>دورات تكوينية</p>
-        </div>
-
+    <section className="balsam-stats">
+      <div className="balsam-stats__container">
+        {STAT_ITEMS.map(item => (
+          <div className="balsam-stats__card" key={item.key}>
+            <div className="balsam-stats__icon">
+              <i className={`fa ${item.icon}`} aria-hidden="true"></i>
+            </div>
+            <h2 className="balsam-stats__value"><CountUp value={stats[item.key]} /></h2>
+            <p className="balsam-stats__label">{item.label}</p>
+          </div>
+        ))}
       </div>
     </section>
   );
 }
-
-const styles = {
-  section: {
-    background: "#f5f7fa",
-    padding: "60px 20px",
-    textAlign: "center"
-  },
-  container: {
-    display: "flex",
-    justifyContent: "center",
-    gap: "30px",
-    flexWrap: "wrap"
-  },
-  card: {
-    background: "#ffffff",
-    padding: "30px",
-    borderRadius: "15px",
-    width: "200px",
-    boxShadow: "0 5px 20px rgba(0,0,0,0.1)",
-    transition: "0.3s"
-  }
-};

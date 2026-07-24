@@ -1,6 +1,20 @@
 import { useState, useEffect, useCallback } from 'react';
 import api from '../api'; // Assuming your API instance is exported from here
 
+// Prefers the backend's own Arabic message/validation errors over a generic
+// fallback — Api controllers already return specific messages (e.g. "فشل
+// التحقق من البيانات" plus per-field errors), which a hardcoded fallback
+// would otherwise discard.
+const extractErrorMessage = (err, fallback) => {
+    const data = err?.response?.data;
+    if (!data) return fallback;
+    if (data.errors) {
+        const firstField = Object.values(data.errors)[0];
+        if (Array.isArray(firstField) && firstField.length) return firstField[0];
+    }
+    return data.message || fallback;
+};
+
 const useAdminCrud = (endpoint, itemNameKey, initialNewItemState, transformNewItem = (item) => item, transformEditItem = (item) => item) => {
     const [items, setItems] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -28,7 +42,7 @@ const useAdminCrud = (endpoint, itemNameKey, initialNewItemState, transformNewIt
             setItems(res.data);
         } catch (err) {
             console.error(`Error fetching items from ${endpoint}:`, err);
-            setAlert({ message: `خطأ في تحميل ${itemNameKey}s`, type: 'danger' });
+            setAlert({ message: extractErrorMessage(err, `حدث خطأ أثناء تحميل بيانات ${itemNameKey}`), type: 'danger' });
         } finally {
             setLoading(false);
         }
@@ -49,7 +63,7 @@ const useAdminCrud = (endpoint, itemNameKey, initialNewItemState, transformNewIt
             setAlert({ message: `تم إضافة ${itemNameKey} بنجاح`, type: 'success' });
         } catch (err) {
             console.error(`Error adding item to ${endpoint}:`, err);
-            setAlert({ message: `خطأ أثناء إضافة ${itemNameKey}`, type: 'danger' });
+            setAlert({ message: extractErrorMessage(err, `خطأ أثناء إضافة ${itemNameKey}`), type: 'danger' });
         } finally {
             setSubmitting(false);
             setTimeout(clearAlert, 3500);
@@ -72,7 +86,7 @@ const useAdminCrud = (endpoint, itemNameKey, initialNewItemState, transformNewIt
             setDeleteTargetItem(null);
         } catch (err) {
             console.error(`Error deleting item from ${endpoint}:`, err);
-            setAlert({ message: `خطأ أثناء حذف ${itemNameKey}`, type: 'danger' });
+            setAlert({ message: extractErrorMessage(err, `خطأ أثناء حذف ${itemNameKey}`), type: 'danger' });
         } finally {
             setDeleting(false);
             setTimeout(clearAlert, 3500);
@@ -99,7 +113,7 @@ const useAdminCrud = (endpoint, itemNameKey, initialNewItemState, transformNewIt
             handleCancelEdit();
         } catch (err) {
             console.error(`Error updating item at ${endpoint}/${id}:`, err);
-            setAlert({ message: `خطأ أثناء تحديث ${itemNameKey}`, type: 'danger' });
+            setAlert({ message: extractErrorMessage(err, `خطأ أثناء تحديث ${itemNameKey}`), type: 'danger' });
         } finally {
             setSubmitting(false);
             setTimeout(clearAlert, 3500);

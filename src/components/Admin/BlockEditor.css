@@ -100,17 +100,17 @@
 /* Specific block styling */
 .block-heading {
     background: #fff8f0;
-    border-left: 4px solid #f05477;
+    border-inline-start: 4px solid #f05477;
 }
 
 .block-paragraph {
     background: #f0f8ff;
-    border-left: 4px solid #4a90e2;
+    border-inline-start: 4px solid #4a90e2;
 }
 
 .block-list {
     background: #f0fff0;
-    border-left: 4px solid #50c878;
+    border-inline-start: 4px solid #50c878;
 }
 
 /* Form controls styling */

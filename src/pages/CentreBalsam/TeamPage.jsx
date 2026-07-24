@@ -13,15 +13,10 @@ const TeamPage = () => {
 
     const fetchTeam = async () => {
         try {
-            const res = await api.get('/admin/accounts');
-
-            const filtered = res.data.filter(user =>
-                ['president', 'vice_president', 'secretary', 'treasurer'].includes(user.role)
-            );
-
-            setTeam(filtered);
+            const res = await api.get('/team');
+            setTeam(res.data);
         } catch (err) {
-            console.error("Erreur lors du chargement de l'équipe:", err);
+            console.error("Error fetching team:", err);
         } finally {
             setLoading(false);
         }
@@ -44,7 +39,7 @@ const TeamPage = () => {
 
     return (
         <>
-            <PageBanner/>
+            <PageBanner title="فريق بلسم" />
         <div
             className="main-content"
             style={{

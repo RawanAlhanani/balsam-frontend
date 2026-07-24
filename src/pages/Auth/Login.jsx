@@ -27,7 +27,7 @@ const Login = () => {
             navigate('/');
         } catch (err) {
             console.error('Login error:', err);
-            setError(err.response?.data?.message || 'اسم المستخدم أوكلمة المرور غير صحيحة.');
+            setError(err.response?.data?.message || 'اسم المستخدم أو كلمة المرور غير صحيحة.');
         } finally {
             setLoading(false);
         }
@@ -35,7 +35,7 @@ const Login = () => {
 
     return (
         <div className="content">
-            <PageBanner />
+            <PageBanner title="تسجيل الدخول" />
             
             <section className="eco_services_environment">
                 <div className="container">

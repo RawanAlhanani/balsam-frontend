@@ -29,7 +29,7 @@ const Activities = () => {
 
     return (
         <div className="content">
-            <PageBanner title="" />
+            <PageBanner title="أنشطتنا" />
 
             <section>
                 <div className="container">
@@ -57,7 +57,7 @@ const Activities = () => {
                                                         </div>
                                                         <div className="col-md-6">
                                                             <a href="#" className="ProjectsRead" style={{ background: '#f05c7d', pointerEvents: 'none' }}>
-                                                                {v.typeactivite?.nom_type}
+                                                                {v.typeactivite?.nomActivite}
                                                             </a>
                                                         </div>
                                                     </div>

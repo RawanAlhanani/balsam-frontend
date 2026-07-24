@@ -228,7 +228,7 @@ const AdminPartners = () => {
                             <input type="file" className="form-control-file" name="imagePartenaire" onChange={handleImageChange} />
                             {currentImage && !image && ( // Show current image if editing and no new image selected
                                 <div className="mt-2">
-                                    <img src={currentImage} alt="Current Partner" style={{ maxWidth: '100px', maxHeight: '100px', objectFit: 'contain' }} />
+                                    <img src={currentImage} alt="الشعار الحالي" style={{ maxWidth: '100px', maxHeight: '100px', objectFit: 'contain' }} />
                                     <small className="d-block text-muted">الشعار الحالي</small>
                                 </div>
                             )}

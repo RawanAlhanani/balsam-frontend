@@ -70,7 +70,7 @@ export default function SpeechTherapy() {
                     .premium-cta { padding: 40px 24px; }
                 }
             `}</style>
-             <PageBanner/>
+             <PageBanner title="تقويم النطق والتواصل" />
 
             {/* عناصر فنية بالخلفية */}
             <div className="bg-blob-1"></div>

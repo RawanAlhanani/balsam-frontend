@@ -25,7 +25,7 @@ const Partners = () => {
 
     return (
         <div className="content">
-            <PageBanner/>
+            <PageBanner title="شركاؤنا" />
 
             <section>
                 <div className="container">

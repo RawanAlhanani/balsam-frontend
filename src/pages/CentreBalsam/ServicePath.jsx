@@ -50,7 +50,7 @@ const PATH_STEPS = [
 export default function ServicePath() {
   return (
       <>
-        <PageBanner/>
+        <PageBanner title="مسار الاستفادة من الخدمات" />
     <div style={{ direction: 'rtl', fontFamily: 'Segoe UI, Arial, sans-serif', textAlign: 'right' }}>
       <style>{`
         /* ── Variables ── */

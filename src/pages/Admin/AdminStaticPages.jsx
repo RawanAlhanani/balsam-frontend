@@ -254,7 +254,7 @@ const AdminStaticPages = () => {
                                                                 {selectedPage.page_image || selectedPage.projet_image || selectedPage.about_image ? (
                                                                     <img
                                                                         src={getStorageUrl(selectedPage.page_image || selectedPage.projet_image || selectedPage.about_image)}
-                                                                        alt="Page Image"
+                                                                        alt="صورة الصفحة"
                                                                         style={{ maxWidth: '100px', maxHeight: '100px', objectFit: 'contain' }}
                                                                     />
                                                                 ) : (

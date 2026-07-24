@@ -5,11 +5,20 @@ import AdminFooter from '../components/Admin/AdminFooter';
 import './admin.css';
 
 const AdminLayout = ({ children }) => {
-    const [isMenuExpanded, setIsMenuExpanded] = useState(true);
+    // Below 991px the sidebar becomes an off-canvas drawer (see admin.css),
+    // so it should start closed there instead of covering the dashboard on
+    // first load — above that it starts expanded as before.
+    const [isMenuExpanded, setIsMenuExpanded] = useState(
+        () => typeof window === 'undefined' || window.innerWidth >= 992
+    );
 
     const toggleMenu = (e) => {
         if (e) e.preventDefault();
         setIsMenuExpanded(!isMenuExpanded);
+    };
+
+    const closeMobileMenu = () => {
+        if (window.innerWidth <= 991) setIsMenuExpanded(false);
     };
 
     useEffect(() => {
@@ -113,7 +122,10 @@ const AdminLayout = ({ children }) => {
     return (
         <div className="admin-wrapper admin-theme">
             <AdminHeader toggleMenu={toggleMenu} />
-            <AdminSidebar isExpanded={isMenuExpanded} />
+            {isMenuExpanded && (
+                <div className="admin-mobile-backdrop" onClick={closeMobileMenu}></div>
+            )}
+            <AdminSidebar isExpanded={isMenuExpanded} onNavigate={closeMobileMenu} />
             <div className="app-content content"> {/* This div is part of the admin theme structure */}
                 <div className="content-wrapper">
                     <div className="content-body">

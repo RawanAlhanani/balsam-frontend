@@ -332,7 +332,9 @@
 
 .admin-theme .table-responsive {
     border-radius: 20px;
-    overflow: hidden;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
 }
 
 .admin-theme .main-menu {
@@ -892,13 +894,65 @@
     }
 }
 
-/* Temporary fix for RTL layout gap in admin dashboard */
-body.menu-expanded .admin-wrapper .app-content.content {
-    margin-right: 150px !important; /* Reduced from 240px */
-    margin-left: 0 !important;
+/* Fix for RTL layout gap in admin dashboard: reserve room for the sidebar
+   at desktop widths only (below 991px it becomes an off-canvas drawer that
+   must not push the content area — see the mobile block further down). */
+@media (min-width: 992px) {
+    body.menu-expanded .admin-wrapper .app-content.content {
+        margin-right: 150px !important; /* Reduced from 240px */
+        margin-left: 0 !important;
+    }
+
+    body.menu-collapsed .admin-wrapper .app-content.content {
+        margin-right: 60px !important;
+        margin-left: 0 !important;
+    }
 }
 
-body.menu-collapsed .admin-wrapper .app-content.content {
-    margin-right: 60px !important;
-    margin-left: 0 !important;
+/* ── Mobile sidebar: off-canvas drawer ──
+   The vendor theme's own JS (unison.js/app-menu.js) pushes the full-width
+   sidebar off-screen below its internal breakpoint without ever hiding it or
+   giving back the reserved content margin — so it silently occupies layout
+   space nobody can reach. This replaces that with a real drawer, reusing the
+   same expanded/collapsed state the header's hamburger button already
+   toggles (expanded = drawer open, collapsed = drawer fully hidden). */
+.admin-mobile-backdrop {
+    display: none;
+}
+
+@media (max-width: 991px) {
+    .admin-wrapper .app-content.content {
+        margin-right: 0 !important;
+    }
+
+    .admin-theme .main-menu {
+        position: fixed !important;
+        top: 0;
+        right: 0;
+        height: 100vh !important;
+        width: min(280px, 82vw) !important;
+        z-index: 10050;
+        transition: transform 0.3s ease;
+    }
+
+    body.menu-collapsed .admin-theme .main-menu {
+        transform: translateX(100%) !important;
+    }
+
+    body.menu-expanded .admin-theme .main-menu {
+        transform: translateX(0) !important;
+        box-shadow: -16px 0 40px rgba(0, 0, 0, 0.25) !important;
+    }
+
+    .admin-mobile-backdrop {
+        display: block;
+        position: fixed;
+        inset: 0;
+        background: rgba(10, 16, 38, 0.5);
+        z-index: 10040;
+    }
+
+    .admin-theme .header-navbar {
+        z-index: 10030;
+    }
 }

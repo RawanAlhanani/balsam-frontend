@@ -73,7 +73,7 @@ const DevenirBenevole = () => {
 
     return (
         <div className="content">
-            <PageBanner />
+            <PageBanner title="تطوع معنا" />
 
             <section className="mt-5 mb-5">
                 <div className="container">

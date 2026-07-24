@@ -64,6 +64,7 @@ const AdminActivityReports = lazy(() => import('./pages/Admin/AdminActivityRepor
 const AdminFinance = lazy(() => import('./pages/Admin/AdminFinance'));
 const AdminStagiaires = lazy(() => import('./pages/Admin/AdminStagiaires'));
 const AdminVolunteers = lazy(() => import('./pages/Admin/AdminVolunteers'));
+const AdminContactMessages = lazy(() => import('./pages/Admin/AdminContactMessages'));
 
 
 
@@ -154,6 +155,7 @@ function App() {
                   <Route path="/finance" element={<RequireAdmin roles={['president', 'treasurer']}><AdminFinance /></RequireAdmin>} />
                   <Route path="/interns" element={<AdminStagiaires />} />
                   <Route path="/volunteers" element={<AdminVolunteers />} />
+                  <Route path="/contact-messages" element={<AdminContactMessages />} />
                 </Routes>
               </Suspense>
             </AdminLayout>

@@ -1,6 +1,5 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import Header from '../../components/Header/Header';
 import PageBanner from "../../components/PageBanner.jsx";
 
 export default function SpecialEducation() {
@@ -80,7 +79,7 @@ export default function SpecialEducation() {
             `}</style>
 
           
-              <PageBanner/>
+              <PageBanner title="التربية الخاصة" />
 
             <div className="creative-blob-1"></div>
             <div className="creative-blob-2"></div>

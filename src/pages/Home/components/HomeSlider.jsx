@@ -1,116 +1,131 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { getStorageUrl } from '../../../utils/formatters';
+import './HomeSlider.css';
+
+const AUTOPLAY_DELAY = 5000;
 
 const HomeSlider = ({ images }) => {
-    const sliderRef = useRef(null);
+    const count = images?.length || 0;
+
+    const [current, setCurrent] = useState(0);
+    const [paused, setPaused] = useState(false);
+    const touchStartX = useRef(null);
+    const reducedMotion = useRef(
+        typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    );
+
+    const goTo = useCallback((index) => {
+        if (!count) return;
+        setCurrent(((index % count) + count) % count);
+    }, [count]);
+
+    const next = useCallback(() => goTo(current + 1), [current, goTo]);
+    const prev = useCallback(() => goTo(current - 1), [current, goTo]);
+
+    useEffect(() => { setCurrent(0); }, [images]);
 
     useEffect(() => {
-        let slider = null;
-        
-        // Small timeout to ensure DOM is ready and jQuery is available
-        const timer = setTimeout(() => {
-            if (window.jQuery && window.jQuery.fn.sliderPro && images?.length > 0) {
-                slider = window.jQuery('#example1').sliderPro({
-                    width: '100%',
-                    height: 500,
-                    fade: true,
-                    arrows: true,
-                    buttons: false,
-                    fullScreen: false,
-                    shuffle: false,
-                    smallSize: 500,
-                    mediumSize: 1000,
-                    largeSize: 3000,
-                    thumbnailArrows: true,
-                    autoplay: true,
-                    autoplayDelay: 5000
-                });
-            }
-        }, 300);
+        if (paused || count <= 1 || reducedMotion.current) return;
+        const timer = setTimeout(next, AUTOPLAY_DELAY);
+        return () => clearTimeout(timer);
+    }, [current, paused, count, next]);
 
-        return () => {
-            clearTimeout(timer);
-            // Optional: Destroy slider on unmount if plugin supports it
-            // if (slider && slider.destroy) slider.destroy();
-        };
-    }, [images]);
+    useEffect(() => {
+        const handleVisibility = () => setPaused(document.hidden);
+        document.addEventListener('visibilitychange', handleVisibility);
+        return () => document.removeEventListener('visibilitychange', handleVisibility);
+    }, []);
 
-    if (!images || images.length === 0) return null;
+    const handleKeyDown = (e) => {
+        if (e.key === 'ArrowLeft') { e.preventDefault(); prev(); }
+        if (e.key === 'ArrowRight') { e.preventDefault(); next(); }
+    };
+
+    const handleTouchStart = (e) => { touchStartX.current = e.touches[0].clientX; };
+    const handleTouchEnd = (e) => {
+        if (touchStartX.current === null) return;
+        const delta = e.changedTouches[0].clientX - touchStartX.current;
+        if (Math.abs(delta) > 40) { delta > 0 ? prev() : next(); }
+        touchStartX.current = null;
+    };
+
+    if (!count) return null;
 
     return (
-        <>
-            <div style={{ direction: 'ltr' }} id="example1" className="slider-pro" ref={sliderRef}>
-                <div className="sp-slides">
-                    {images.map(img => (
-                        <div className="sp-slide" key={img.id}>
-                            <img 
-                                className="sp-image" 
-                                src="/content/view/themes/balsam/assests/sliderpro/css/images/blank.gif"
-                                data-src={getStorageUrl(img.nomImage)}
-                                data-retina={getStorageUrl(img.nomImage)} 
-                                alt="" 
-                            />
-                        </div>
-                    ))}
-                </div>
-
-                {/* Hardcoded Thumbnails from original design */}
-                <div className="sp-thumbnails">
-                    <div className="sp-thumbnail">
-                        <div className="sp-thumbnail-title">
-                            <img src="/content/upload/new-slider-25-6-2018/01.png" alt="thumb1" />
-                        </div>
+        <div
+            className="homeSlider"
+            role="region"
+            aria-roledescription="carousel"
+            aria-label="صور مميزة من أنشطة الجمعية"
+            onMouseEnter={() => setPaused(true)}
+            onMouseLeave={() => setPaused(false)}
+            onFocus={() => setPaused(true)}
+            onBlur={() => setPaused(false)}
+            onKeyDown={handleKeyDown}
+            onTouchStart={handleTouchStart}
+            onTouchEnd={handleTouchEnd}
+        >
+            <div className="homeSlider__track">
+                {images.map((img, i) => (
+                    <div
+                        key={img.id}
+                        className={`homeSlider__slide${i === current ? ' is-active' : ''}`}
+                        aria-hidden={i !== current}
+                    >
+                        <img
+                            src={getStorageUrl(img.nomImage)}
+                            alt=""
+                            loading={i === 0 ? 'eager' : 'lazy'}
+                        />
                     </div>
-                    <div className="sp-thumbnail">
-                        <div className="sp-thumbnail-title">
-                            <img src="/content/upload/new-slider-25-6-2018/02.png" alt="thumb2" />
-                        </div>
-                    </div>
-                    <div className="sp-thumbnail">
-                        <div className="sp-thumbnail-title">
-                            <img src="/content/upload/new-slider-25-6-2018/03.png" alt="thumb3" />
-                        </div>
-                    </div>
-                    <div className="sp-thumbnail">
-                        <div className="sp-thumbnail-title">
-                            <img src="/content/upload/new-slider-25-6-2018/04.png" alt="thumb4" />
-                        </div>
-                    </div>
-                </div>
+                ))}
+                <div className="homeSlider__scrim" />
             </div>
 
-            <style>{`
-                .sp-thumbnail {
-                    width: 100%;
-                }
-                .sp-thumbnail-title img {
-                    width: 80px;
-                    display: table;
-                    margin: auto;
-                }
-                .sp-thumbnail-title {
-                    padding: 10px;
-                }
-                .sp-bottom-thumbnails.sp-has-pointer .sp-selected-thumbnail:before {
-                    display: none;
-                }
-                .sp-bottom-thumbnails.sp-has-pointer .sp-selected-thumbnail:after {
-                    content: '';
-                    position: absolute;
-                    width: 0;
-                    height: 0;
-                    left: 50%;
-                    top: 0;
-                    margin-left: -20px;
-                    border-bottom: 15px solid #fff;
-                    border-left: 20px solid transparent;
-                    border-right: 20px solid transparent;
-                }
-                .slider-pro {
-                    margin-bottom: 30px;
-                }
-            `}</style>
-        </>
+            {count > 1 && (
+                <>
+                    <button type="button" className="homeSlider__arrow homeSlider__arrow--prev" onClick={prev} aria-label="الصورة السابقة">
+                        <i className="fa fa-chevron-left" aria-hidden="true"></i>
+                    </button>
+                    <button type="button" className="homeSlider__arrow homeSlider__arrow--next" onClick={next} aria-label="الصورة التالية">
+                        <i className="fa fa-chevron-right" aria-hidden="true"></i>
+                    </button>
+
+                    <button
+                        type="button"
+                        className="homeSlider__playToggle"
+                        onClick={() => setPaused(p => !p)}
+                        aria-label={paused ? 'تشغيل العرض التلقائي للصور' : 'إيقاف العرض التلقائي للصور'}
+                    >
+                        <i className={`fa ${paused ? 'fa-play' : 'fa-pause'}`} aria-hidden="true"></i>
+                    </button>
+
+                    <div className="homeSlider__dots" role="tablist" aria-label="اختيار صورة">
+                        {images.map((img, i) => (
+                            <button
+                                key={img.id}
+                                type="button"
+                                role="tab"
+                                aria-selected={i === current}
+                                aria-label={`الصورة ${i + 1} من ${count}`}
+                                className={`homeSlider__dot${i === current ? ' is-active' : ''}`}
+                                onClick={() => goTo(i)}
+                            >
+                                {i === current && (
+                                    <span
+                                        className="homeSlider__dot-progress"
+                                        style={{
+                                            animationDuration: `${AUTOPLAY_DELAY}ms`,
+                                            animationPlayState: (paused || reducedMotion.current) ? 'paused' : 'running'
+                                        }}
+                                    />
+                                )}
+                            </button>
+                        ))}
+                    </div>
+                </>
+            )}
+        </div>
     );
 };
 

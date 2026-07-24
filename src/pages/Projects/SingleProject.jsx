@@ -56,7 +56,7 @@ const SingleProject = () => {
 
     return (
         <div className="content">
-            <PageBanner />
+            <PageBanner title={project.titre} />
 
             <section className="eco_services_environment">
                 <div className="container">

@@ -46,7 +46,7 @@ const AdminActivities = () => {
             const res = await api.get('/admin/activities');
             setActivities(res.data);
         } catch (err) {
-            setAlert({ message: 'خطأ في تحميل الأنشطة', type: 'danger' });
+            setAlert({ message: err.response?.data?.message || 'خطأ في تحميل الأنشطة', type: 'danger' });
             console.error(err);
         } finally {
             setLoading(false);
@@ -73,7 +73,7 @@ const AdminActivities = () => {
             setDeleteTargetId(null);
             setDeleteTargetName('');
         } catch (err) {
-            setAlert({ message: 'خطأ في الحذف', type: 'danger' });
+            setAlert({ message: err.response?.data?.message || 'خطأ في الحذف', type: 'danger' });
             console.error(err);
         } finally {
             setDeleting(false);
