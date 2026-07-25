@@ -46,6 +46,11 @@ const AdminAdmins = () => {
     const [formErrors, setFormErrors] = useState({}); // New state for form errors
     const [deleting, setDeleting] = useState(false);
 
+    // State for editing an existing admin (password stays optional here —
+    // blank means "keep current password")
+    const [isEditing, setIsEditing] = useState(false);
+    const [editingId, setEditingId] = useState(null);
+
     // State for delete confirmation modal
     const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState(false);
     const [deleteTargetId, setDeleteTargetId] = useState(null);
@@ -80,6 +85,16 @@ const AdminAdmins = () => {
     const resetForm = () => {
         setFormData({ name: '', email: '', password: '', role: 'secretary' });
         setFormErrors({}); // Clear form errors on reset
+        setIsEditing(false);
+        setEditingId(null);
+    };
+
+    const handleOpenEditForm = (admin) => {
+        setFormData({ name: admin.name, email: admin.email, password: '', role: admin.role });
+        setIsEditing(true);
+        setEditingId(admin.id);
+        setFormErrors({});
+        setShowForm(true);
     };
 
     const handleInputChange = (e) => {
@@ -98,8 +113,13 @@ const AdminAdmins = () => {
         setAlert({ message: '', type: '' }); // Clear general alert
 
         try {
-            await api.post('/admin/accounts', formData);
-            setAlert({ message: 'تم إضافة المسؤول بنجاح', type: 'success' });
+            if (isEditing) {
+                await api.put(`/admin/accounts/${editingId}`, formData);
+                setAlert({ message: 'تم تحديث حساب المسؤول بنجاح', type: 'success' });
+            } else {
+                await api.post('/admin/accounts', formData);
+                setAlert({ message: 'تم إضافة المسؤول بنجاح', type: 'success' });
+            }
             setShowForm(false);
             resetForm();
             fetchAdmins();
@@ -153,7 +173,9 @@ const AdminAdmins = () => {
         president: 'رئيس',
         vice_president: 'نائب رئيس',
         secretary: 'كاتب عام',
+        vice_secretary: 'نائب الكاتب العام',
         treasurer: 'أمين مال',
+        vice_treasurer: 'نائب أمين المال',
     };
 
     return (
@@ -164,13 +186,13 @@ const AdminAdmins = () => {
                     subtitle="إضافة وحذف حسابات المسؤولين"
                     badge="الإعدادات"
                     actions={
-                        <AdminBtn variant={showForm ? 'secondary' : 'primary'} icon={showForm ? 'la-times' : 'la-plus'} onClick={() => { setShowForm(!showForm); resetForm(); }}>
+                        <AdminBtn variant={showForm ? 'secondary' : 'primary'} icon={showForm ? 'la-times' : 'la-plus'} onClick={() => { if (showForm) { setShowForm(false); resetForm(); } else { resetForm(); setShowForm(true); } }}>
                             {showForm ? 'إلغاء' : 'إضافة مسؤول'}
                         </AdminBtn>
                     }
                 />
                 <div className="content-body">
-                    <AdminFormPanel title="إضافة مسؤول جديد" open={showForm} onClose={() => { setShowForm(false); resetForm(); }} onSubmit={handleSubmit}>
+                    <AdminFormPanel title={isEditing ? 'تعديل حساب المسؤول' : 'إضافة مسؤول جديد'} open={showForm} onClose={() => { setShowForm(false); resetForm(); }} onSubmit={handleSubmit}>
                         <div className="row">
                             <AdminFormGroup label="الاسم" className="col-md-3">
                                 <input className="form-control" name="name" value={formData.name} onChange={handleInputChange} required />
@@ -180,8 +202,8 @@ const AdminAdmins = () => {
                                 <input className="form-control" type="email" name="email" value={formData.email} onChange={handleInputChange} required />
                                 {formErrors.email && <div className="text-danger small mt-1">{formErrors.email[0]}</div>}
                             </AdminFormGroup>
-                            <AdminFormGroup label="كلمة السر" className="col-md-3">
-                                <input className="form-control" type="password" name="password" value={formData.password} onChange={handleInputChange} required />
+                            <AdminFormGroup label={isEditing ? 'كلمة السر' : 'كلمة السر'} className="col-md-3">
+                                <input className="form-control" type="password" name="password" value={formData.password} onChange={handleInputChange} placeholder={isEditing ? 'اتركها فارغة للإبقاء على كلمة السر الحالية' : ''} required={!isEditing} />
                                 {formErrors.password && <div className="text-danger small mt-1">{formErrors.password[0]}</div>}
                             </AdminFormGroup>
                             <AdminFormGroup label="الصفة" className="col-md-3">
@@ -189,14 +211,16 @@ const AdminAdmins = () => {
                                     <option value="president">رئيس</option>
                                     <option value="vice_president">نائب رئيس</option>
                                     <option value="secretary">كاتب عام</option>
+                                    <option value="vice_secretary">نائب الكاتب العام</option>
                                     <option value="treasurer">أمين مال</option>
+                                    <option value="vice_treasurer">نائب أمين المال</option>
                                 </select>
                                 {formErrors.role && <div className="text-danger small mt-1">{formErrors.role[0]}</div>}
                             </AdminFormGroup>
                         </div>
                         <AdminFormActions>
                             <AdminBtn variant="success" type="submit" icon="la-check" disabled={submitting}>
-                                {submitting ? <><span className="spinner-border spinner-border-sm mr-2" role="status" aria-hidden="true"></span> جارٍ...</> : 'حفظ'}
+                                {submitting ? <><span className="spinner-border spinner-border-sm mr-2" role="status" aria-hidden="true"></span> جارٍ...</> : (isEditing ? 'حفظ التعديلات' : 'حفظ')}
                             </AdminBtn>
                             <AdminBtn variant="secondary" icon="la-times" onClick={() => { setShowForm(false); resetForm(); }}>إلغاء</AdminBtn>
                         </AdminFormActions>
@@ -225,7 +249,10 @@ const AdminAdmins = () => {
                                                 <td>{a.email}</td>
                                                 <td><span className="admin-tag">{roleLabels[a.role] || a.role}</span></td>
                                                 <td>
-                                                    <AdminBtn variant="danger" icon="la-trash" onClick={() => promptDelete(a.id, a.name)}>حذف</AdminBtn>
+                                                    <div className="admin-action-group">
+                                                        <AdminBtn variant="primary" icon="la-edit" onClick={() => handleOpenEditForm(a)}>تعديل</AdminBtn>
+                                                        <AdminBtn variant="danger" icon="la-trash" onClick={() => promptDelete(a.id, a.name)}>حذف</AdminBtn>
+                                                    </div>
                                                 </td>
                                             </tr>
                                         ))}

@@ -65,6 +65,7 @@ const AdminFinance = lazy(() => import('./pages/Admin/AdminFinance'));
 const AdminStagiaires = lazy(() => import('./pages/Admin/AdminStagiaires'));
 const AdminVolunteers = lazy(() => import('./pages/Admin/AdminVolunteers'));
 const AdminContactMessages = lazy(() => import('./pages/Admin/AdminContactMessages'));
+const AdminMyProfile = lazy(() => import('./pages/Admin/AdminMyProfile'));
 
 
 
@@ -156,6 +157,7 @@ function App() {
                   <Route path="/interns" element={<AdminStagiaires />} />
                   <Route path="/volunteers" element={<AdminVolunteers />} />
                   <Route path="/contact-messages" element={<AdminContactMessages />} />
+                  <Route path="/my-profile" element={<AdminMyProfile />} />
                 </Routes>
               </Suspense>
             </AdminLayout>

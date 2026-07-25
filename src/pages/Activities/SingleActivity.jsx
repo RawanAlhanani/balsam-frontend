@@ -79,12 +79,6 @@ const SingleActivity = () => {
                                 </div>
                                 <p className="lead" dangerouslySetInnerHTML={{ __html: activity.description?.replace(/\n/g, '<br />') }} />
                             </div>
-
-                            <div className="text-center mt-5"> {/* Centered button */}
-                                <Link to={`/vouloirParticiper/${activity.id}`} className="btn btn-primary btn-lg">
-                                    المشاركة في النشاط <i className="la la-arrow-left ml-2"></i> {/* Added icon, changed mr-2 to ml-2 */}
-                                </Link>
-                            </div>
                         </div>
 
                         {/* Sidebar for Latest Activities */}

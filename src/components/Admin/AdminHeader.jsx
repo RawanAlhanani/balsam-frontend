@@ -32,8 +32,8 @@ const AdminHeader = ({ toggleMenu }) => {
                         </li>
                         <li className="nav-item">
                             <Link className="navbar-brand" to="/admin/dashboard">
-                                <img className="brand-logo" alt="شعار باسم" src="/backend/app-assets/images/logo/logo.png" />
-                                <h3 className="brand-text">باسم</h3>
+                                <img className="brand-logo" alt="شعار بلسم" src="/backend/app-assets/images/logo/logo.png" />
+                                <h3 className="brand-text">بلسم</h3>
                             </Link>
                         </li>
                         <li className="nav-item d-md-none">
@@ -60,6 +60,12 @@ const AdminHeader = ({ toggleMenu }) => {
                                     </span>
                                 </li>
                             )}
+                            <li className="nav-item">
+                                <Link className="nav-link dropdown-user-link" to="/admin/my-profile">
+                                    <i className="la la-user mr-1" />
+                                    <span>الملف الشخصي</span>
+                                </Link>
+                            </li>
                             <li className="dropdown dropdown-user nav-item">
                                 <a className="dropdown-toggle nav-link dropdown-user-link" href="#" onClick={handleLogout}>
                                     <i className="la la-sign-out mr-1" />

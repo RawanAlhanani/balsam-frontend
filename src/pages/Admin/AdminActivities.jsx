@@ -132,7 +132,8 @@ const AdminActivities = () => {
                                                     'لا توجد'
                                                 )}
                                             </td>
-                                            <td>{act.description.substring(0, 50)}...</td> {/* Truncated description */}
+                                            {/* Truncated description */}
+                                            <td>{act.description.substring(0, 50)}...</td>
                                             <td>
                                                 <div className="admin-action-group">
                                                     <AdminBtn variant="primary" icon="la-edit" onClick={() => navigate(`/admin/activities/edit/${act.id}`)}>تعديل</AdminBtn> {/* Navigate to edit page */}

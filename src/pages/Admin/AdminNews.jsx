@@ -156,7 +156,8 @@ const AdminNews = () => {
                                     {news.map(item => (
                                         <tr key={item.id}>
                                             <td>{item.titre}</td>
-                                            <td>{item.description.substring(0, 50)}...</td> {/* Truncated description */}
+                                            {/* Truncated description */}
+                                            <td>{item.description.substring(0, 50)}...</td>
                                             <td>
                                                 {item.image_info ? (
                                                     <img src={getStorageUrl(item.image_info)} alt={item.titre} style={{ maxWidth: '50px', maxHeight: '50px', objectFit: 'cover' }} />
