@@ -88,7 +88,7 @@ const Footer = () => {
                         </div>
                     </div>
                     <div className="eco_template_information">
-                       <p>© Copyrights 2021</p>
+                       <p>© Copyrights {new Date().getFullYear()}</p>
                     </div>
                 </div>
             </div>
