@@ -47,7 +47,9 @@ const OptimizedImage = ({
     <div
       ref={imgRef}
       className={className}
-      style={{ 
+      style={{
+        width: '100%',
+        height: '100%',
         ...style,
         backgroundColor: placeholder && !isLoaded ? '#f0f0f0' : 'transparent',
         transition: 'opacity 0.3s ease',
