@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import api from '../../api';
 import {
     AdminPage, AdminPageHeader, AdminCard, AdminLoading, AdminAlert, AdminBtn
@@ -40,6 +40,7 @@ const getPersonalizedErrorMessage = (error) => {
 
 const AdminStaticPages = () => {
     const navigate = useNavigate();
+    const location = useLocation();
     const [pages, setPages] = useState({ about: [], autism: [], projects: [] });
     const [selectedType, setSelectedType] = useState('about');
     const [selectedPage, setSelectedPage] = useState(null);
@@ -51,6 +52,16 @@ const AdminStaticPages = () => {
     const [search, setSearch] = useState('');
 
     useEffect(() => { fetchPages(); }, []);
+
+    useEffect(() => {
+        if (location.state?.flashMessage) {
+            setAlert({ message: location.state.flashMessage, type: location.state.flashType || 'success' });
+            navigate(location.pathname, { replace: true, state: {} });
+            const timer = setTimeout(() => setAlert({ message: '', type: '' }), 3500);
+            return () => clearTimeout(timer);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [location.state]);
 
     // Lock background scroll and interactions when delete modal is open
     useEffect(() => {

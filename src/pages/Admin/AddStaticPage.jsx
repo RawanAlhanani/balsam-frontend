@@ -86,8 +86,8 @@ const AddStaticPage = () => {
 
         try {
             await api.post('/admin/static-pages', data);
-            setAlert({ message: 'تم الإضافة بنجاح', type: 'success' });
-            navigate('/admin/static-pages'); // Redirect to the list page
+            navigate('/admin/static-pages', { state: { flashMessage: 'تم الإضافة بنجاح', flashType: 'success' } });
+            return;
         } catch (err) {
             if (err.response && err.response.status === 422) {
                 setFormErrors(err.response.data.errors);

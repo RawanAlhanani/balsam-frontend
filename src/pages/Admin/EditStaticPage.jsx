@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import api from '../../api';
 import BlockEditor from '../../components/Admin/BlockEditor';
+import { getStorageUrl } from '../../utils/formatters';
 import {
     AdminPage, AdminPageHeader, AdminCard, AdminLoading, AdminAlert, AdminBtn
 } from '../../components/Admin/ui/AdminUI';
@@ -42,6 +43,7 @@ const EditStaticPage = () => {
     const [formData, setFormData] = useState({ type: type, titre: '', description: '' }); // Initialize type with URL param
     const [blockContent, setBlockContent] = useState({ sections: [] }); // New state for BlockEditor
     const [image, setImage] = useState(null);
+    const [currentImage, setCurrentImage] = useState(null);
     const [alert, setAlert] = useState({ message: '', type: '' });
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
@@ -64,6 +66,7 @@ const EditStaticPage = () => {
                 } else {
                     setBlockContent({ sections: [] }); // Reset for other types or if no structured data
                 }
+                setCurrentImage(page.page_image || page.about_image || page.projet_image || null);
             } catch (err) {
                 const errorMessage = getPersonalizedErrorMessage(err);
                 setAlert({ message: errorMessage, type: 'danger' });
@@ -121,8 +124,8 @@ const EditStaticPage = () => {
         try {
             // Changed API endpoint to include type and id for a RESTful update
             await api.post(`/admin/static-pages/${type}/${id}`, data);
-            setAlert({ message: 'تم التحديث بنجاح', type: 'success' });
-            navigate('/admin/static-pages'); // Redirect to the list page
+            navigate('/admin/static-pages', { state: { flashMessage: 'تم التحديث بنجاح', flashType: 'success' } });
+            return;
         } catch (err) {
             if (err.response && err.response.status === 422) {
                 setFormErrors(err.response.data.errors);
@@ -198,6 +201,17 @@ const EditStaticPage = () => {
                         </div>
                         <div className="form-group">
                             <label>صورة</label>
+                            {currentImage && !image && (
+                                <div className="mb-2">
+                                    <img
+                                        src={getStorageUrl(currentImage)}
+                                        alt="الصورة الحالية"
+                                        style={{ maxWidth: '120px', maxHeight: '120px', objectFit: 'contain', display: 'block' }}
+                                        className="mb-1 border rounded p-1"
+                                    />
+                                    <small className="text-muted">الصورة الحالية — اختر ملفًا جديدًا فقط إن أردت استبدالها</small>
+                                </div>
+                            )}
                             <input type="file" className="form-control-file" name="image" onChange={handleImageChange} />
                             {formErrors.image && <div className="text-danger small mt-1">{formErrors.image[0]}</div>}
                         </div>
