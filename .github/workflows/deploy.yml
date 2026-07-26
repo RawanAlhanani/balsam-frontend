@@ -38,4 +38,4 @@ jobs:
           local-dir: ./dist/
           server-dir: ${{ secrets.FTP_FRONTEND_DIR }}/
           exclude: |
-            backend/app-assets/**/*.php
+            backend/app-assets/**
