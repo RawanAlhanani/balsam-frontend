@@ -1,15 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { getNews } from '../../api';
+import { getNews, getSiteSettings } from '../../api';
 import { getStorageUrl } from '../../utils/formatters';
 
 const Footer = () => {
     const [recentNews, setRecentNews] = useState([]);
+    const [siteSettings, setSiteSettings] = useState({});
 
     useEffect(() => {
         getNews(1)
             .then(res => setRecentNews((res.data.data || []).slice(0, 3)))
             .catch(err => console.error('Error fetching footer news:', err));
+
+        getSiteSettings()
+            .then(res => setSiteSettings(res.data || {}))
+            .catch(err => console.error('Error fetching site settings:', err));
     }, []);
 
     return (
@@ -38,13 +43,22 @@ const Footer = () => {
                                            تعمل عى تحسين حياة المصابين بالتوحد</h5>
 
                                     <ul className="eco_admin_info">
-                                        <li><i className="fa fa-phone" aria-hidden="true"></i><p>32 07 06 00 6 212+</p></li>
-                                        <li><i className="fa fa-envelope" aria-hidden="true"></i><p>balsam.autism@gmail.com</p></li>
+                                        {siteSettings.phone && (
+                                            <li><i className="fa fa-phone" aria-hidden="true"></i><p dir="ltr">{siteSettings.phone}</p></li>
+                                        )}
+                                        {siteSettings.email && (
+                                            <li><i className="fa fa-envelope" aria-hidden="true"></i><p>{siteSettings.email}</p></li>
+                                        )}
                                     </ul>
 
                                     <ul className="social-icons">
-                                        <li><a href="https://facebook.com/BalsamAutisme/"><i className="fa fa-facebook" aria-hidden="true"></i></a></li>
-                                        <li><a href="https://www.youtube.com/channel/UCQbDMLX0jQlPYAGWWn5n3sQ"><i className="fa fa-youtube" aria-hidden="true"></i></a></li>
+                                        {siteSettings.facebook_url && (
+                                            <li><a href={siteSettings.facebook_url} target="_blank" rel="noopener noreferrer"><i className="fa fa-facebook" aria-hidden="true"></i></a></li>
+                                        )}
+                                        {siteSettings.instagram_url && (
+                                            <li><a href={siteSettings.instagram_url} target="_blank" rel="noopener noreferrer"><i className="fa fa-instagram" aria-hidden="true"></i></a></li>
+                                        )}
+                                        <li><a href="https://www.youtube.com/channel/UCQbDMLX0jQlPYAGWWn5n3sQ" target="_blank" rel="noopener noreferrer"><i className="fa fa-youtube" aria-hidden="true"></i></a></li>
                                     </ul>
                                 </div>
                             </div>

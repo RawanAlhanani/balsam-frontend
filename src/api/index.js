@@ -166,6 +166,8 @@ export const registerStagiaire = (data) => api.post('/register-stagiaire', data)
 export const submitContact = (data) => api.post('/contact', data);
 export const getContactMessages = (page = 1) => api.get('/admin/contact-messages', { params: { page } });
 export const deleteContactMessage = (id) => api.delete(`/admin/contact-messages/${id}`);
+export const getSiteSettings = () => api.get('/site-settings');
+export const updateSiteSettings = (data) => api.put('/admin/site-settings', data);
 
 // Auth functions
 export const login = (credentials) => api.post('/login', credentials);

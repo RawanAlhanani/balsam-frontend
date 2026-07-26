@@ -1,11 +1,18 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import PageBanner from '../../components/PageBanner';
-import { submitContact } from '../../api';
+import { submitContact, getSiteSettings } from '../../api';
 
 const Contact = () => {
     const [formData, setFormData] = useState({ name: '', email: '', subject: '', message: '' });
     const [submitting, setSubmitting] = useState(false);
     const [status, setStatus] = useState({ type: '', message: '' });
+    const [siteSettings, setSiteSettings] = useState({});
+
+    useEffect(() => {
+        getSiteSettings()
+            .then(res => setSiteSettings(res.data || {}))
+            .catch(err => console.error('Error fetching site settings:', err));
+    }, []);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -75,14 +82,21 @@ const Contact = () => {
                                 <div className="eco_detail_address">
                                     <h5 className="eco_sm_titles">معلومات التواصل</h5>
                                     <ul className="eco_admin_info">
-                                        <li><i className="fa fa-phone" aria-hidden="true"></i><p>32 07 06 00 6 212+</p></li>
-                                        <li><i className="fa fa-envelope" aria-hidden="true"></i><p>info@balsam.com </p></li>
+                                        {siteSettings.phone && (
+                                            <li><i className="fa fa-phone" aria-hidden="true"></i><p dir="ltr">{siteSettings.phone}</p></li>
+                                        )}
+                                        {siteSettings.email && (
+                                            <li><i className="fa fa-envelope" aria-hidden="true"></i><p>{siteSettings.email}</p></li>
+                                        )}
                                     </ul>
                                     <h5 className="eco_sm_titles">حسابات التواصل الاجتماعي</h5>
                                     <ul className="social-icons">
-                                        <li><a href="https://facebook.com/BalsamAutisme/"><i className="fa fa-facebook" aria-hidden="true"></i></a></li>
-                                        <li><a href="https://twitter.com/"><i className="fa fa-twitter" aria-hidden="true"></i></a></li>
-                                        <li><a href="https://instagram.com/"><i className="fa fa-instagram" aria-hidden="true"></i></a></li>
+                                        {siteSettings.facebook_url && (
+                                            <li><a href={siteSettings.facebook_url} target="_blank" rel="noopener noreferrer"><i className="fa fa-facebook" aria-hidden="true"></i></a></li>
+                                        )}
+                                        {siteSettings.instagram_url && (
+                                            <li><a href={siteSettings.instagram_url} target="_blank" rel="noopener noreferrer"><i className="fa fa-instagram" aria-hidden="true"></i></a></li>
+                                        )}
                                     </ul>
                                 </div>
                             </div>

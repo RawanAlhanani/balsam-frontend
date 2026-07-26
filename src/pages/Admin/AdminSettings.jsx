@@ -9,6 +9,7 @@ import AdminActivityTypes from './components/AdminActivityTypes'; // Import the 
 import AdminRegions from './components/AdminRegions'; // Import the new component
 import AdminDoctors from './components/AdminDoctors'; // Import the new component
 import AdminFinanceCategories from './components/AdminFinanceCategories'; // Import the new component
+import AdminContactInfo from './components/AdminContactInfo';
 
 const AdminSettings = () => {
     // Using the custom hook for each category
@@ -265,6 +266,11 @@ const AdminSettings = () => {
                         handleCancelEditDoctor={handleCancelEditDoctor}
                         handleSaveEditDoctor={handleSaveEditDoctor}
                         doctorsSubmitting={doctorsSubmitting}
+                    />
+
+                    <AdminContactInfo
+                        openCategory={openCategory}
+                        toggleCategory={toggleCategory}
                     />
                 </div>
 
