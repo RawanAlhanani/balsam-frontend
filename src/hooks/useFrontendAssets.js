@@ -1,46 +1,16 @@
 import { useEffect } from 'react';
 
+// Bundled from the ~36 individual legacy theme files (see scripts/build-bundle
+// history) into 2 requests - loading them one-by-one, with scripts awaited in
+// series, was adding several seconds of pure request-queueing latency to every
+// first page load.
 const useFrontendAssets = () => {
     const styles = [
-        "/content/view/themes/balsam/assests/css/bootstrap.min.css",
-        "/content/view/themes/balsam/assests/css/font-awesome.css",
-        "/content/view/themes/balsam/assests/css/chosen.min.css",
-        "/content/view/themes/balsam/assests/css/slick-slider.css",
-        "/content/view/themes/balsam/assests/css/jquery.bxslider.css",
-        "/content/view/themes/balsam/assests/css/prettyPhoto.css",
-        "/content/view/themes/balsam/assests/js/responsive-menu/component.css",
-        "/content/view/themes/balsam/assests/css/svg-icons.css",
-        "/content/view/themes/balsam/assests/css/typography.css",
-        "/content/view/themes/balsam/assests/css/jquery.auto-complete.css",
-        "/content/view/themes/balsam/assests/css/shortcodes.css",
-        "/content/view/themes/balsam/assests/css/colors.css",
-        "/content/view/themes/balsam/assests/style.css",
-        "/content/view/themes/balsam/assests/css/lightbox.min.css",
-        "/content/view/themes/balsam/assests/css/responsive.css",
-        "/content/view/themes/balsam/assests/css/rtl.css",
-        "/styles/modern-theme.css"
+        "/content/view/themes/balsam/assests/bundle.css"
     ];
 
     const scripts = [
-        "/content/view/themes/balsam/assests/js/jquery.js",
-        "/content/view/themes/balsam/assests/js/bootstrap-lab.js",
-        "/content/view/themes/balsam/assests/js/bootstrap.js",
-        "/content/view/themes/balsam/assests/js/responsive-menu/modernizr.custom.js",
-        "/content/view/themes/balsam/assests/js/responsive-menu/jquery.dlmenu.js",
-        "/content/view/themes/balsam/assests/js/jquery-filterable.js",
-        "/content/view/themes/balsam/assests/js/masonry-gallery.js",
-        "/content/view/themes/balsam/assests/js/chosen.jquery.min.js",
-        "/content/view/themes/balsam/assests/js/jquery.auto-complete.js",
-        "/content/view/themes/balsam/assests/js/jquery.prettyPhoto.js",
-        "/content/view/themes/balsam/assests/js/countup.js",
-        "/content/view/themes/balsam/assests/js/jquery.countdown.js",
-        "/content/view/themes/balsam/assests/js/slick-slider.js",
-        "/content/view/themes/balsam/assests/js/jquery.bxslider.js",
-        "/content/view/themes/balsam/assests/js/owl.carousel.js",
-        "/content/view/themes/balsam/assests/js/lightbox.js",
-        "/content/view/themes/balsam/assests/youtube/YouTubePopUp.jquery.js",
-        "/content/view/themes/balsam/assests/js/custom.js",
-        "/content/view/themes/balsam/assests/js/client_side_validation.js"
+        "/content/view/themes/balsam/assests/bundle.js"
     ];
 
     useEffect(() => {
