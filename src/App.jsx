@@ -151,9 +151,9 @@ function App() {
                   <Route path="/static-pages/add" element={<AddStaticPage />} />
                   <Route path="/static-pages/edit/:type/:id" element={<EditStaticPage />} />
                   <Route path="/static-pages" element={<AdminStaticPages />} />
-                  <Route path="/meetings" element={<RequireAdmin roles={['president', 'secretary']}><AdminMeetings /></RequireAdmin>} />
-                  <Route path="/activity-reports" element={<RequireAdmin roles={['president', 'secretary']}><AdminActivityReports /></RequireAdmin>} />
-                  <Route path="/finance" element={<RequireAdmin roles={['president', 'treasurer']}><AdminFinance /></RequireAdmin>} />
+                  <Route path="/meetings" element={<RequireAdmin roles={['president', 'secretary', 'vice_secretary']}><AdminMeetings /></RequireAdmin>} />
+                  <Route path="/activity-reports" element={<RequireAdmin roles={['president', 'secretary', 'vice_secretary']}><AdminActivityReports /></RequireAdmin>} />
+                  <Route path="/finance" element={<RequireAdmin roles={['president', 'treasurer', 'vice_treasurer']}><AdminFinance /></RequireAdmin>} />
                   <Route path="/interns" element={<AdminStagiaires />} />
                   <Route path="/volunteers" element={<AdminVolunteers />} />
                   <Route path="/contact-messages" element={<AdminContactMessages />} />

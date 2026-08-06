@@ -9,7 +9,9 @@ const AdminHeader = ({ toggleMenu }) => {
         president: 'رئيس الجمعية',
         vice_president: 'نائب الرئيس',
         secretary: 'الكاتب العام',
+        vice_secretary: 'نائب الكاتب العام',
         treasurer: 'أمين المال',
+        vice_treasurer: 'نائب أمين المال',
     };
 
     const handleLogout = (e) => {

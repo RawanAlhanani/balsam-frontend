@@ -59,7 +59,7 @@ const AdminSidebar = ({ isExpanded, onNavigate }) => {
 
     // Role-based simple items
     const roleItems = [];
-    if (adminRole === 'president' || adminRole === 'secretary') {
+    if (adminRole === 'president' || adminRole === 'secretary' || adminRole === 'vice_secretary') {
         roleItems.push({
             title: "الاجتماعات",
             icon: "la-comments",
@@ -72,7 +72,7 @@ const AdminSidebar = ({ isExpanded, onNavigate }) => {
         });
     }
 
-    if (adminRole === 'president' || adminRole === 'treasurer') {
+    if (adminRole === 'president' || adminRole === 'treasurer' || adminRole === 'vice_treasurer') {
         roleItems.push({
             title: "المالية",
             icon: "la-money",
