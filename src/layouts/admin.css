@@ -292,6 +292,18 @@
     box-shadow: 0 0 0 0.15rem rgba(61, 84, 204, 0.12) !important;
 }
 
+/* Native <select> doesn't vertically-center its selected text like an
+   <input> does under the same padding/border-radius - anchor it explicitly.
+   Matches .form-control's own specificity (0,2,0) so this actually wins,
+   since a bare "select"/".custom-select" selector alone (0,1,1) loses to
+   the base rule's ".admin-theme .form-control" match on the same element. */
+.admin-theme select.form-control,
+.admin-theme .custom-select.form-control,
+.admin-theme select.custom-select {
+    padding-top: 0.55rem !important;
+    padding-bottom: 0.55rem !important;
+}
+
 .admin-theme .btn {
     border-radius: 999px !important;
     padding: 0.85rem 1.25rem !important;
