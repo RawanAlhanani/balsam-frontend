@@ -720,26 +720,6 @@ $(function(){
     
 });
 
-$( document ).ready(function( $ ) {
-		$( '#example1' ).sliderPro({
-			width: 1920,
-			height: 720,
-			arrows: true,
-			buttons: false,
-			waitForLayers: true,
-			thumbnailWidth: 200,
-			thumbnailHeight: 125,
-			thumbnailPointer: true,
-			autoplay: false,
-			autoScaleLayers: false,
-			breakpoints: {
-				500: {
-					thumbnailWidth: 120,
-					thumbnailHeight: 50
-				}
-			}
-		});
-	});
     
     
     	jQuery(function(){
