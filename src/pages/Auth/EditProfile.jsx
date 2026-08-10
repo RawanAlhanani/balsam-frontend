@@ -226,7 +226,7 @@ const EditProfile = () => {
                             <div className="form-group">
                                 <label>المتخصصون المتابعون:</label>
                                 <select className="form-control" name="doctor" multiple value={formData.doctor} onChange={handleDoctorChange} style={{ height: '150px' }}>
-                                    {regData.specialites.map(s => <option key={s.id} value={s.id}>{s.nom_doctor}</option>)}
+                                    {regData.specialites.map(s => <option key={s.id} value={s.id}>{s.specialite}</option>)}
                                 </select>
                             </div>
                         </div>
