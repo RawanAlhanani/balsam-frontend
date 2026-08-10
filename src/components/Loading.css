@@ -80,6 +80,13 @@
 .balsam-loading--small .balsam-loading__message { font-size: 14px; }
 .balsam-loading--large .balsam-loading__message { font-size: 19px; }
 
+.balsam-loading__hint {
+    color: #6b7c85;
+    font-size: 14px;
+    max-width: 320px;
+    margin: -8px 0 0;
+}
+
 @media (prefers-reduced-motion: reduce) {
     .balsam-loading__logo img,
     .balsam-loading__dot {

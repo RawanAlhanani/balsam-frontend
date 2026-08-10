@@ -6,6 +6,11 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000
 const api = axios.create({
     baseURL: API_BASE_URL,
     withCredentials: true, // Enable cookies for CSRF protection
+    // Shared hosting can take a while to spin the backend back up after it's
+    // been idle (see /api/ping) - long enough to survive that, but bounded
+    // so a genuinely broken backend fails with a clear error instead of an
+    // infinite spinner.
+    timeout: 60000,
 });
 
 let isRefreshing = false;

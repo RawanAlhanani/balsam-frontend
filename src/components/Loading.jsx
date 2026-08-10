@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import './Loading.css';
 
 /**
@@ -6,8 +6,20 @@ import './Loading.css';
  * the viewport for route-level/initial loads; pass `overlay={false}` to
  * render inline within a page section instead (e.g. while refetching a
  * paginated list, so the header/footer don't flash out).
+ *
+ * On shared hosting the backend can take a while to respond after sitting
+ * idle, so a load can legitimately take much longer than usual - after a
+ * few seconds we swap in a message explaining that, instead of leaving the
+ * dots spinning with no explanation.
  */
 const Loading = ({ message = 'جاري التحميل...', size = 'medium', overlay = true }) => {
+    const [isSlow, setIsSlow] = useState(false);
+
+    useEffect(() => {
+        const timer = setTimeout(() => setIsSlow(true), 6000);
+        return () => clearTimeout(timer);
+    }, []);
+
     return (
         <div
             className={`balsam-loading balsam-loading--${size} ${overlay ? 'balsam-loading--overlay' : 'balsam-loading--inline'}`}
@@ -24,6 +36,11 @@ const Loading = ({ message = 'جاري التحميل...', size = 'medium', over
                 <span className="balsam-loading__dot balsam-loading__dot--4"></span>
             </div>
             {message && <p className="balsam-loading__message">{message}</p>}
+            {isSlow && overlay && (
+                <p className="balsam-loading__hint">
+                    الاتصال بالخادم قد يستغرق وقتًا أطول من المعتاد عند الزيارة الأولى، الرجاء الانتظار...
+                </p>
+            )}
         </div>
     );
 };
