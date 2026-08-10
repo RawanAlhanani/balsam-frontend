@@ -46,6 +46,7 @@ const TeamPage = lazy(() => import('./pages/CentreBalsam/TeamPage'));
 const AdminLogin = lazy(() => import('./pages/Auth/AdminLogin'));
 const AdminDashboard = lazy(() => import('./pages/Admin/AdminDashboard'));
 const AdminTuteurs = lazy(() => import('./pages/Admin/AdminTuteurs'));
+const EditTuteur = lazy(() => import('./pages/Admin/EditTuteur'));
 const AdminActivities = lazy(() => import('./pages/Admin/AdminActivities'));
 const AddActivity = lazy(() => import('./pages/Admin/AddActivity')); // New import
 const EditActivity = lazy(() => import('./pages/Admin/EditActivity')); // New import
@@ -133,6 +134,7 @@ function App() {
                 <Routes>
                   <Route path="/dashboard" element={<AdminDashboard />} />
                   <Route path="/parents" element={<AdminTuteurs />} />
+                  <Route path="/editTuteur/:enfantId" element={<EditTuteur />} />
 
                   {/* Activity Routes */}
                   <Route path="/activities" element={<AdminActivities />} />
