@@ -112,8 +112,18 @@ const AdminTuteurs = () => {
         }
     };
 
+    const accountTypeLabels = {
+        beneficiary: 'مستفيد',
+        volunteer: 'متطوع',
+        admin_request: 'طلب إدارة',
+    };
+
+    // Beneficiaries get one row per child; volunteer/admin_request registrations
+    // have no child by design, but must still show up somewhere in the admin panel.
     const rows = tuteurs.flatMap(tuteur =>
-        (tuteur.enfants || []).map(enfant => ({ tuteur, enfant }))
+        (tuteur.enfants && tuteur.enfants.length > 0)
+            ? tuteur.enfants.map(enfant => ({ tuteur, enfant }))
+            : [{ tuteur, enfant: null }]
     );
 
     return (
@@ -135,6 +145,7 @@ const AdminTuteurs = () => {
                                 <table className="table table-hover admin-table">
                                     <thead>
                                         <tr>
+                                            <th>نوع التسجيل</th>
                                             <th>الاسم العائلي</th>
                                             <th>الاسم الشخصي</th>
                                             <th>الهاتف</th>
@@ -156,7 +167,12 @@ const AdminTuteurs = () => {
                                     </thead>
                                     <tbody>
                                         {rows.map(({ tuteur, enfant }) => (
-                                            <tr key={enfant.id}>
+                                            <tr key={enfant ? `e${enfant.id}` : `t${tuteur.id}`}>
+                                                <td>
+                                                    <span className={`badge ${tuteur.account_type === 'beneficiary' ? 'badge-success' : 'badge-info'}`}>
+                                                        {accountTypeLabels[tuteur.account_type] || tuteur.account_type}
+                                                    </span>
+                                                </td>
                                                 <td>{tuteur.nom_tuteur}</td>
                                                 <td>{tuteur.prenom_tuteur}</td>
                                                 <td>{tuteur.telephon}</td>
@@ -165,25 +181,33 @@ const AdminTuteurs = () => {
                                                 <td>{tuteur.CIN}</td>
                                                 <td>{tuteur.adresse}</td>
                                                 <td>{tuteur.region?.nom_region}</td>
-                                                <td>{enfant.prenom_enfant} {enfant.nom_enfant}</td>
-                                                <td>{enfant.date_naissance}</td>
-                                                <td>{enfant.sexeEnfant == 2 ? 'ذكر' : 'أنثى'}</td>
-                                                <td>
-                                                    {enfant.statut == 1 ? 'خفيف' : enfant.statut == 2 ? 'متوسط' : 'شديد'}
-                                                </td>
-                                                <td>
-                                                    {enfant.parole == 1 ? 'غير متكلم' : enfant.parole == 2 ? 'أصوات' : enfant.parole == 3 ? 'كلمات' : 'يتكلم'}
-                                                </td>
-                                                <td>{enfant.avs == 1 ? 'نعم' : 'لا'}</td>
-                                                <td>{enfant.etude == 1 ? 'نعم' : 'لا'}</td>
-                                                <td>
-                                                    <img className="admin-child-photo" src={getStorageUrl(enfant.photo || 'Profile.png')} alt="" />
-                                                </td>
+                                                {enfant ? (
+                                                    <>
+                                                        <td>{enfant.prenom_enfant} {enfant.nom_enfant}</td>
+                                                        <td>{enfant.date_naissance}</td>
+                                                        <td>{enfant.sexeEnfant == 2 ? 'ذكر' : 'أنثى'}</td>
+                                                        <td>
+                                                            {enfant.statut == 1 ? 'خفيف' : enfant.statut == 2 ? 'متوسط' : 'شديد'}
+                                                        </td>
+                                                        <td>
+                                                            {enfant.parole == 1 ? 'غير متكلم' : enfant.parole == 2 ? 'أصوات' : enfant.parole == 3 ? 'كلمات' : 'يتكلم'}
+                                                        </td>
+                                                        <td>{enfant.avs == 1 ? 'نعم' : 'لا'}</td>
+                                                        <td>{enfant.etude == 1 ? 'نعم' : 'لا'}</td>
+                                                        <td>
+                                                            <img className="admin-child-photo" src={getStorageUrl(enfant.photo || 'Profile.png')} alt="" />
+                                                        </td>
+                                                    </>
+                                                ) : (
+                                                    <td colSpan={8} className="text-muted text-center">لا يوجد طفل مسجل (تسجيل {accountTypeLabels[tuteur.account_type] || tuteur.account_type})</td>
+                                                )}
                                                 <td>
                                                     <div className="admin-action-group">
-                                                        <Link to={`/admin/editTuteur/${enfant.id}`} className="btn btn-sm btn-warning admin-action-btn">
-                                                            <i className="la la-edit" /> تعديل
-                                                        </Link>
+                                                        {enfant && (
+                                                            <Link to={`/admin/editTuteur/${enfant.id}`} className="btn btn-sm btn-warning admin-action-btn">
+                                                                <i className="la la-edit" /> تعديل
+                                                            </Link>
+                                                        )}
                                                         <AdminBtn variant="danger" icon="la-trash" onClick={() => promptDelete(tuteur.id, `${tuteur.nom_tuteur} ${tuteur.prenom_tuteur}`)}>حذف</AdminBtn>
                                                     </div>
                                                 </td>
