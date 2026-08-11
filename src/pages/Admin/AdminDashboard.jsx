@@ -198,7 +198,7 @@ const AdminDashboard = () => {
                                                         recentActivities.map(activity => (
                                                             <li key={activity.id} className="list-group-item d-flex justify-content-between align-items-center">
                                                                 <Link to={`/admin/activities`}>{activity.titre}</Link> {/* Link to activities list */}
-                                                                <small className="text-muted">{new Date(activity.created_at).toLocaleDateString()}</small>
+                                                                <small className="text-muted">{new Date(activity.created_at).toLocaleDateString('ar-MA')}</small>
                                                             </li>
                                                         ))
                                                     ) : (
@@ -213,7 +213,7 @@ const AdminDashboard = () => {
                                                         recentNews.map(newsItem => (
                                                             <li key={newsItem.id} className="list-group-item d-flex justify-content-between align-items-center">
                                                                 <Link to={`/admin/news`}>{newsItem.titre}</Link> {/* Link to news list */}
-                                                                <small className="text-muted">{new Date(newsItem.created_at).toLocaleDateString()}</small>
+                                                                <small className="text-muted">{new Date(newsItem.created_at).toLocaleDateString('ar-MA')}</small>
                                                             </li>
                                                         ))
                                                     ) : (
@@ -228,7 +228,7 @@ const AdminDashboard = () => {
                                                         recentTuteurs.map(tuteur => (
                                                             <li key={tuteur.id} className="list-group-item d-flex justify-content-between align-items-center">
                                                                 <Link to={`/admin/parents`}>{tuteur.nom_tuteur} {tuteur.prenom_tuteur}</Link> {/* Corrected property names */}
-                                                                <small className="text-muted">{new Date(tuteur.created_at).toLocaleDateString()}</small>
+                                                                <small className="text-muted">{new Date(tuteur.created_at).toLocaleDateString('ar-MA')}</small>
                                                             </li>
                                                         ))
                                                     ) : (

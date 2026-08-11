@@ -207,7 +207,7 @@ const AdminStaticPages = () => {
                                                         onClick={() => handleSelectPage(selectedType, p)}
                                                     >
                                                         <div>{p.titre}</div>
-                                                        <small className="text-muted">{new Date(p.updated_at).toLocaleDateString()}</small>
+                                                        <small className="text-muted">{new Date(p.updated_at).toLocaleDateString('ar-MA')}</small>
                                                     </li>
                                                 ))}
                                                 {pages[selectedType].filter(p => p.titre.toLowerCase().includes(search.toLowerCase())).length === 0 && (
@@ -275,7 +275,7 @@ const AdminStaticPages = () => {
                                                         </tr>
                                                         <tr>
                                                             <th>مُحدّث آخر</th>
-                                                            <td>{new Date(selectedPage.updated_at).toLocaleString()}</td>
+                                                            <td>{new Date(selectedPage.updated_at).toLocaleString('ar-MA')}</td>
                                                         </tr>
                                                     </tbody>
                                                 </table>
