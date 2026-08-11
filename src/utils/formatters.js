@@ -45,7 +45,11 @@ export const getStorageUrl = (imageName, type = '') => {
     // If it's already an absolute URL, return it
     if (imageName.startsWith('http')) return imageName;
 
-    const backendUrl = import.meta.env.VITE_API_BASE_URL?.replace('/api', '') || 'http://localhost:8000';
+    // Strip only a trailing "/api" (anchored to the end) - a plain string
+    // replace would match the FIRST "/api" anywhere, which on this app's
+    // real host (api.balsam.ma) falls inside "https://api..." and mangles
+    // the URL instead of removing the intended path suffix.
+    const backendUrl = import.meta.env.VITE_API_BASE_URL?.replace(/\/api\/?$/, '') || 'http://localhost:8000';
     const storageBase = import.meta.env.VITE_STORAGE_URL || `${backendUrl}/storage/MesImages`;
 
     // Strategy: 
@@ -71,6 +75,10 @@ export const getFileUrl = (path) => {
     if (!path) return null;
     if (path.startsWith('http')) return path;
 
-    const backendUrl = import.meta.env.VITE_API_BASE_URL?.replace('/api', '') || 'http://localhost:8000';
+    // Strip only a trailing "/api" (anchored to the end) - a plain string
+    // replace would match the FIRST "/api" anywhere, which on this app's
+    // real host (api.balsam.ma) falls inside "https://api..." and mangles
+    // the URL instead of removing the intended path suffix.
+    const backendUrl = import.meta.env.VITE_API_BASE_URL?.replace(/\/api\/?$/, '') || 'http://localhost:8000';
     return `${backendUrl}/storage/${path}`;
 };
