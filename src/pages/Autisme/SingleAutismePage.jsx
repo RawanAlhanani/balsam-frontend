@@ -77,7 +77,7 @@ const SingleAutismePage = () => {
                                         src={getStorageUrl(page.page_image)} 
                                         alt={page.titre} 
                                         className="img-fluid rounded shadow-sm" // Responsive image, rounded corners, shadow
-                                        style={{ maxHeight: '450px', objectFit: 'cover', width: '100%' }} 
+                                        style={{ maxHeight: '450px', width: '100%', objectFit: 'contain', backgroundColor: '#f4f4f4' }}
                                     />
                                 </figure>
                             )}
