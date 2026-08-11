@@ -54,7 +54,7 @@ export default function RegisterPath() {
     /* ── واجهات خطوات الاستمارة المحسنة والمباشرة ── */
     const renderBeneficiaryStep1 = () => (
         <div className="form-card-step animate-fade">
-            <h4 className="step-inner-title">👶 الخطوة ١: معلومات شخصية عن الطفل</h4>
+            <h4 className="step-inner-title">👶 الخطوة 1: معلومات شخصية عن الطفل</h4>
             <div className="inputs-grid">
                 <div className="form-group">
                     <label>الاسم العائلي للطفل *</label>
@@ -89,7 +89,7 @@ export default function RegisterPath() {
 
     const renderBeneficiaryStep2 = () => (
         <div className="form-card-step animate-fade">
-            <h4 className="step-inner-title">📊 الخطوة ٢: وضعية الطفل الصحية والتطورية</h4>
+            <h4 className="step-inner-title">📊 الخطوة 2: وضعية الطفل الصحية والتطورية</h4>
             <div className="inputs-grid">
                 <div className="form-group">
                     <label>درجة حالة الطفل الحالية *</label>
@@ -137,7 +137,7 @@ export default function RegisterPath() {
 
     const renderBeneficiaryStep3 = () => (
         <div className="form-card-step animate-fade">
-            <h4 className="step-inner-title">👨‍👩‍👦‍👦 الخطوة ٣: معلومات ولي الأمر / التوتير</h4>
+            <h4 className="step-inner-title">👨‍👩‍👦‍👦 الخطوة 3: معلومات ولي الأمر / التوتير</h4>
             <div className="inputs-grid">
                 <div className="form-group">
                     <label>الاسم العائلي لولي الأمر *</label>
@@ -176,7 +176,7 @@ export default function RegisterPath() {
 
     const renderBeneficiaryStep4 = () => (
         <div className="form-card-step animate-fade">
-            <h4 className="step-inner-title">🔐 الخطوة ٤: إنشاء بيانات الحساب الإلكتروني</h4>
+            <h4 className="step-inner-title">🔐 الخطوة 4: إنشاء بيانات الحساب الإلكتروني</h4>
             <div className="inputs-grid">
                 <div className="form-group">
                     <label>اسم المستخدم (تُسجل به الدخول للموقع مستقبلاً) *</label>
@@ -466,10 +466,10 @@ export default function RegisterPath() {
 
                     {/* شريط المتابعة التفاعلي الجديد في الأعلى */}
                     <div className="steps-indicator-bar">
-                        <div className={`ind-step ${step === 1 ? 'active' : ''}`}><span className="ind-num">١</span> معلومات الطفل</div>
-                        <div className={`ind-step ${step === 2 ? 'active' : ''}`}><span className="ind-num">٢</span> الوضعية الصحية</div>
-                        <div className={`ind-step ${step === 3 ? 'active' : ''}`}><span className="ind-num">٣</span> معلومات ولي الأمر</div>
-                        <div className={`ind-step ${step === 4 ? 'active' : ''}`}><span className="ind-num">٤</span> بيانات الحساب</div>
+                        <div className={`ind-step ${step === 1 ? 'active' : ''}`}><span className="ind-num">1</span> معلومات الطفل</div>
+                        <div className={`ind-step ${step === 2 ? 'active' : ''}`}><span className="ind-num">2</span> الوضعية الصحية</div>
+                        <div className={`ind-step ${step === 3 ? 'active' : ''}`}><span className="ind-num">3</span> معلومات ولي الأمر</div>
+                        <div className={`ind-step ${step === 4 ? 'active' : ''}`}><span className="ind-num">4</span> بيانات الحساب</div>
                     </div>
 
                     <form onSubmit={handleSubmit}>
