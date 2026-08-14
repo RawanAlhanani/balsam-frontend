@@ -48,6 +48,7 @@ const AdminMeetings = () => {
     const [submitting, setSubmitting] = useState(false);
     const [alert, setAlert] = useState({ message: '', type: '' });
     const [formErrors, setFormErrors] = useState({}); // New state for form errors
+    const [printingId, setPrintingId] = useState(null);
     const [deleting, setDeleting] = useState(false);
 
     // State for delete confirmation modal
@@ -155,189 +156,39 @@ const AdminMeetings = () => {
         }
     };
 
-    const handlePrint = (meeting) => {
-        const logoUrl = window.location.origin + '/backend/app-assets/images/logo/meeting.jpg';
-
-        const content = `
-            <html dir="rtl">
-            <head>
-                <title>تقرير اجتماع</title>
-                <style>
-                    @import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap');
-
-                    @page {
-                        size: A4;
-                        margin: 0;
-                    }
-
-                    body {
-                        font-family: 'Amiri', serif;
-                        margin: 0;
-                        padding: 0;
-                        -webkit-print-color-adjust: exact;
-                        print-color-adjust: exact;
-                    }
-
-                    /* Background frame on every page */
-                    .background-frame {
-                        position: fixed;
-                        top: 0;
-                        left: 0;
-                        width: 210mm;
-                        height: 297mm;
-                        z-index: -1;
-                    }
-
-                    .background-frame img {
-                        width: 100%;
-                        height: 100%;
-                        display: block;
-                    }
-
-                    /* Table layout to force header/footer spacing on every page */
-                    .print-table {
-                        width: 100%;
-                        border-collapse: collapse;
-                        position: relative;
-                        z-index: 1;
-                    }
-
-                    .page-header-space {
-                        height: 55mm; /* Header height */
-                    }
-
-                    .page-footer-space {
-                        height: 45mm; /* Footer height */
-                    }
-
-                    .content-cell {
-                        padding: 0 25mm;
-                        vertical-align: top;
-                    }
-
-                    .header-title { text-align: center; margin-bottom: 30px; }
-                    .title { font-size: 26px; font-weight: bold; color: #1a5a96; }
-
-                    .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px; }
-                    .info-item { border-bottom: 1px dashed #bbb; padding: 5px; }
-                    .info-label { font-weight: bold; color: #333; margin-left: 10px; }
-
-                    .section { margin-bottom: 20px; page-break-inside: avoid; }
-                    .section-title { font-size: 19px; font-weight: bold; color: #1a5a96; border-right: 5px solid #1a5a96; padding-right: 12px; margin-bottom: 8px; background: rgba(26, 90, 150, 0.05); }
-                    .section-content { padding: 5px 15px; white-space: pre-wrap; font-size: 16px; min-height: 40px; }
-
-                    .footer-signatures { display: flex; justify-content: space-between; margin-top: 40px; padding: 0 20px; page-break-inside: avoid; }
-                    .signature-box { text-align: center; width: 220px; border-top: 1px solid #eee; padding-top: 10px; }
-
-                    @media print {
-                        body { -webkit-print-color-adjust: exact; }
-                    }
-                </style>
-            </head>
-            <body>
-                <div class="background-frame">
-                    <img src="${logoUrl}" alt="خلفية" />
-                </div>
-
-                <table class="print-table">
-                    <thead>
-                        <tr><td><div class="page-header-space"></div></td></tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td class="content-cell">
-                                <div class="header-title">
-                                    <div class="title">محضر اجتماع الجمعية</div>
-                                </div>
-
-                                <div class="info-grid">
-                                    <div class="info-item"><span class="info-label">التاريخ:</span> ${meeting.date}</div>
-                                    <div class="info-item"><span class="info-label">المكان:</span> ${meeting.location}</div>
-                                    <div class="info-item"><span class="info-label">من:</span> ${meeting.start_time}</div>
-                                    <div class="info-item"><span class="info-label">إلى:</span> ${meeting.end_time}</div>
-                                </div>
-
-                                <div class="section">
-                                    <div class="section-title">الحضور</div>
-                                    <div class="section-content">${meeting.attendees || '---'}</div>
-                                </div>
-
-                                <div class="section">
-                                    <div class="section-title">جدول الأعمال</div>
-                                    <div class="section-content">${meeting.agenda || '---'}</div>
-                                </div>
-
-                                <div class="section">
-                                    <div class="section-title">مداولات الاجتماع</div>
-                                    <div class="section-content">${meeting.discussions || '---'}</div>
-                                </div>
-
-                                <div class="section">
-                                    <div class="section-title">القرارات المتخذة</div>
-                                    <div class="section-content">${meeting.decisions || '---'}</div>
-                                </div>
-
-                                ${meeting.next_meeting_date ? `
-                                <div class="section">
-                                    <div class="section-title">موعد الاجتماع المقبل</div>
-                                    <div class="section-content">${meeting.next_meeting_date}</div>
-                                </div>
-                                ` : ''}
-
-                                <div class="footer-signatures">
-                                    <div class="signature-box">
-                                        <strong>توقيع الكاتب العام</strong>
-                                    </div>
-                                    <div class="signature-box">
-                                        <strong>توقيع رئيس الجمعية</strong>
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                    <tfoot>
-                        <tr><td><div class="page-footer-space"></div></td></tr>
-                    </tfoot>
-                </table>
-            </body>
-            </html>
-        `;
-
-        // Remove any leftover print iframe from a previous click
-        const oldFrame = document.getElementById('print-frame');
-        if (oldFrame) oldFrame.remove();
-
-        // Create a hidden iframe instead of window.open — avoids the popup blocker
-        const iframe = document.createElement('iframe');
-        iframe.id = 'print-frame';
-        iframe.style.position = 'fixed';
-        iframe.style.right = '0';
-        iframe.style.bottom = '0';
-        iframe.style.width = '0';
-        iframe.style.height = '0';
-        iframe.style.border = '0';
-        document.body.appendChild(iframe);
-
-        const doc = iframe.contentWindow.document;
-        doc.open();
-        doc.write(content);
-        doc.close();
-
-        const triggerPrint = () => {
-            iframe.contentWindow.focus();
-            iframe.contentWindow.print();
-        };
-
-        // Clean up the iframe once printing is done (or cancelled)
-        iframe.contentWindow.onafterprint = () => {
-            iframe.remove();
-        };
-
-        // Give the browser a moment to load the @import font + image before printing
-        if (iframe.contentDocument.readyState === 'complete') {
-            setTimeout(triggerPrint, 300);
-        } else {
-            iframe.onload = () => setTimeout(triggerPrint, 300);
+    // Generated server-side via dompdf and downloaded as a real PDF, instead
+    // of the previous hidden-iframe + window.print() approach - that was
+    // unreliable on mobile browsers (iOS Safari in particular doesn't print
+    // iframe content reliably) and had a race condition where the letterhead
+    // image/font could still be loading when print() fired.
+    const handlePrint = async (meeting) => {
+        setPrintingId(meeting.id);
+        // Open the tab synchronously, inside the click's call stack, so popup
+        // blockers treat it as user-initiated - opening it later after the
+        // `await` below would get silently blocked (it's no longer inside a
+        // trusted user-gesture context).
+        const newTab = window.open('', '_blank');
+        try {
+            const res = await api.get(`/admin/meetings/${meeting.id}/print`, { responseType: 'blob' });
+            const blobUrl = URL.createObjectURL(new Blob([res.data], { type: 'application/pdf' }));
+            if (newTab) {
+                newTab.location.href = blobUrl;
+            } else {
+                // Even the synchronous open was blocked - fall back to a direct download.
+                const link = document.createElement('a');
+                link.href = blobUrl;
+                link.download = `محضر-اجتماع-${meeting.date}.pdf`;
+                document.body.appendChild(link);
+                link.click();
+                link.remove();
+            }
+            setTimeout(() => URL.revokeObjectURL(blobUrl), 60000);
+        } catch (err) {
+            if (newTab) newTab.close();
+            setAlert({ message: 'حدث خطأ أثناء إنشاء ملف PDF.', type: 'danger' });
+            console.error(err);
+        } finally {
+            setPrintingId(null);
         }
     };
 
@@ -430,7 +281,9 @@ const AdminMeetings = () => {
                                                 <td>{m.start_time}</td>
                                                 <td>
                                                     <div className="admin-action-group">
-                                                        <AdminBtn variant="info" icon="la-print" onClick={() => handlePrint(m)}>طباعة</AdminBtn>
+                                                        <AdminBtn variant="info" icon="la-print" onClick={() => handlePrint(m)} disabled={printingId === m.id}>
+                                                            {printingId === m.id ? 'جارِ الإنشاء...' : 'طباعة'}
+                                                        </AdminBtn>
                                                         <AdminBtn variant="danger" icon="la-trash" onClick={() => promptDelete(m.id, m.date)}>حذف</AdminBtn>
                                                     </div>
                                                 </td>
