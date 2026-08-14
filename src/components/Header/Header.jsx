@@ -291,6 +291,11 @@ const Header = () => {
                   display: flex !important;
                   align-items: center;
                   justify-content: space-between;
+                  /* Logo is the first DOM child (right edge in RTL by
+                     default) and the hamburger the second (left edge) -
+                     reversed here so the hamburger sits on the right and
+                     the logo on the left, mobile only. */
+                  flex-direction: row-reverse;
                   float: none !important;
                   width: 100% !important;
                   padding: 14px 0 !important;
@@ -306,8 +311,13 @@ const Header = () => {
                   width: auto;
                 }
                 .kode_navigaion_bar {
-                  width: auto !important;
-                  float: none !important;
+                  /* display:contents takes it out of .kode_eco-top_bar's own
+                     flex layout (it was an empty third flex item still
+                     claiming a justify-content:space-between slot, pushing
+                     the hamburger into the middle instead of the edge) while
+                     its child <nav> keeps its own closed(display:none)/open
+                     (position:fixed) behavior unchanged either way. */
+                  display: contents;
                 }
                 .mobile-nav-toggle { display: flex; }
 
