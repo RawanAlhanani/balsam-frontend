@@ -105,7 +105,7 @@ const EditProfile = () => {
                     
                     <form onSubmit={handleSubmit} className="row">
                         <div className={isBeneficiary ? 'col-md-6' : 'col-md-12'}>
-                            <h4>معلومات الولي</h4>
+                            <h4 style={{ textAlign: 'right' }}>{isBeneficiary ? 'معلومات الولي' : 'معلومات المتطوع'}</h4>
                             <div className="form-group">
                                 <label>الاسم الشخصي</label>
                                 <input className="form-control" name="nom_tuteur" value={formData.nom_tuteur} onChange={handleChange} required />
@@ -174,7 +174,7 @@ const EditProfile = () => {
 
                         {isBeneficiary && (
                         <div className="col-md-6">
-                            <h4>معلومات الطفل</h4>
+                            <h4 style={{ textAlign: 'right' }}>معلومات الطفل</h4>
                             <div className="form-group">
                                 <label>الاسم الشخصي للطفل</label>
                                 <input className="form-control" name="nom_enfant" value={formData.nom_enfant} onChange={handleChange} required />
