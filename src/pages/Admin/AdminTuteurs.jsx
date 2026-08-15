@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import ExcelJS from 'exceljs';
 import api from '../../api';
 import {
     AdminPage, AdminPageHeader, AdminCard, AdminLoading, AdminEmptyState, AdminBtn, AdminAlert
@@ -44,6 +45,7 @@ const AdminTuteurs = () => {
     const navigate = useNavigate();
     const [alert, setAlert] = useState({ message: '', type: '' });
     const [deleting, setDeleting] = useState(false);
+    const [exporting, setExporting] = useState(false);
 
     // State for delete confirmation modal
     const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState(false);
@@ -126,6 +128,96 @@ const AdminTuteurs = () => {
             : [{ tuteur, enfant: null }]
     );
 
+    // Same columns as the table (minus the photo/actions columns, which
+    // don't mean anything in a spreadsheet cell). A real .xlsx (via ExcelJS)
+    // instead of CSV: CSV's column split depends on Excel matching the
+    // comma to the system locale's list separator (often ";" on
+    // Arabic/French Windows), which silently dumps everything into column A
+    // when it doesn't - a real workbook has actual cells, so that ambiguity
+    // doesn't exist, and it can carry real styling.
+    const exportToExcel = async () => {
+        setExporting(true);
+        try {
+            const headers = [
+                'نوع التسجيل', 'الاسم العائلي', 'الاسم الشخصي', 'الهاتف', 'الواتساب', 'تكوين',
+                'رقم البطاقة', 'العنوان', 'المنطقة', 'اسم الطفل', 'تاريخ الازدياد', 'جنس الطفل',
+                'حالة التوحد', 'كلام الطفل', 'مرافق', 'متمدرس'
+            ];
+
+            const workbook = new ExcelJS.Workbook();
+            workbook.creator = 'جمعية بلسم لذوي التوحد';
+            workbook.created = new Date();
+
+            const sheet = workbook.addWorksheet('المسجلين', {
+                views: [{ rightToLeft: true, state: 'frozen', ySplit: 1 }],
+            });
+
+            sheet.columns = headers.map(h => ({ header: h, width: h === 'العنوان' ? 30 : 18 }));
+
+            const TEAL = 'FF0D5377';
+            const BORDER_COLOR = 'FFCBD5D9';
+            const thinBorder = {
+                top: { style: 'thin', color: { argb: BORDER_COLOR } },
+                left: { style: 'thin', color: { argb: BORDER_COLOR } },
+                bottom: { style: 'thin', color: { argb: BORDER_COLOR } },
+                right: { style: 'thin', color: { argb: BORDER_COLOR } },
+            };
+
+            const headerRow = sheet.getRow(1);
+            headerRow.height = 24;
+            headerRow.eachCell(cell => {
+                cell.font = { bold: true, color: { argb: 'FFFFFFFF' }, size: 12 };
+                cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: TEAL } };
+                cell.alignment = { horizontal: 'center', vertical: 'middle' };
+                cell.border = thinBorder;
+            });
+
+            rows.forEach(({ tuteur, enfant }, idx) => {
+                const row = sheet.addRow([
+                    accountTypeLabels[tuteur.account_type] || tuteur.account_type,
+                    tuteur.nom_tuteur,
+                    tuteur.prenom_tuteur,
+                    tuteur.telephon,
+                    tuteur.whatsapp,
+                    tuteur.formation == 1 ? 'نعم' : 'لا',
+                    tuteur.CIN,
+                    tuteur.adresse,
+                    tuteur.region?.nom_region || '',
+                    enfant ? `${enfant.prenom_enfant} ${enfant.nom_enfant}` : '',
+                    enfant ? enfant.date_naissance : '',
+                    enfant ? (enfant.sexeEnfant == 2 ? 'ذكر' : 'أنثى') : '',
+                    enfant ? (enfant.statut == 1 ? 'خفيف' : enfant.statut == 2 ? 'متوسط' : enfant.statut == 3 ? 'شديد' : '') : '',
+                    enfant ? (enfant.parole == 1 ? 'غير متكلم' : enfant.parole == 2 ? 'أصوات' : enfant.parole == 3 ? 'كلمات' : enfant.parole == 4 ? 'يتكلم' : '') : '',
+                    enfant ? (enfant.avs == 1 ? 'نعم' : 'لا') : '',
+                    enfant ? (enfant.etude == 1 ? 'نعم' : 'لا') : '',
+                ]);
+                row.eachCell(cell => {
+                    cell.alignment = { horizontal: 'center', vertical: 'middle' };
+                    cell.border = thinBorder;
+                    if (idx % 2 === 1) {
+                        cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF3F8FA' } };
+                    }
+                });
+            });
+
+            const buffer = await workbook.xlsx.writeBuffer();
+            const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `المسجلين-${new Date().toISOString().slice(0, 10)}.xlsx`;
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            setTimeout(() => URL.revokeObjectURL(url), 60000);
+        } catch (err) {
+            setAlert({ message: 'حدث خطأ أثناء تصدير الملف.', type: 'danger' });
+            console.error(err);
+        } finally {
+            setExporting(false);
+        }
+    };
+
     return (
         <>
             <AdminPage>
@@ -135,7 +227,16 @@ const AdminTuteurs = () => {
                     badge="المسجلين"
                 />
                 <div className="content-body">
-                    <AdminCard title="قائمة المسجلين" icon="la-users" flush>
+                    <AdminCard
+                        title="قائمة المسجلين"
+                        icon="la-users"
+                        flush
+                        actions={rows.length > 0 && (
+                            <AdminBtn variant="success" icon="la-file-excel-o" onClick={exportToExcel} disabled={exporting}>
+                                {exporting ? 'جارِ التصدير...' : 'تصدير Excel'}
+                            </AdminBtn>
+                        )}
+                    >
                         {loading ? (
                             <AdminLoading />
                         ) : rows.length === 0 ? (
