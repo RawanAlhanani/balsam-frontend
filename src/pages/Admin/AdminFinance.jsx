@@ -469,8 +469,8 @@ const AdminFinance = () => {
                                                 <td>{t.description}</td>
                                                 <td>
                                                     <div className="admin-action-group">
-                                                        <AdminBtn variant="outline-primary" icon="la-edit" onClick={() => handleEdit(t)}>تعديل</AdminBtn>
-                                                        <AdminBtn variant="outline-danger" icon="la-trash" onClick={() => promptDelete(t.id, t.description)}>حذف</AdminBtn>
+                                                        <AdminBtn permission="edit_finance" variant="outline-primary" icon="la-edit" onClick={() => handleEdit(t)}>تعديل</AdminBtn>
+                                                        <AdminBtn permission="delete_finance" variant="outline-danger" icon="la-trash" onClick={() => promptDelete(t.id, t.description)}>حذف</AdminBtn>
                                                     </div>
                                                 </td>
                                             </tr>

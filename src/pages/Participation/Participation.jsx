@@ -39,8 +39,22 @@ const Participation = () => {
             });
     }, [activite_id, navigate]);
 
-    const handleConfirm = () => {
-        window.open(`${import.meta.env.VITE_API_BASE_URL}/generer/${activite_id}/${user.id}`, '_blank');
+    const handleConfirm = async () => {
+        try {
+            const response = await api.get(`/generer/${activite_id}/${user.id}`, {
+                responseType: 'blob',
+            });
+            const url = URL.createObjectURL(response.data);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'demande.pdf';
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error(error);
+        }
     };
 
     if (loading) return <Loading />;

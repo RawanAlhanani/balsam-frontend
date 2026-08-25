@@ -59,8 +59,8 @@ const AdminDoctors = ({
                                         <>
                                             <span>{d.specialite}</span>
                                             <div className="admin-action-group">
-                                                <AdminBtn variant="primary" size="sm" icon="la-edit" onClick={() => handleEditDoctor(d)}>تعديل</AdminBtn>
-                                                <AdminBtn variant="danger" size="sm" icon="la-trash" onClick={() => promptDeleteDoctor(d)}>حذف</AdminBtn>
+                                                <AdminBtn permission="edit_doctors" variant="primary" size="sm" icon="la-edit" onClick={() => handleEditDoctor(d)}>تعديل</AdminBtn>
+                                                <AdminBtn permission="delete_doctors" variant="danger" size="sm" icon="la-trash" onClick={() => promptDeleteDoctor(d)}>حذف</AdminBtn>
                                             </div>
                                         </>
                                     )}

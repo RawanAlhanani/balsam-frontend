@@ -166,7 +166,7 @@ const AdminStagiaires = () => {
                                                     )}
                                                 </td>
                                                 <td>
-                                                    <AdminBtn variant="danger" icon="la-trash" onClick={() => promptDelete(stg.id, `${stg.prenom_stagiaire} ${stg.nom_stagiaire}`)}>
+                                                    <AdminBtn permission="delete_stagiaires" variant="danger" icon="la-trash" onClick={() => promptDelete(stg.id, `${stg.prenom_stagiaire} ${stg.nom_stagiaire}`)}>
                                                         حذف
                                                     </AdminBtn>
                                                 </td>

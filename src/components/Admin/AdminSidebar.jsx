@@ -1,9 +1,34 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
+import { getCurrentUserPermissions } from '../../api';
 
 const AdminSidebar = ({ isExpanded, onNavigate }) => {
     const [openMenus, setOpenMenus] = useState({});
+    const [permissions, setPermissions] = useState([]);
+    const [permissionsLoaded, setPermissionsLoaded] = useState(false);
     const adminRole = localStorage.getItem('admin_role');
+
+    useEffect(() => {
+        const fetchPermissions = async () => {
+            try {
+                const res = await getCurrentUserPermissions();
+                setPermissions(res.data.permissions || []);
+            } catch (err) {
+                console.error('Failed to fetch permissions:', err);
+            } finally {
+                setPermissionsLoaded(true);
+            }
+        };
+        fetchPermissions();
+    }, []);
+
+    const hasPermission = (permissionName) => {
+        // President has all permissions
+        if (adminRole === 'president') return true;
+        // If permissions not loaded yet, return false to hide items
+        if (!permissionsLoaded) return false;
+        return permissions.includes(permissionName);
+    };
 
     const toggleMenu = (menu) => {
         setOpenMenus(prev => ({ ...prev, [menu]: !prev[menu] }));
@@ -13,67 +38,80 @@ const AdminSidebar = ({ isExpanded, onNavigate }) => {
         {
             title: "المسجلين",
             icon: "la-users",
-            to: "/admin/parents"
+            to: "/admin/parents",
+            permission: "view_tuteurs"
         },
         {
             title: "طلبات التدريب", 
             icon: "la-user-plus",  
-            to: "/admin/interns"
+            to: "/admin/interns",
+            permission: "view_stagiaires"
         },
         {
             title: "طلبات التطوع", 
             icon: "la-heart-o",  
-            to: "/admin/volunteers"
+            to: "/admin/volunteers",
+            permission: "view_volunteers"
         },
         {
             title: "الأنشطة",
             icon: "la-calendar",
-            to: "/admin/activities"
+            to: "/admin/activities",
+            permission: "view_activities"
         },
         {
             title: "الأخبار",
             icon: "la-newspaper-o",
-            to: "/admin/news"
+            to: "/admin/news",
+            permission: "view_news"
         },
         {
             title: "الشركاء",
-            icon: "la-users", // Changed from la-handshake-o for testing
-            to: "/admin/partners"
+            icon: "la-users",
+            to: "/admin/partners",
+            permission: "view_partners"
         },
         {
             title: "الصور والمعرض",
             icon: "la-image",
-            to: "/admin/media"
+            to: "/admin/media",
+            permission: "view_gallery"
         },
         {
             title: "الصفحات الثابتة",
             icon: "la-file-text",
-            to: "/admin/static-pages"
+            to: "/admin/static-pages",
+            permission: "view_static_pages"
         },
         {
             title: "رسائل التواصل",
             icon: "la-envelope",
-            to: "/admin/contact-messages"
+            to: "/admin/contact-messages",
+            permission: "view_contact_messages"
         }
     ];
 
-    // Role-based simple items
-    const roleItems = [];
-    if (adminRole === 'president' || adminRole === 'secretary' || adminRole === 'vice_secretary') {
-        roleItems.push({
+    // Permission-based items
+    const permissionItems = [];
+    
+    if (hasPermission('view_meetings')) {
+        permissionItems.push({
             title: "الاجتماعات",
             icon: "la-comments",
             to: "/admin/meetings"
         });
-        roleItems.push({
+    }
+    
+    if (hasPermission('view_activity_reports')) {
+        permissionItems.push({
             title: "تقارير الأنشطة",
             icon: "la-clipboard",
             to: "/admin/activity-reports"
         });
     }
-
-    if (adminRole === 'president' || adminRole === 'treasurer' || adminRole === 'vice_treasurer') {
-        roleItems.push({
+    
+    if (hasPermission('view_finance')) {
+        permissionItems.push({
             title: "المالية",
             icon: "la-money",
             to: "/admin/finance"
@@ -84,11 +122,20 @@ const AdminSidebar = ({ isExpanded, onNavigate }) => {
     const settingsMenu = {
         title: "إعدادات النظام",
         icon: "la-cog",
-        subItems: [
-            { title: "الإعدادات العامة", to: "/admin/settings" },
-            { title: "حسابات الإدارة", to: "/admin/admins" }
-        ]
+        subItems: []
     };
+    
+    if (hasPermission('view_settings')) {
+        settingsMenu.subItems.push({ title: "الإعدادات العامة", to: "/admin/settings" });
+    }
+    
+    if (hasPermission('view_users')) {
+        settingsMenu.subItems.push({ title: "حسابات الإدارة", to: "/admin/admins" });
+    }
+    
+    if (hasPermission('view_permissions')) {
+        settingsMenu.subItems.push({ title: "إدارة الصلاحيات", to: "/admin/permissions" });
+    }
 
     const handleLogout = (e) => {
         e.preventDefault();
@@ -108,8 +155,11 @@ const AdminSidebar = ({ isExpanded, onNavigate }) => {
                         </NavLink>
                     </li>
 
-                    {/* Direct Links */}
-                    {[...menuItems, ...roleItems].map((item, idx) => (
+                    {/* Direct Links - Filter by permissions */}
+                    {[...menuItems, ...permissionItems]
+                        .filter(item => !item.permission || hasPermission(item.permission))
+                        .filter(item => !item.permission || permissionsLoaded)
+                        .map((item, idx) => (
                         <li key={idx} className="nav-item">
                             <NavLink to={item.to} onClick={onNavigate} className={({ isActive }) => isActive ? 'active-admin-link' : ''}>
                                 <i className={`la ${item.icon}`}></i>
@@ -118,8 +168,8 @@ const AdminSidebar = ({ isExpanded, onNavigate }) => {
                         </li>
                     ))}
 
-                    {/* Settings Dropdown */}
-                    {adminRole === 'president' && (
+                    {/* Settings Dropdown - Only show if has sub items */}
+                    {settingsMenu.subItems.length > 0 && (
                         <li className={`nav-item ${openMenus[settingsMenu.title] ? 'open' : ''}`}>
                             <a href="#" onClick={(e) => { e.preventDefault(); toggleMenu(settingsMenu.title); }}>
                                 <i className={`la ${settingsMenu.icon}`}></i>

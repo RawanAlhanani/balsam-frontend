@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../api';
+import { getAdminPermissions } from '../../utils/adminPermissions';
 import {
     AdminPage, AdminPageHeader, AdminCard, AdminFormGroup, AdminBtn, AdminAlert, AdminLoading
 } from '../../components/Admin/ui/AdminUI';
@@ -12,6 +13,20 @@ import AdminFinanceCategories from './components/AdminFinanceCategories'; // Imp
 import AdminContactInfo from './components/AdminContactInfo';
 
 const AdminSettings = () => {
+    const [adminPermissions, setAdminPermissions] = useState([]);
+    const [permissionsLoaded, setPermissionsLoaded] = useState(false);
+
+    useEffect(() => {
+        getAdminPermissions()
+            .then(permissions => setAdminPermissions(permissions))
+            .catch(() => setAdminPermissions([]))
+            .finally(() => setPermissionsLoaded(true));
+    }, []);
+
+    const canAccess = (permission) => (
+        localStorage.getItem('admin_role') === 'president' || adminPermissions.includes(permission)
+    );
+
     // Using the custom hook for each category
     const {
         items: types,
@@ -37,7 +52,8 @@ const AdminSettings = () => {
         clearAlert: clearTypesAlert,
     } = useAdminCrud('/admin/types', 'نوع النشاط', { nomActivite: '' },
         (item) => ({ nomActivite: item.nomActivite }), // transformNewItem
-        (item) => ({ nomActivite: item.nomActivite })  // transformEditItem
+        (item) => ({ nomActivite: item.nomActivite }), // transformEditItem
+        canAccess('view_types')
     );
 
     const {
@@ -64,7 +80,8 @@ const AdminSettings = () => {
         clearAlert: clearRegionsAlert,
     } = useAdminCrud('/admin/regions', 'المنطقة', { nom_region: '' },
         (item) => ({ nom_region: item.nom_region }),
-        (item) => ({ nom_region: item.nom_region })
+        (item) => ({ nom_region: item.nom_region }),
+        canAccess('view_regions')
     );
 
     const {
@@ -91,7 +108,8 @@ const AdminSettings = () => {
         clearAlert: clearDoctorsAlert,
     } = useAdminCrud('/admin/doctors', 'التخصص', { specialite: '' },
         (item) => ({ specialite: item.specialite }),
-        (item) => ({ specialite: item.specialite })
+        (item) => ({ specialite: item.specialite }),
+        canAccess('view_doctors')
     );
 
     const {
@@ -118,7 +136,8 @@ const AdminSettings = () => {
         clearAlert: clearFinanceCatsAlert,
     } = useAdminCrud('/admin/finance-categories', 'الفئة المالية', { name: '', type: 'income' },
         (item) => ({ name: item.name, type: item.type }),
-        (item) => ({ name: item.name, type: item.type })
+        (item) => ({ name: item.name, type: item.type }),
+        canAccess('manage_finance_categories')
     );
 
     // Combine alerts from all hooks
@@ -203,7 +222,7 @@ const AdminSettings = () => {
     const activeDeleteModalProps = getActiveDeleteModalProps();
 
     // Overall loading state for initial data fetch
-    if (typesLoading || regionsLoading || doctorsLoading || financeCatsLoading) {
+    if (!permissionsLoaded || typesLoading || regionsLoading || doctorsLoading || financeCatsLoading) {
         return <AdminLoading />;
     }
 
@@ -217,7 +236,7 @@ const AdminSettings = () => {
             />
             <div className="content-body">
                 <div className="row">
-                    <AdminActivityTypes
+                    {canAccess('view_types') && <AdminActivityTypes
                         openCategory={openCategory}
                         toggleCategory={toggleCategory}
                         types={types}
@@ -232,9 +251,9 @@ const AdminSettings = () => {
                         handleCancelEditType={handleCancelEditType}
                         handleSaveEditType={handleSaveEditType}
                         typesSubmitting={typesSubmitting}
-                    />
+                    />}
 
-                    <AdminRegions
+                    {canAccess('view_regions') && <AdminRegions
                         openCategory={openCategory}
                         toggleCategory={toggleCategory}
                         regions={regions}
@@ -249,9 +268,9 @@ const AdminSettings = () => {
                         handleCancelEditRegion={handleCancelEditRegion}
                         handleSaveEditRegion={handleSaveEditRegion}
                         regionsSubmitting={regionsSubmitting}
-                    />
+                    />}
 
-                    <AdminDoctors
+                    {canAccess('view_doctors') && <AdminDoctors
                         openCategory={openCategory}
                         toggleCategory={toggleCategory}
                         doctors={doctors}
@@ -266,30 +285,33 @@ const AdminSettings = () => {
                         handleCancelEditDoctor={handleCancelEditDoctor}
                         handleSaveEditDoctor={handleSaveEditDoctor}
                         doctorsSubmitting={doctorsSubmitting}
-                    />
+                    />}
 
-                    <AdminContactInfo
+                    {canAccess('view_site_settings') && <AdminContactInfo
                         openCategory={openCategory}
                         toggleCategory={toggleCategory}
-                    />
+                        enabled={canAccess('view_site_settings')}
+                    />}
                 </div>
 
-                <AdminFinanceCategories
-                    openCategory={openCategory}
-                    toggleCategory={toggleCategory}
-                    financeCats={financeCats}
-                    newCat={newCat}
-                    setNewCat={setNewCat}
-                    editingCatId={editingCatId}
-                    editingCatData={editingCatData}
-                    setEditingCatData={setEditingCatData}
-                    handleAddCat={handleAddCat}
-                    promptDeleteCat={promptDeleteCat}
-                    handleEditCat={handleEditCat}
-                    handleCancelEditCat={handleCancelEditCat}
-                    handleSaveEditCat={handleSaveEditCat}
-                    financeCatsSubmitting={financeCatsSubmitting}
-                />
+                {canAccess('manage_finance_categories') && (
+                    <AdminFinanceCategories
+                        openCategory={openCategory}
+                        toggleCategory={toggleCategory}
+                        financeCats={financeCats}
+                        newCat={newCat}
+                        setNewCat={setNewCat}
+                        editingCatId={editingCatId}
+                        editingCatData={editingCatData}
+                        setEditingCatData={setEditingCatData}
+                        handleAddCat={handleAddCat}
+                        promptDeleteCat={promptDeleteCat}
+                        handleEditCat={handleEditCat}
+                        handleCancelEditCat={handleCancelEditCat}
+                        handleSaveEditCat={handleSaveEditCat}
+                        financeCatsSubmitting={financeCatsSubmitting}
+                    />
+                )}
             </div>
         </AdminPage>
 

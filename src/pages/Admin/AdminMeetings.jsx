@@ -431,7 +431,7 @@ const AdminMeetings = () => {
                                                 <td>
                                                     <div className="admin-action-group">
                                                         <AdminBtn variant="info" icon="la-print" onClick={() => handlePrint(m)}>طباعة</AdminBtn>
-                                                        <AdminBtn variant="danger" icon="la-trash" onClick={() => promptDelete(m.id, m.date)}>حذف</AdminBtn>
+                                                        <AdminBtn permission="delete_meetings" variant="danger" icon="la-trash" onClick={() => promptDelete(m.id, m.date)}>حذف</AdminBtn>
                                                     </div>
                                                 </td>
                                             </tr>

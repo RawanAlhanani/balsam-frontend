@@ -108,7 +108,7 @@ const AdminContactMessages = () => {
                                                 <td>{msg.message.length > 60 ? `${msg.message.substring(0, 60)}...` : msg.message}</td>
                                                 <td>{new Date(msg.created_at).toLocaleDateString('ar-MA')}</td>
                                                 <td>
-                                                    <AdminBtn variant="danger" icon="la-trash" onClick={() => promptDelete(msg.id, msg.subject)}>حذف</AdminBtn>
+                                                    <AdminBtn permission="delete_contact_messages" variant="danger" icon="la-trash" onClick={() => promptDelete(msg.id, msg.subject)}>حذف</AdminBtn>
                                                 </td>
                                             </tr>
                                         ))}

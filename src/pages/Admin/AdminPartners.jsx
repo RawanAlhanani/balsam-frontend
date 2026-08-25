@@ -267,8 +267,8 @@ const AdminPartners = () => {
                                             </td>
                                             <td>
                                                 <div className="admin-action-group">
-                                                    <AdminBtn variant="primary" icon="la-edit" onClick={() => handleOpenEditForm(p)}>تعديل</AdminBtn>
-                                                    <AdminBtn variant="danger" icon="la-trash" onClick={() => promptDelete(p.id, p.nomPartenaire)}>حذف</AdminBtn>
+                                                    <AdminBtn permission="edit_partners" variant="primary" icon="la-edit" onClick={() => handleOpenEditForm(p)}>تعديل</AdminBtn>
+                                                    <AdminBtn permission="delete_partners" variant="danger" icon="la-trash" onClick={() => promptDelete(p.id, p.nomPartenaire)}>حذف</AdminBtn>
                                                 </div>
                                             </td>
                                         </tr>

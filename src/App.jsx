@@ -67,6 +67,7 @@ const AdminStagiaires = lazy(() => import('./pages/Admin/AdminStagiaires'));
 const AdminVolunteers = lazy(() => import('./pages/Admin/AdminVolunteers'));
 const AdminContactMessages = lazy(() => import('./pages/Admin/AdminContactMessages'));
 const AdminMyProfile = lazy(() => import('./pages/Admin/AdminMyProfile'));
+const AdminPermissions = lazy(() => import('./pages/Admin/AdminPermissions'));
 
 
 
@@ -133,33 +134,34 @@ function App() {
               <Suspense fallback={<AdminLoading message="جاري تحميل لوحة التحكم..." />}>
                 <Routes>
                   <Route path="/dashboard" element={<AdminDashboard />} />
-                  <Route path="/parents" element={<AdminTuteurs />} />
-                  <Route path="/editTuteur/:enfantId" element={<EditTuteur />} />
+                  <Route path="/parents" element={<RequireAdmin permissions={['view_tuteurs']}><AdminTuteurs /></RequireAdmin>} />
+                  <Route path="/editTuteur/:enfantId" element={<RequireAdmin permissions={['edit_tuteurs']}><EditTuteur /></RequireAdmin>} />
 
                   {/* Activity Routes */}
-                  <Route path="/activities" element={<AdminActivities />} />
-                  <Route path="/activities/add" element={<AddActivity />} /> {/* New route */}
-                  <Route path="/activities/edit/:id" element={<EditActivity />} /> {/* New route */}
+                  <Route path="/activities" element={<RequireAdmin permissions={['view_activities']}><AdminActivities /></RequireAdmin>} />
+                  <Route path="/activities/add" element={<RequireAdmin permissions={['create_activities']}><AddActivity /></RequireAdmin>} /> {/* New route */}
+                  <Route path="/activities/edit/:id" element={<RequireAdmin permissions={['edit_activities']}><EditActivity /></RequireAdmin>} /> {/* New route */}
 
                   {/* News Routes */}
-                  <Route path="/news" element={<AdminNews />} />
-                  <Route path="/news/add" element={<AddNews />} /> {/* New route */}
-                  <Route path="/news/edit/:id" element={<EditNews />} /> {/* New route */}
+                  <Route path="/news" element={<RequireAdmin permissions={['view_news']}><AdminNews /></RequireAdmin>} />
+                  <Route path="/news/add" element={<RequireAdmin permissions={['create_news']}><AddNews /></RequireAdmin>} /> {/* New route */}
+                  <Route path="/news/edit/:id" element={<RequireAdmin permissions={['edit_news']}><EditNews /></RequireAdmin>} /> {/* New route */}
 
-                  <Route path="/partners" element={<AdminPartners />} />
-                  <Route path="/settings" element={<AdminSettings />} />
+                  <Route path="/partners" element={<RequireAdmin permissions={['view_partners']}><AdminPartners /></RequireAdmin>} />
+                  <Route path="/settings" element={<RequireAdmin permissions={['view_settings']}><AdminSettings /></RequireAdmin>} />
                   <Route path="/admins" element={<RequireAdmin roles={['president']}><AdminAdmins /></RequireAdmin>} />
-                  <Route path="/media" element={<AdminImages />} />
-                  <Route path="/static-pages/add" element={<AddStaticPage />} />
-                  <Route path="/static-pages/edit/:type/:id" element={<EditStaticPage />} />
-                  <Route path="/static-pages" element={<AdminStaticPages />} />
-                  <Route path="/meetings" element={<RequireAdmin roles={['president', 'secretary', 'vice_secretary']}><AdminMeetings /></RequireAdmin>} />
-                  <Route path="/activity-reports" element={<RequireAdmin roles={['president', 'secretary', 'vice_secretary']}><AdminActivityReports /></RequireAdmin>} />
+                  <Route path="/media" element={<RequireAdmin permissions={['view_gallery']}><AdminImages /></RequireAdmin>} />
+                  <Route path="/static-pages/add" element={<RequireAdmin permissions={['create_static_pages']}><AddStaticPage /></RequireAdmin>} />
+                  <Route path="/static-pages/edit/:type/:id" element={<RequireAdmin permissions={['edit_static_pages']}><EditStaticPage /></RequireAdmin>} />
+                  <Route path="/static-pages" element={<RequireAdmin permissions={['view_static_pages']}><AdminStaticPages /></RequireAdmin>} />
+                  <Route path="/meetings" element={<RequireAdmin roles={['president', 'vice_president', 'secretary', 'vice_secretary']}><AdminMeetings /></RequireAdmin>} />
+                  <Route path="/activity-reports" element={<RequireAdmin roles={['president', 'vice_president', 'secretary', 'vice_secretary']}><AdminActivityReports /></RequireAdmin>} />
                   <Route path="/finance" element={<RequireAdmin roles={['president', 'treasurer', 'vice_treasurer']}><AdminFinance /></RequireAdmin>} />
-                  <Route path="/interns" element={<AdminStagiaires />} />
-                  <Route path="/volunteers" element={<AdminVolunteers />} />
-                  <Route path="/contact-messages" element={<AdminContactMessages />} />
+                  <Route path="/interns" element={<RequireAdmin permissions={['view_stagiaires']}><AdminStagiaires /></RequireAdmin>} />
+                  <Route path="/volunteers" element={<RequireAdmin permissions={['view_volunteers']}><AdminVolunteers /></RequireAdmin>} />
+                  <Route path="/contact-messages" element={<RequireAdmin permissions={['view_contact_messages']}><AdminContactMessages /></RequireAdmin>} />
                   <Route path="/my-profile" element={<AdminMyProfile />} />
+                  <Route path="/permissions" element={<RequireAdmin roles={['president']} permissions={['view_permissions']}><AdminPermissions /></RequireAdmin>} />
                 </Routes>
               </Suspense>
             </AdminLayout>

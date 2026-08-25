@@ -1,4 +1,22 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import { getAdminPermissions } from '../../../utils/adminPermissions';
+
+export const AdminPermissionGate = ({ permission, children }) => {
+    const [allowed, setAllowed] = useState(false);
+
+    useEffect(() => {
+        if (localStorage.getItem('admin_role') === 'president') {
+            setAllowed(true);
+            return;
+        }
+
+        getAdminPermissions()
+            .then(permissions => setAllowed(permissions.includes(permission)))
+            .catch(() => setAllowed(false));
+    }, [permission]);
+
+    return allowed ? children : null;
+};
 
 export const AdminPage = ({ children }) => (
     <div className="app-content content">
@@ -101,7 +119,24 @@ export const AdminTableWrap = ({ children }) => (
     </div>
 );
 
-export const AdminBtn = ({ variant = 'primary', size = 'sm', icon, children, className = '', as: Component = 'button', ...props }) => {
+export const AdminBtn = ({ variant = 'primary', size = 'sm', icon, permission, children, className = '', as: Component = 'button', ...props }) => {
+    const [allowed, setAllowed] = useState(permission === undefined);
+
+    useEffect(() => {
+        if (permission === undefined) return;
+        if (localStorage.getItem('admin_role') === 'president') {
+            setAllowed(true);
+            return;
+        }
+
+        setAllowed(false);
+        getAdminPermissions()
+            .then(permissions => setAllowed(permissions.includes(permission)))
+            .catch(() => setAllowed(false));
+    }, [permission]);
+
+    if (!allowed) return null;
+
     return (
         <Component
             type={Component === 'button' ? (props.type || 'button') : undefined} // Only apply type to button element

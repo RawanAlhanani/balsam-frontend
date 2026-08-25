@@ -305,11 +305,11 @@ const AdminTuteurs = () => {
                                                 <td>
                                                     <div className="admin-action-group">
                                                         {enfant && (
-                                                            <Link to={`/admin/editTuteur/${enfant.id}`} className="btn btn-sm btn-warning admin-action-btn">
-                                                                <i className="la la-edit" /> تعديل
-                                                            </Link>
+                                                            <AdminBtn permission="edit_tuteurs" as={Link} to={`/admin/editTuteur/${enfant.id}`} variant="warning" icon="la-edit">
+                                                                تعديل
+                                                            </AdminBtn>
                                                         )}
-                                                        <AdminBtn variant="danger" icon="la-trash" onClick={() => promptDelete(tuteur.id, `${tuteur.nom_tuteur} ${tuteur.prenom_tuteur}`)}>حذف</AdminBtn>
+                                                        <AdminBtn permission="delete_tuteurs" variant="danger" icon="la-trash" onClick={() => promptDelete(tuteur.id, `${tuteur.nom_tuteur} ${tuteur.prenom_tuteur}`)}>حذف</AdminBtn>
                                                     </div>
                                                 </td>
                                             </tr>

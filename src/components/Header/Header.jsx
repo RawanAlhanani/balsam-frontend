@@ -11,6 +11,7 @@ const Header = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const navigate = useNavigate();
   const { pathname } = useLocation();
+  const isAdmin = localStorage.getItem('is_admin') === 'true' && localStorage.getItem('admin_token');
 
   const balsamRef = useRef(null);
   const userRef = useRef(null);
@@ -547,6 +548,14 @@ const Header = () => {
                       <Link to="/se_connecter" onClick={closeAll}>حسابي</Link>
                     )}
                   </li>
+
+                  {isAdmin && (
+                    <li>
+                      <Link to="/admin/dashboard" onClick={closeAll}>
+                        لوحة التحكم
+                      </Link>
+                    </li>
+                  )}
 
                 </ul>
               </nav>

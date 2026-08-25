@@ -250,8 +250,8 @@ const AdminAdmins = () => {
                                                 <td><span className="admin-tag">{roleLabels[a.role] || a.role}</span></td>
                                                 <td>
                                                     <div className="admin-action-group">
-                                                        <AdminBtn variant="primary" icon="la-edit" onClick={() => handleOpenEditForm(a)}>تعديل</AdminBtn>
-                                                        <AdminBtn variant="danger" icon="la-trash" onClick={() => promptDelete(a.id, a.name)}>حذف</AdminBtn>
+                                                        <AdminBtn permission="edit_users" variant="primary" icon="la-edit" onClick={() => handleOpenEditForm(a)}>تعديل</AdminBtn>
+                                                        <AdminBtn permission="delete_users" variant="danger" icon="la-trash" onClick={() => promptDelete(a.id, a.name)}>حذف</AdminBtn>
                                                     </div>
                                                 </td>
                                             </tr>

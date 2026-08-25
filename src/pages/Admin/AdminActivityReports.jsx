@@ -406,7 +406,7 @@ const AdminActivityReports = () => {
                                             <td>
                                                 <div className="admin-action-group">
                                                     <AdminBtn variant="info" icon="la-print" onClick={() => handlePrint(a)}>طباعة</AdminBtn>
-                                                    <AdminBtn variant="danger" icon="la-trash" onClick={() => promptDelete(a.id, a.presentation_title || `تقرير بتاريخ ${a.date}`)}>حذف</AdminBtn>
+                                                    <AdminBtn permission="delete_activity_reports" variant="danger" icon="la-trash" onClick={() => promptDelete(a.id, a.presentation_title || `تقرير بتاريخ ${a.date}`)}>حذف</AdminBtn>
                                                 </div>
                                             </td>
                                         </tr>

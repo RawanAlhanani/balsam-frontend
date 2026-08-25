@@ -59,8 +59,8 @@ const AdminRegions = ({
                                         <>
                                             <span>{r.nom_region}</span>
                                             <div className="admin-action-group">
-                                                <AdminBtn variant="primary" size="sm" icon="la-edit" onClick={() => handleEditRegion(r)}>تعديل</AdminBtn>
-                                                <AdminBtn variant="danger" size="sm" icon="la-trash" onClick={() => promptDeleteRegion(r)}>حذف</AdminBtn>
+                                                <AdminBtn permission="edit_regions" variant="primary" size="sm" icon="la-edit" onClick={() => handleEditRegion(r)}>تعديل</AdminBtn>
+                                                <AdminBtn permission="delete_regions" variant="danger" size="sm" icon="la-trash" onClick={() => promptDeleteRegion(r)}>حذف</AdminBtn>
                                             </div>
                                         </>
                                     )}

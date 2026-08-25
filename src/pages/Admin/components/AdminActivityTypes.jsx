@@ -59,8 +59,8 @@ const AdminActivityTypes = ({
                                         <>
                                             <span>{t.nomActivite}</span>
                                             <div className="admin-action-group">
-                                                <AdminBtn variant="primary" size="sm" icon="la-edit" onClick={() => handleEditType(t)}>تعديل</AdminBtn>
-                                                <AdminBtn variant="danger" size="sm" icon="la-trash" onClick={() => promptDeleteType(t)}>حذف</AdminBtn>
+                                                <AdminBtn permission="edit_types" variant="primary" size="sm" icon="la-edit" onClick={() => handleEditType(t)}>تعديل</AdminBtn>
+                                                <AdminBtn permission="delete_types" variant="danger" size="sm" icon="la-trash" onClick={() => promptDeleteType(t)}>حذف</AdminBtn>
                                             </div>
                                         </>
                                     )}

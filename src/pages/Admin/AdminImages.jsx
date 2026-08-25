@@ -181,7 +181,7 @@ const AdminImages = () => {
                                         {sliders.map(s => (
                                             <div key={s.id} className="admin-image-item">
                                                 <img src={getStorageUrl(s.nomImage)} alt="" />
-                                                <AdminBtn variant="danger" size="sm" icon="la-trash" onClick={() => promptDelete('sliders', s.id, `صورة السلايدر ${s.id}`)}>حذف</AdminBtn>
+                                                <AdminBtn permission="delete_sliders" variant="danger" size="sm" icon="la-trash" onClick={() => promptDelete('sliders', s.id, `صورة السلايدر ${s.id}`)}>حذف</AdminBtn>
                                             </div>
                                         ))}
                                     </div>
@@ -204,7 +204,7 @@ const AdminImages = () => {
                                         {gallery.map(g => (
                                             <div key={g.id} className="admin-image-item">
                                                 <img src={getStorageUrl(g.nomImage)} alt="" />
-                                                <AdminBtn variant="danger" size="sm" icon="la-trash" onClick={() => promptDelete('gallery', g.id, `صورة المعرض ${g.id}`)}>حذف</AdminBtn>
+                                                <AdminBtn permission="delete_gallery" variant="danger" size="sm" icon="la-trash" onClick={() => promptDelete('gallery', g.id, `صورة المعرض ${g.id}`)}>حذف</AdminBtn>
                                             </div>
                                         ))}
                                     </div>

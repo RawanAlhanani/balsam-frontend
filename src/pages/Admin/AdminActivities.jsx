@@ -136,8 +136,8 @@ const AdminActivities = () => {
                                             <td>{act.description.substring(0, 50)}...</td>
                                             <td>
                                                 <div className="admin-action-group">
-                                                    <AdminBtn variant="primary" icon="la-edit" onClick={() => navigate(`/admin/activities/edit/${act.id}`)}>تعديل</AdminBtn> {/* Navigate to edit page */}
-                                                    <AdminBtn variant="danger" icon="la-trash" onClick={() => promptDelete(act.id, act.titre)}>حذف</AdminBtn>
+                                                    <AdminBtn permission="edit_activities" variant="primary" icon="la-edit" onClick={() => navigate(`/admin/activities/edit/${act.id}`)}>تعديل</AdminBtn> {/* Navigate to edit page */}
+                                                    <AdminBtn permission="delete_activities" variant="danger" icon="la-trash" onClick={() => promptDelete(act.id, act.titre)}>حذف</AdminBtn>
                                                 </div>
                                             </td>
                                         </tr>

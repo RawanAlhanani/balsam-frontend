@@ -78,8 +78,8 @@ const AdminFinanceCategories = ({
                                                     <>
                                                         <span>{c.name}</span>
                                                         <div className="admin-action-group">
-                                                            <AdminBtn variant="primary" size="sm" icon="la-edit" onClick={() => handleEditCat(c)}>تعديل</AdminBtn>
-                                                            <AdminBtn variant="danger" size="sm" icon="la-trash" onClick={() => promptDeleteCat(c)}>حذف</AdminBtn>
+                                                            <AdminBtn permission="manage_finance_categories" variant="primary" size="sm" icon="la-edit" onClick={() => handleEditCat(c)}>تعديل</AdminBtn>
+                                                            <AdminBtn permission="manage_finance_categories" variant="danger" size="sm" icon="la-trash" onClick={() => promptDeleteCat(c)}>حذف</AdminBtn>
                                                         </div>
                                                     </>
                                                 )}
@@ -120,8 +120,8 @@ const AdminFinanceCategories = ({
                                                     <>
                                                         <span>{c.name}</span>
                                                         <div className="admin-action-group">
-                                                            <AdminBtn variant="primary" size="sm" icon="la-edit" onClick={() => handleEditCat(c)}>تعديل</AdminBtn>
-                                                            <AdminBtn variant="danger" size="sm" icon="la-trash" onClick={() => promptDeleteCat(c)}>حذف</AdminBtn>
+                                                            <AdminBtn permission="manage_finance_categories" variant="primary" size="sm" icon="la-edit" onClick={() => handleEditCat(c)}>تعديل</AdminBtn>
+                                                            <AdminBtn permission="manage_finance_categories" variant="danger" size="sm" icon="la-trash" onClick={() => promptDeleteCat(c)}>حذف</AdminBtn>
                                                         </div>
                                                     </>
                                                 )}

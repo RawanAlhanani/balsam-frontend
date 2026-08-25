@@ -15,7 +15,7 @@ const extractErrorMessage = (err, fallback) => {
     return data.message || fallback;
 };
 
-const useAdminCrud = (endpoint, itemNameKey, initialNewItemState, transformNewItem = (item) => item, transformEditItem = (item) => item) => {
+const useAdminCrud = (endpoint, itemNameKey, initialNewItemState, transformNewItem = (item) => item, transformEditItem = (item) => item, enabled = true) => {
     const [items, setItems] = useState([]);
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false); // For add/edit operations
@@ -49,8 +49,12 @@ const useAdminCrud = (endpoint, itemNameKey, initialNewItemState, transformNewIt
     }, [endpoint, itemNameKey]);
 
     useEffect(() => {
+        if (!enabled) {
+            setLoading(false);
+            return;
+        }
         fetchItems();
-    }, [fetchItems]);
+    }, [enabled, fetchItems]);
 
     const handleAddItem = async (e) => {
         e.preventDefault();

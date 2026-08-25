@@ -163,7 +163,7 @@ const AdminVolunteers = () => {
                                                 </td>
                                                 <td><strong>{vol.nom_utilisateur}</strong></td>
                                                 <td>
-                                                    <AdminBtn variant="danger" icon="la-trash" onClick={() => promptDelete(vol.id, `${vol.prenom_tuteur} ${vol.nom_tuteur}`)}>
+                                                    <AdminBtn permission="delete_volunteers" variant="danger" icon="la-trash" onClick={() => promptDelete(vol.id, `${vol.prenom_tuteur} ${vol.nom_tuteur}`)}>
                                                         حذف
                                                     </AdminBtn>
                                                 </td>

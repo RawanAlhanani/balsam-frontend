@@ -168,8 +168,8 @@ const AdminNews = () => {
                                             <td>{new Date(item.created_at).toLocaleDateString('ar-MA')}</td>
                                             <td>
                                                 <div className="admin-action-group">
-                                                    <AdminBtn variant="primary" icon="la-edit" onClick={() => navigate(`/admin/news/edit/${item.id}`)}>تعديل</AdminBtn> {/* Navigate to edit page */}
-                                                    <AdminBtn variant="danger" icon="la-trash" onClick={() => promptDelete(item.id, item.titre)}>حذف</AdminBtn>
+                                                    <AdminBtn permission="edit_news" variant="primary" icon="la-edit" onClick={() => navigate(`/admin/news/edit/${item.id}`)}>تعديل</AdminBtn> {/* Navigate to edit page */}
+                                                    <AdminBtn permission="delete_news" variant="danger" icon="la-trash" onClick={() => promptDelete(item.id, item.titre)}>حذف</AdminBtn>
                                                 </div>
                                             </td>
                                         </tr>

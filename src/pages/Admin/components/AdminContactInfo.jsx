@@ -3,13 +3,17 @@ import PropTypes from 'prop-types';
 import { AdminCard, AdminFormGroup, AdminBtn, AdminAlert } from '../../../components/Admin/ui/AdminUI';
 import { getSiteSettings, updateSiteSettings } from '../../../api';
 
-const AdminContactInfo = ({ openCategory, toggleCategory }) => {
+const AdminContactInfo = ({ openCategory, toggleCategory, enabled = true }) => {
     const [form, setForm] = useState({ phone: '', email: '', facebook_url: '', instagram_url: '' });
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
     const [alert, setAlert] = useState({ message: '', type: '' });
 
     useEffect(() => {
+        if (!enabled) {
+            setLoading(false);
+            return;
+        }
         getSiteSettings()
             .then(res => setForm({
                 phone: res.data.phone || '',
@@ -19,7 +23,7 @@ const AdminContactInfo = ({ openCategory, toggleCategory }) => {
             }))
             .catch(() => setAlert({ message: 'تعذّر تحميل معلومات التواصل.', type: 'danger' }))
             .finally(() => setLoading(false));
-    }, []);
+    }, [enabled]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -86,6 +90,7 @@ const AdminContactInfo = ({ openCategory, toggleCategory }) => {
 AdminContactInfo.propTypes = {
     openCategory: PropTypes.string,
     toggleCategory: PropTypes.func.isRequired,
+    enabled: PropTypes.bool,
 };
 
 export default AdminContactInfo;

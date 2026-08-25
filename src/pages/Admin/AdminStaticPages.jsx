@@ -226,6 +226,7 @@ const AdminStaticPages = () => {
                                                 <h5 className="mb-0">تفاصيل: {selectedPage.titre}</h5>
                                                 <div>
                                                     <AdminBtn
+                                                        permission="edit_static_pages"
                                                         variant="primary"
                                                         icon="la-edit"
                                                         onClick={() => navigate(`/admin/static-pages/edit/${selectedType}/${selectedPage.id}`)}
@@ -234,6 +235,7 @@ const AdminStaticPages = () => {
                                                         تعديل
                                                     </AdminBtn>
                                                     <AdminBtn
+                                                        permission="delete_static_pages"
                                                         variant="danger"
                                                         icon="la-trash"
                                                         onClick={() => promptDelete(selectedType, selectedPage)}

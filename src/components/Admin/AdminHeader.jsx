@@ -63,6 +63,12 @@ const AdminHeader = ({ toggleMenu }) => {
                                 </li>
                             )}
                             <li className="nav-item">
+                                <Link className="nav-link" to="/">
+                                    <i className="la la-home mr-1" />
+                                    <span>الموقع</span>
+                                </Link>
+                            </li>
+                            <li className="nav-item">
                                 <Link className="nav-link dropdown-user-link" to="/admin/my-profile">
                                     <i className="la la-user mr-1" />
                                     <span>الملف الشخصي</span>

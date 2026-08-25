@@ -174,6 +174,15 @@ export const deleteContactMessage = (id) => api.delete(`/admin/contact-messages/
 export const getSiteSettings = () => api.get('/site-settings');
 export const updateSiteSettings = (data) => api.put('/admin/site-settings', data);
 
+// Permission management API functions (president only)
+export const getPermissions = () => api.get('/admin/permissions');
+export const getPermissionsByModule = () => api.get('/admin/permissions/modules');
+export const getUsersWithPermissions = () => api.get('/admin/users');
+export const getUserPermissions = (userId) => api.get(`/admin/users/${userId}/permissions`);
+export const assignUserPermissions = (userId, permissions) => api.post(`/admin/users/${userId}/permissions`, { permissions });
+export const revokeUserPermission = (userId, permissionId) => api.delete(`/admin/users/${userId}/permissions/${permissionId}`);
+export const getCurrentUserPermissions = () => api.get('/admin/me/permissions');
+
 // Auth functions
 export const login = (credentials) => api.post('/login', credentials);
 export const adminLogin = (credentials) => api.post('/admin-login', credentials);
