@@ -154,9 +154,9 @@ function App() {
                   <Route path="/static-pages/add" element={<RequireAdmin permissions={['create_static_pages']}><AddStaticPage /></RequireAdmin>} />
                   <Route path="/static-pages/edit/:type/:id" element={<RequireAdmin permissions={['edit_static_pages']}><EditStaticPage /></RequireAdmin>} />
                   <Route path="/static-pages" element={<RequireAdmin permissions={['view_static_pages']}><AdminStaticPages /></RequireAdmin>} />
-                  <Route path="/meetings" element={<RequireAdmin roles={['president', 'vice_president', 'secretary', 'vice_secretary']}><AdminMeetings /></RequireAdmin>} />
-                  <Route path="/activity-reports" element={<RequireAdmin roles={['president', 'vice_president', 'secretary', 'vice_secretary']}><AdminActivityReports /></RequireAdmin>} />
-                  <Route path="/finance" element={<RequireAdmin roles={['president', 'treasurer', 'vice_treasurer']}><AdminFinance /></RequireAdmin>} />
+                  <Route path="/meetings" element={<RequireAdmin permissions={['view_meetings']}><AdminMeetings /></RequireAdmin>} />
+                  <Route path="/activity-reports" element={<RequireAdmin permissions={['view_activity_reports']}><AdminActivityReports /></RequireAdmin>} />
+                  <Route path="/finance" element={<RequireAdmin permissions={['view_finance']}><AdminFinance /></RequireAdmin>} />
                   <Route path="/interns" element={<RequireAdmin permissions={['view_stagiaires']}><AdminStagiaires /></RequireAdmin>} />
                   <Route path="/volunteers" element={<RequireAdmin permissions={['view_volunteers']}><AdminVolunteers /></RequireAdmin>} />
                   <Route path="/contact-messages" element={<RequireAdmin permissions={['view_contact_messages']}><AdminContactMessages /></RequireAdmin>} />

@@ -212,7 +212,7 @@ const AdminPermissions = () => {
                                                 <td>{user.email}</td>
                                                 <td>
                                                     <span className="admin-tag">
-                                                        {roleLabels[user.role] || user.role}
+                                                        {user.role_label || roleLabels[user.role] || user.role}
                                                     </span>
                                                 </td>
                                                 <td>
@@ -263,7 +263,7 @@ const AdminPermissions = () => {
                             </div>
                             <div className="modal-body" style={{ maxHeight: '70vh', overflowY: 'auto' }}>
                                 <div className="alert alert-info">
-                                    <strong>الدور الحالي:</strong> {roleLabels[editingUser.role] || editingUser.role}
+                                    <strong>الدور الحالي:</strong> {editingUser.role_label || roleLabels[editingUser.role] || editingUser.role}
                                     <br />
                                     <small>الصلاحيات المحددة باللون الأزرق هي صلاحيات الدور الافتراضية.</small>
                                 </div>

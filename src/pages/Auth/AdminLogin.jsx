@@ -26,6 +26,7 @@ const AdminLogin = () => {
             localStorage.setItem('refresh_token', response.data.refresh_token);
             localStorage.setItem('is_admin', 'true');
             localStorage.setItem('admin_role', response.data.user.role);
+            localStorage.setItem('admin_role_label', response.data.user.role_label || '');
             navigate('/admin/dashboard');
         } catch (err) {
             setError(err.response?.data?.message || 'البريد الإلكتروني أو كلمة المرور غير صحيحة.');

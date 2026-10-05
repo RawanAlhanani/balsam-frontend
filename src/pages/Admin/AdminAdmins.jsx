@@ -55,8 +55,15 @@ const AdminAdmins = () => {
     const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState(false);
     const [deleteTargetId, setDeleteTargetId] = useState(null);
     const [deleteTargetName, setDeleteTargetName] = useState('');
+    const [deleteTargetType, setDeleteTargetType] = useState('account');
 
-    useEffect(() => { fetchAdmins(); }, []);
+    // Built-in + president-defined roles (custom ones carry an `id`)
+    const [roles, setRoles] = useState([]);
+    const [newRoleLabel, setNewRoleLabel] = useState('');
+    const [roleError, setRoleError] = useState('');
+    const [addingRole, setAddingRole] = useState(false);
+
+    useEffect(() => { fetchAdmins(); fetchRoles(); }, []);
 
     // Lock background scroll and interactions when delete modal is open
     useEffect(() => {
@@ -79,6 +86,39 @@ const AdminAdmins = () => {
             console.error(err);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const fetchRoles = async () => {
+        try {
+            const res = await api.get('/admin/roles');
+            setRoles(res.data);
+        } catch (err) {
+            setAlert({ message: getPersonalizedErrorMessage(err), type: 'danger' });
+            console.error(err);
+        }
+    };
+
+    const handleAddRole = async (e) => {
+        e.preventDefault();
+        if (!newRoleLabel.trim() || addingRole) return;
+        setAddingRole(true);
+        setRoleError('');
+        try {
+            await api.post('/admin/roles', { label: newRoleLabel.trim() });
+            setNewRoleLabel('');
+            setAlert({ message: 'تم إضافة الدور بنجاح، يمكنك الآن تعيينه لمسؤول ثم تحديد صلاحياته من صفحة الصلاحيات', type: 'success' });
+            fetchRoles();
+        } catch (err) {
+            if (err.response && err.response.status === 422) {
+                setRoleError(err.response.data.errors?.label?.[0] || err.response.data.message);
+            } else {
+                setAlert({ message: getPersonalizedErrorMessage(err), type: 'danger' });
+            }
+            console.error(err);
+        } finally {
+            setAddingRole(false);
+            setTimeout(() => setAlert({ message: '', type: '' }), 3500);
         }
     };
 
@@ -140,9 +180,10 @@ const AdminAdmins = () => {
         }
     };
 
-    const promptDelete = (id, name) => {
+    const promptDelete = (id, name, type = 'account') => {
         setDeleteTargetId(id);
         setDeleteTargetName(name);
+        setDeleteTargetType(type);
         setShowDeleteConfirmModal(true);
     };
 
@@ -150,12 +191,18 @@ const AdminAdmins = () => {
         if (!deleteTargetId || deleting) return;
         setDeleting(true);
         try {
-            await api.delete(`/admin/accounts/${deleteTargetId}`);
-            setAlert({ message: 'تم حذف الحساب بنجاح', type: 'success' });
+            if (deleteTargetType === 'role') {
+                await api.delete(`/admin/roles/${deleteTargetId}`);
+                setAlert({ message: 'تم حذف الدور بنجاح', type: 'success' });
+                fetchRoles();
+            } else {
+                await api.delete(`/admin/accounts/${deleteTargetId}`);
+                setAlert({ message: 'تم حذف الحساب بنجاح', type: 'success' });
+                fetchAdmins();
+            }
             setShowDeleteConfirmModal(false);
             setDeleteTargetId(null);
             setDeleteTargetName('');
-            fetchAdmins();
         } catch (err) {
             const errorMessage = getPersonalizedErrorMessage(err);
             setAlert({ message: errorMessage, type: 'danger' });
@@ -169,14 +216,7 @@ const AdminAdmins = () => {
         }
     };
 
-    const roleLabels = {
-        president: 'رئيس',
-        vice_president: 'نائب رئيس',
-        secretary: 'كاتب عام',
-        vice_secretary: 'نائب الكاتب العام',
-        treasurer: 'أمين مال',
-        vice_treasurer: 'نائب أمين المال',
-    };
+    const customRoles = roles.filter(r => r.custom);
 
     return (
         <>
@@ -208,12 +248,9 @@ const AdminAdmins = () => {
                             </AdminFormGroup>
                             <AdminFormGroup label="الصفة" className="col-md-3">
                                 <select className="form-control" name="role" value={formData.role} onChange={handleInputChange}>
-                                    <option value="president">رئيس</option>
-                                    <option value="vice_president">نائب رئيس</option>
-                                    <option value="secretary">كاتب عام</option>
-                                    <option value="vice_secretary">نائب الكاتب العام</option>
-                                    <option value="treasurer">أمين مال</option>
-                                    <option value="vice_treasurer">نائب أمين المال</option>
+                                    {roles.map(r => (
+                                        <option key={r.name} value={r.name}>{r.label}</option>
+                                    ))}
                                 </select>
                                 {formErrors.role && <div className="text-danger small mt-1">{formErrors.role[0]}</div>}
                             </AdminFormGroup>
@@ -225,6 +262,41 @@ const AdminAdmins = () => {
                             <AdminBtn variant="secondary" icon="la-times" onClick={() => { setShowForm(false); resetForm(); }}>إلغاء</AdminBtn>
                         </AdminFormActions>
                     </AdminFormPanel>
+
+                    <AdminCard title="الأدوار المخصصة" icon="la-tags">
+                        <p className="text-muted mb-2">
+                            أضف دوراً جديداً بعنوانه فقط (مثل: منشئ محتوى)، ثم عيّنه لمسؤول وحدد صلاحياته من صفحة «إدارة الصلاحيات».
+                        </p>
+                        <form className="d-flex flex-wrap align-items-start mb-2" style={{ gap: 8 }} onSubmit={handleAddRole}>
+                            <div style={{ flex: '1 1 240px' }}>
+                                <input
+                                    className="form-control"
+                                    placeholder="عنوان الدور"
+                                    maxLength={100}
+                                    value={newRoleLabel}
+                                    onChange={(e) => { setNewRoleLabel(e.target.value); setRoleError(''); }}
+                                />
+                                {roleError && <div className="text-danger small mt-1">{roleError}</div>}
+                            </div>
+                            <AdminBtn variant="success" type="submit" icon="la-plus" disabled={addingRole || !newRoleLabel.trim()}>
+                                {addingRole ? 'جارٍ...' : 'إضافة دور'}
+                            </AdminBtn>
+                        </form>
+                        {customRoles.length === 0 ? (
+                            <span className="text-muted small">لا توجد أدوار مخصصة بعد.</span>
+                        ) : (
+                            <div className="d-flex flex-wrap" style={{ gap: 8 }}>
+                                {customRoles.map(r => (
+                                    <span key={r.id} className="admin-tag d-inline-flex align-items-center" style={{ gap: 8 }}>
+                                        {r.label}
+                                        <a href="#" className="text-danger" title="حذف الدور" onClick={(e) => { e.preventDefault(); promptDelete(r.id, r.label, 'role'); }}>
+                                            <i className="la la-times"></i>
+                                        </a>
+                                    </span>
+                                ))}
+                            </div>
+                        )}
+                    </AdminCard>
 
                     <AdminCard title="قائمة الحسابات" icon="la-user-secret" flush>
                         {loading ? (
@@ -247,7 +319,7 @@ const AdminAdmins = () => {
                                             <tr key={a.id}>
                                                 <td>{a.name}</td>
                                                 <td>{a.email}</td>
-                                                <td><span className="admin-tag">{roleLabels[a.role] || a.role}</span></td>
+                                                <td><span className="admin-tag">{a.role_label || a.role}</span></td>
                                                 <td>
                                                     <div className="admin-action-group">
                                                         <AdminBtn permission="edit_users" variant="primary" icon="la-edit" onClick={() => handleOpenEditForm(a)}>تعديل</AdminBtn>

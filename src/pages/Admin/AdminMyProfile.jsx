@@ -4,15 +4,6 @@ import {
     AdminPage, AdminPageHeader, AdminFormPanel, AdminFormGroup, AdminFormActions, AdminBtn, AdminAlert, AdminLoading
 } from '../../components/Admin/ui/AdminUI';
 
-const roleLabels = {
-    president: 'رئيس الجمعية',
-    vice_president: 'نائب الرئيس',
-    secretary: 'الكاتب العام',
-    vice_secretary: 'نائب الكاتب العام',
-    treasurer: 'أمين المال',
-    vice_treasurer: 'نائب أمين المال',
-};
-
 const AdminMyProfile = () => {
     const [formData, setFormData] = useState({ name: '', email: '', password: '' });
     const [role, setRole] = useState('');
@@ -25,7 +16,7 @@ const AdminMyProfile = () => {
         api.get('/profile')
             .then(res => {
                 setFormData({ name: res.data.admin.name, email: res.data.admin.email, password: '' });
-                setRole(res.data.role);
+                setRole(res.data.admin.role_label || res.data.role);
                 setLoading(false);
             })
             .catch(err => {
@@ -73,7 +64,7 @@ const AdminMyProfile = () => {
         <AdminPage>
             <AdminPageHeader
                 title="الملف الشخصي"
-                subtitle={role ? `الصفة: ${roleLabels[role] || role}` : undefined}
+                subtitle={role ? `الصفة: ${role}` : undefined}
                 badge="حسابي"
             />
             <div className="content-body">

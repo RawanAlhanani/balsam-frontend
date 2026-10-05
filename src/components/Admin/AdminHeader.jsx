@@ -58,7 +58,7 @@ const AdminHeader = ({ toggleMenu }) => {
                             {adminRole && (
                                 <li className="nav-item d-none d-md-block mr-2">
                                     <span className="admin-header-role">
-                                        {roleLabels[adminRole] || adminRole}
+                                        {roleLabels[adminRole] || localStorage.getItem('admin_role_label') || adminRole}
                                     </span>
                                 </li>
                             )}
