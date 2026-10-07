@@ -2,6 +2,22 @@
   RewriteEngine On
   RewriteBase /
 
+  # Link previews: social-media crawlers don't run JavaScript, so they would only
+  # ever see the empty SPA shell. For shareable detail pages, hand them a
+  # server-rendered page (Open Graph tags + preview image) from the API; people
+  # still get the normal SPA. Search engines are deliberately not listed.
+  RewriteCond %{HTTP_USER_AGENT} (facebookexternalhit|Facebot|WhatsApp|Twitterbot|TelegramBot|LinkedInBot|Slackbot|Discordbot|Pinterest|SkypeUriPreview|Viber|vkShare|Embedly|redditbot|Mastodon|Applebot) [NC]
+  RewriteRule ^ - [E=SHARE_BOT:1]
+  RewriteCond %{ENV:SHARE_BOT} 1
+  RewriteRule ^Information/([0-9]+)/?$ https://api.balsam.ma/api/share/news/$1 [R=302,L]
+  RewriteCond %{ENV:SHARE_BOT} 1
+  RewriteRule ^uneActivite/([0-9]+)/?$ https://api.balsam.ma/api/share/activity/$1 [R=302,L]
+  RewriteCond %{ENV:SHARE_BOT} 1
+  RewriteRule ^projet/([0-9]+)/?$ https://api.balsam.ma/api/share/project/$1 [R=302,L]
+  RewriteCond %{ENV:SHARE_BOT} 1
+  RewriteRule ^page_autisme/([0-9]+)/?$ https://api.balsam.ma/api/share/autism/$1 [R=302,L]
+
+
   # Let real files/directories (assets, images, etc.) be served as-is
   RewriteCond %{REQUEST_FILENAME} -f [OR]
   RewriteCond %{REQUEST_FILENAME} -d
